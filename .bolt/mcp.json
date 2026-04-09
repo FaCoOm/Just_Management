@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "stitch": {
+      "enabled": true
+    },
+    "github": {
+      "enabled": true
+    }
+  }
+}
