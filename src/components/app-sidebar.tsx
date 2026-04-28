@@ -4,9 +4,6 @@ import {
   ClipboardList,
   Users,
   BedDouble,
-  Map,
-  Layers,
-  CalendarRange,
   Sparkles,
   UtensilsCrossed,
   DollarSign,
@@ -46,37 +43,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import type { PageId } from "@/App";
 
-const frontOfficeItems = [
-  { title: "Dashboard", icon: LayoutDashboard, isActive: true },
-  { title: "Reservations", icon: CalendarCheck },
-  { title: "Check-in / Check-out", icon: ClipboardList },
-];
+interface AppSidebarProps {
+  currentPage: PageId;
+  onNavigate: (page: PageId) => void;
+}
 
-const roomsSubItems = [
-  { title: "Floor Plan", icon: Map },
-  { title: "Room Types", icon: Layers },
-  { title: "Availability", icon: CalendarRange },
-];
-
-const propertyItems = [
-  { title: "Housekeeping", icon: Sparkles },
-  { title: "Dining & Events", icon: UtensilsCrossed },
-];
-
-const revenueItems = [
-  { title: "Rate Manager", icon: DollarSign },
-  { title: "Billing & Invoices", icon: FileText },
-  { title: "Channel Distribution", icon: Globe },
-];
-
-const adminItems = [
-  { title: "Staff & Roles", icon: UserCog },
-  { title: "Maintenance Logs", icon: Wrench },
-  { title: "Security & Access", icon: ShieldCheck },
-];
-
-export function AppSidebar() {
+export function AppSidebar({ currentPage, onNavigate }: AppSidebarProps) {
   return (
     <Sidebar>
       <SidebarHeader className="border-b border-sidebar-border px-4 py-3">
@@ -100,18 +74,37 @@ export function AppSidebar() {
           <SidebarGroupLabel>Front Office</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {frontOfficeItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton isActive={item.isActive}>
-                    <item.icon />
-                    <span>{item.title}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  isActive={currentPage === "dashboard"}
+                  onClick={() => onNavigate("dashboard")}
+                >
+                  <LayoutDashboard />
+                  <span>Dashboard</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  isActive={currentPage === "reservations"}
+                  onClick={() => onNavigate("reservations")}
+                >
+                  <CalendarCheck />
+                  <span>Reservations</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton>
+                  <ClipboardList />
+                  <span>Check-in / Check-out</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
               <Collapsible className="group/collapsible">
                 <SidebarMenuItem>
                   <CollapsibleTrigger asChild>
-                    <SidebarMenuButton>
+                    <SidebarMenuButton
+                      isActive={currentPage === "guests"}
+                      onClick={() => onNavigate("guests")}
+                    >
                       <Users />
                       <span>Guest Profiles</span>
                       <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
@@ -120,7 +113,9 @@ export function AppSidebar() {
                   <CollapsibleContent>
                     <SidebarMenuSub>
                       <SidebarMenuSubItem>
-                        <SidebarMenuSubButton>All Guests</SidebarMenuSubButton>
+                        <SidebarMenuSubButton onClick={() => onNavigate("guests")}>
+                          All Guests
+                        </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButton>VIP Guests</SidebarMenuSubButton>
@@ -140,7 +135,7 @@ export function AppSidebar() {
               <Collapsible defaultOpen className="group/collapsible">
                 <SidebarMenuItem>
                   <CollapsibleTrigger asChild>
-                    <SidebarMenuButton>
+                    <SidebarMenuButton isActive={currentPage === "rooms"}>
                       <BedDouble />
                       <span>Rooms & Suites</span>
                       <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
@@ -148,25 +143,33 @@ export function AppSidebar() {
                   </CollapsibleTrigger>
                   <CollapsibleContent>
                     <SidebarMenuSub>
-                      {roomsSubItems.map((item) => (
-                        <SidebarMenuSubItem key={item.title}>
-                          <SidebarMenuSubButton>
-                            {item.title}
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                      ))}
+                      <SidebarMenuSubItem>
+                        <SidebarMenuSubButton onClick={() => onNavigate("rooms")}>
+                          Floor Plan
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                      <SidebarMenuSubItem>
+                        <SidebarMenuSubButton>Room Types</SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                      <SidebarMenuSubItem>
+                        <SidebarMenuSubButton>Availability</SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
                     </SidebarMenuSub>
                   </CollapsibleContent>
                 </SidebarMenuItem>
               </Collapsible>
-              {propertyItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton>
-                    <item.icon />
-                    <span>{item.title}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              <SidebarMenuItem>
+                <SidebarMenuButton>
+                  <Sparkles />
+                  <span>Housekeeping</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton>
+                  <UtensilsCrossed />
+                  <span>Dining & Events</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -175,7 +178,11 @@ export function AppSidebar() {
           <SidebarGroupLabel>Revenue</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {revenueItems.map((item) => (
+              {[
+                { title: "Rate Manager", icon: DollarSign },
+                { title: "Billing & Invoices", icon: FileText },
+                { title: "Channel Distribution", icon: Globe },
+              ].map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton>
                     <item.icon />
@@ -191,14 +198,27 @@ export function AppSidebar() {
           <SidebarGroupLabel>Administration</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {adminItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton>
-                    <item.icon />
-                    <span>{item.title}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              <SidebarMenuItem>
+                <SidebarMenuButton>
+                  <UserCog />
+                  <span>Staff & Roles</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  isActive={currentPage === "maintenance"}
+                  onClick={() => onNavigate("maintenance")}
+                >
+                  <Wrench />
+                  <span>Maintenance Logs</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton>
+                  <ShieldCheck />
+                  <span>Security & Access</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
