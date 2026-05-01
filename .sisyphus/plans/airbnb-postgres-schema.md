@@ -298,7 +298,7 @@ Wave 3: Track B branch scaffold, auth strategy, seed/policy/docs/branch closeout
 
   **Commit**: YES | Message: `feat(db): add listings and room mappings` | Files: [`supabase/migrations/*`, `.sisyphus/evidence/task-3-listing-mappings.json`]
 
-- [ ] 4. Introduce the reservation core, external reservation references, and room allocations
+- [x] 4. Introduce the reservation core, external reservation references, and room allocations
 
   **What to do**: Create `reservations` as the v1 booking source of truth with additive links to `property_id`, `primary_room_id` (nullable compatibility convenience), `channel_id`, `external_account_id`, and `channel_listing_id` when known. Store stay dates, operational status, headcount snapshot, guest-facing name/contact snapshot, and operational notes in the reservation row. Add `reservation_external_refs` for provider reservation identifiers and raw/provider statuses (e.g. confirmation code `HMX44ZA85B`, booking timestamp, raw payload). Add `reservation_room_allocations` so one reservation can allocate one or many physical rooms, even though most v1 records will be single-room bookings.
   **Must NOT do**: Do not treat `guests` as the long-term booking core. Do not force all reservations to single-room shape in a way that blocks composite inventory. Do not store earnings/accounting breakdown as normalized core fields in v1.
@@ -339,7 +339,7 @@ Wave 3: Track B branch scaffold, auth strategy, seed/policy/docs/branch closeout
 
   **Commit**: YES | Message: `feat(db): add reservation core` | Files: [`supabase/migrations/*`, `.sisyphus/evidence/task-4-reservations.json`]
 
-- [ ] 5. Re-anchor operational child tables to the reservation core without breaking the current app
+- [x] 5. Re-anchor operational child tables to the reservation core without breaking the current app
 
   **What to do**: Extend `guest_requests` with additive linkage needed for the new core: add `reservation_id` and `property_id` where required for simpler operational joins and to prevent orphaned request records. Review `maintenance_issues` and keep it property/room anchored, adding reservation linkage only if a concrete workflow in the codebase needs it now. Preserve `guests` for compatibility during cutover and define the compatibility rule explicitly: `guests` remains readable until frontend migration is complete.
   **Must NOT do**: Do not fully repurpose `maintenance_issues` around reservations without evidence. Do not delete `guest_id` from `guest_requests` until all readers have migrated. Do not create polymorphic request ownership tables.
@@ -378,7 +378,7 @@ Wave 3: Track B branch scaffold, auth strategy, seed/policy/docs/branch closeout
 
   **Commit**: YES | Message: `feat(db): link operational tables to reservations` | Files: [`supabase/migrations/*`, `.sisyphus/evidence/task-5-operational-links.json`]
 
-- [ ] 6. Build the backfill and import-mapping path from legacy guests and CSV sources
+- [x] 6. Build the backfill and import-mapping path from legacy guests and CSV sources
 
   **What to do**: Define and implement the additive migration path that backfills `reservations` from current `guests` rows and supports CSV-based provider imports safely. Use `channel_listing_aliases` plus explicit staging/mapping SQL so reservations from `reservations_data.csv` are resolved through aliases or left flagged as unmapped. Treat earnings as raw provider metadata only in v1. Make the seed/import flow idempotent where possible and explicitly one-shot where not.
   **Must NOT do**: Do not auto-match reservation rows solely by listing title without alias support. Do not silently discard unmapped rows. Do not make earnings a normalized financial ledger in v1.
@@ -418,11 +418,11 @@ Wave 3: Track B branch scaffold, auth strategy, seed/policy/docs/branch closeout
 
   **Commit**: YES | Message: `feat(db): add reservation backfill path` | Files: [`supabase/migrations/*`, `.sisyphus/evidence/task-6-backfill.json`]
 
-- [ ] 7. Migrate frontend types and dashboard data loading from legacy guest bookings to reservations
+- [x] 7. Migrate frontend types and dashboard data loading from legacy guest bookings to reservations
 
   **What to do**: Update `src/types/database.ts` and `src/hooks/use-dashboard-data.ts` so the live dashboard consumes `reservations` as the booking source while preserving the same arrivals/departures/occupancy semantics. Decide explicitly whether to rename the frontend `Guest` interface now or keep a compatibility alias while the UI components remain guest-labeled. Ensure any new tables referenced by the hook are read safely under existing Supabase access assumptions.
   **Must NOT do**: Do not leave the frontend reading `guests` as the authoritative booking source once `reservations` exists. Do not change KPI semantics unintentionally. Do not break the five-table dashboard load flow without replacing it deliberately.
-
+  
   **Recommended Agent Profile**:
   - Category: `unspecified-high` - Reason: this task couples schema migration to a live dashboard contract.
   - Skills: [] - why needed: current repo patterns are simple and local.
@@ -458,7 +458,7 @@ Wave 3: Track B branch scaffold, auth strategy, seed/policy/docs/branch closeout
 
   **Commit**: YES | Message: `feat(app): migrate dashboard bookings to reservations` | Files: [`src/types/database.ts`, `src/hooks/use-dashboard-data.ts`, `.sisyphus/evidence/task-7-frontend-migration.txt`]
 
-- [ ] 8. Finish seed data, indexing, RLS policy alignment, and schema documentation
+- [x] 8. Finish seed data, indexing, RLS policy alignment, and schema documentation
 
   **What to do**: Add or update seed data for the new v1 tables, define all required supporting indexes and uniqueness constraints, review RLS so the dashboard can still read the intended tables under the current demo-access model, and update the schema docs to reflect the new runtime truth. Document the deferred PMS seam clearly: future `stays`, folios, room moves, and finance layers belong later and should extend—not replace—the v1 reservation core.
   **Must NOT do**: Do not leave new tables unindexed on their primary query paths. Do not leave RLS behavior implicit. Do not update docs in a way that revives the stale `src/data` narrative.
@@ -498,7 +498,7 @@ Wave 3: Track B branch scaffold, auth strategy, seed/policy/docs/branch closeout
 
   **Commit**: YES | Message: `docs(db): finalize balanced core schema docs` | Files: [`supabase/migrations/*`, `README.md`, `database_design/db-schema-airbnb.md`, `.sisyphus/evidence/task-8-schema-finish.json`]
 
-- [ ] 9. Complete the shared frontend data-access foundation for Track A and Track B
+- [x] 9. Complete the shared frontend data-access foundation for Track A and Track B
 
   **What to do**: Implement Sprint 1 Story-01 by introducing a frontend repository/data-access abstraction and TanStack Query foundation so the UI no longer depends on direct, hard-coded Supabase fetches. Define shared interfaces for properties, rooms, reservations, guest requests, and maintenance access. Provide a Track A repository implementation that talks to Supabase now and a Track B contract that the future custom backend must satisfy.
   **Must NOT do**: Do not keep the app coupled only to `supabase.from(...)` calls inside feature hooks. Do not make Track B parity implicit; document the exact repository methods and payload shapes.
