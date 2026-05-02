@@ -1,5 +1,6 @@
-// Prisma schema mirroring Track A balanced-core v1 schema
-// This must stay in sync with supabase/migrations/*.sql
+// Prisma schema mirroring Track A balanced-core v1 schema.
+// Track A SQL remains in supabase/migrations/*.sql.
+// Track B migrations are generated from this schema for Azure PostgreSQL.
 
 generator client {
   provider = "prisma-client-js"
@@ -10,310 +11,332 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// =============================================================================
-// RETAINED CORE TABLES (from original schema, additive-only)
-// =============================================================================
-
 model properties {
-  id         String   @id @default (uuid())
-  name       String
-  slug       String   @unique
-  total_rooms Int
-  location   String
-  status     String
-  created_at DateTime @default(now())
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String
+  slug        String   @unique
+  total_rooms Int      @default(0)
+  location    String   @default("")
+  status      String   @default("active")
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
 
-  rooms             rooms[]
-  guest_requests    guest_requests[]
+  rooms              rooms[]
+  guests             guests[]
+  guest_requests     guest_requests[]
   maintenance_issues maintenance_issues[]
-  reservations      reservations[]
-
-  @@index([name])
+  reservations       reservations[]
 }
 
 model rooms {
-  id          String   @id @default (uuid())
-  property_id String
+  id          String   @id @default(uuid()) @db.Uuid
+  property_id String   @db.Uuid
   room_number String
-  room_name   String
-  room_type   String
-  status      String
-  passcode    String
-  floor       Int
-  created_at  DateTime @default(now())
+  room_name   String   @default("")
+  room_type   String   @default("Standard")
+  status      String   @default("Vacant")
+  passcode    String   @default("")
+  floor       Int      @default(1)
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
 
-  property                  properties                   @relation(fields: [property_id], references: [id], onDelete: Restrict)
-  guest_requests           guest_requests[]
-  maintenance_issues       maintenance_issues[]
-  reservations             reservations[]
+  property                     properties                    @relation(fields: [property_id], references: [id], onDelete: Restrict)
+  guests                       guests[]
+  guest_requests               guest_requests[]
+  listing_room_mappings        listing_room_mappings[]
+  maintenance_issues           maintenance_issues[]
+  primary_reservations         reservations[]                @relation("reservation_primary_room")
   reservation_room_allocations reservation_room_allocations[]
 
   @@unique([id, property_id])
-  @@index([property_id])
-  @@index([status])
 }
 
 model guests {
-  id              String   @id @default (uuid())
-  reservation_id   String?
-  property_id     String
-  room_id         String?
+  id              String    @id @default(uuid()) @db.Uuid
+  property_id     String    @db.Uuid
+  room_id         String?   @db.Uuid
   guest_name      String
-  eta             DateTime
-  etd             DateTime
-  check_in_status String
-  booking_source  String
-  is_vip          Boolean  @default(false)
-  guest_count     Int      @default(1)
-  created_at      DateTime @default(now())
+  eta             DateTime? @db.Timestamptz(6)
+  etd             DateTime? @db.Timestamptz(6)
+  check_in_status String    @default("Pending")
+  booking_source  String    @default("Direct")
+  is_vip          Boolean   @default(false)
+  guest_count     Int       @default(1)
+  created_at      DateTime  @default(now()) @db.Timestamptz(6)
+
+  property                           properties                           @relation(fields: [property_id], references: [id], onDelete: Restrict)
+  room                               rooms?                               @relation(fields: [room_id], references: [id], onDelete: Restrict)
+  guest_requests                     guest_requests[]
+  legacy_guest_reservation_backfills legacy_guest_reservation_backfills[]
 }
 
-// =============================================================================
-// PROVIDER EDGE (channel/account/listing abstraction)
-// =============================================================================
+model guest_requests {
+  id             String   @id @default(uuid()) @db.Uuid
+  guest_id       String   @db.Uuid
+  room_id        String   @db.Uuid
+  request_type   String
+  notes          String   @default("")
+  is_completed   Boolean  @default(false)
+  created_at     DateTime @default(now()) @db.Timestamptz(6)
+  reservation_id String?  @db.Uuid
+  property_id    String?  @db.Uuid
+
+  guest       guests        @relation(fields: [guest_id], references: [id], onDelete: Restrict)
+  property    properties?   @relation(fields: [property_id], references: [id], onDelete: SetNull)
+  reservation reservations? @relation(fields: [reservation_id], references: [id], onDelete: SetNull)
+  room        rooms         @relation(fields: [room_id], references: [id], onDelete: Restrict)
+
+  @@index([guest_id])
+  @@index([property_id])
+  @@index([reservation_id])
+}
+
+model maintenance_issues {
+  id          String   @id @default(uuid()) @db.Uuid
+  property_id String   @db.Uuid
+  room_id     String?  @db.Uuid
+  title       String
+  description String   @default("")
+  severity    String   @default("Low")
+  status      String   @default("Open")
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+
+  property properties @relation(fields: [property_id], references: [id], onDelete: Restrict)
+  room     rooms?     @relation(fields: [room_id], references: [id], onDelete: Restrict)
+}
 
 model channels {
-  id        String   @id @default(uuid())
-  name      String   @unique
-  api_name  String   @unique
-  logo_url  String?
-  created_at DateTime @default(now())
+  id         String   @id @default(uuid()) @db.Uuid
+  slug       String   @unique
+  display_name String
+  status     String   @default("active")
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @updatedAt @db.Timestamptz(6)
 
-  external_accounts        external_accounts[]
-  reservation_external_refs reservation_external_refs[]
+  external_accounts          external_accounts[]
+  provider_reservation_import_rows provider_reservation_import_rows[]
+  reservation_external_refs  reservation_external_refs[]
 }
 
 model external_accounts {
-  id          String   @id @default(uuid())
-  channel_id  String
-  account_key String   @unique // main/ruby/manuka22
-  name        String
-  email       String?
-  is_active   Boolean  @default(true)
-  created_at  DateTime @default(now())
+  id                   String    @id @default(uuid()) @db.Uuid
+  channel_id           String    @db.Uuid
+  account_key          String
+  display_name         String
+  status               String    @default("active")
+  archived_at          DateTime? @db.Timestamptz(6)
+  last_synced_at       DateTime? @db.Timestamptz(6)
+  last_sync_started_at DateTime? @db.Timestamptz(6)
+  last_sync_error      String?
+  sync_metadata        Json      @default("{}")
+  created_at           DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at           DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
 
-  channel            channels              @relation(fields: [channel_id], references: [id], onDelete: Restrict)
-  channel_listings   channel_listings[]
-  reservation_external_refs reservation_external_refs[]
+  channel                          channels                           @relation(fields: [channel_id], references: [id], onDelete: Restrict)
+  channel_listing_aliases          channel_listing_aliases[]
+  channel_listings                 channel_listings[]
+  provider_reservation_import_rows provider_reservation_import_rows[]
+  reservation_external_refs        reservation_external_refs[]
 
+  @@unique([channel_id, account_key])
   @@unique([id, channel_id])
-  @@index([account_key])
-  @@index([channel_id])
 }
 
 model channel_listings {
-  id                  String   @id @default(uuid())
-  external_account_id String
+  id                  String    @id @default(uuid()) @db.Uuid
+  external_account_id String    @db.Uuid
   provider_listing_id String
   title               String
-  is_active           Boolean  @default(true)
-  created_at          DateTime @default(now())
-  updated_at          DateTime @updatedAt
+  internal_name       String?
+  listing_type        String    @default("home")
+  location            String    @default("")
+  status              String    @default("listed")
+  public_url          String?
+  host_editor_url     String?
+  extracted_at        DateTime? @db.Timestamptz(6)
+  last_synced_at      DateTime? @db.Timestamptz(6)
+  last_seen_at        DateTime? @db.Timestamptz(6)
+  source_metadata     Json      @default("{}")
+  created_at          DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
 
-  external_account        external_accounts         @relation(fields: [external_account_id], references: [id], onDelete: Restrict)
-  channel_listing_aliases channel_listing_aliases[]
-  listing_room_mappings    listing_room_mappings[]
-  reservation_external_refs reservation_external_refs[]
+  external_account                 external_accounts                  @relation(fields: [external_account_id], references: [id], onDelete: Restrict)
+  channel_listing_aliases          channel_listing_aliases[]
+  listing_room_mappings            listing_room_mappings[]
+  provider_reservation_import_rows provider_reservation_import_rows[]
+  reservation_external_refs        reservation_external_refs[]
 
   @@unique([external_account_id, provider_listing_id])
-  @@index([external_account_id])
+  @@unique([id, external_account_id])
 }
 
 model channel_listing_aliases {
-  id                  String   @id @default(uuid())
-  channel_listing_id  String
-  alias               String
-  match_type          String   @default("exact") // exact, fuzzy, regex
-  is_active           Boolean  @default(true)
-  created_at          DateTime @default(now())
+  id                 String    @id @default(uuid()) @db.Uuid
+  channel_listing_id String    @db.Uuid
+  external_account_id String   @db.Uuid
+  alias_value        String
+  alias_type         String    @default("manual")
+  status             String    @default("active")
+  archived_at        DateTime? @db.Timestamptz(6)
+  raw_metadata       Json      @default("{}")
+  created_at         DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
 
-  channel_listing channel_listings @relation(fields: [channel_listing_id], references: [id], onDelete: Cascade)
+  channel_listing channel_listings  @relation(fields: [channel_listing_id, external_account_id], references: [id, external_account_id], onDelete: Cascade)
+  external_account external_accounts @relation(fields: [external_account_id], references: [id], onDelete: Restrict)
 
-  @@unique([channel_listing_id, alias])
-  @@index([alias])
+  @@unique([channel_listing_id, alias_value])
+  @@index([external_account_id, alias_value])
 }
 
 model listing_room_mappings {
-  id                 String   @id @default(uuid())
-  channel_listing_id String
-  room_id            String
-  is_active          Boolean  @default(true)
-  created_at         DateTime @default(now())
-  updated_at         DateTime @updatedAt
+  id                 String    @id @default(uuid()) @db.Uuid
+  channel_listing_id String    @db.Uuid
+  room_id            String    @db.Uuid
+  mapping_role       String    @default("full_occupancy")
+  status             String    @default("active")
+  sort_order         Int       @default(1)
+  notes              String    @default("")
+  archived_at        DateTime? @db.Timestamptz(6)
+  created_at         DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
 
   channel_listing channel_listings @relation(fields: [channel_listing_id], references: [id], onDelete: Cascade)
+  room            rooms            @relation(fields: [room_id], references: [id], onDelete: Restrict)
 
-  @@unique([channel_listing_id, room_id])
-  @@index([channel_listing_id])
+  @@index([channel_listing_id, room_id])
 }
 
-// =============================================================================
-// RESERVATION CORE (booking source of truth)
-// =============================================================================
-
 model reservations {
-  id              String   @id @default(uuid())
-  property_id     String
-  primary_room_id String?
-  status          String   @default("pending") // pending, check_in_pending, checked_in, check_out_pending, checked_out, cancelled, no_show
-  check_in_date   DateTime @db.Date
-  check_out_date  DateTime @db.Date
-  guest_name      String
-  guest_phone     String?
-  guest_email     String?
-  adult_count     Int      @default(1)
-  child_count     Int      @default(0)
-  infant_count    Int      @default(0)
-  guest_count     Int      @default(1)
-  operational_notes String @default("")
-  guest_notes     String  @default("")
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
+  id                String   @id @default(uuid()) @db.Uuid
+  property_id       String   @db.Uuid
+  primary_room_id   String?  @db.Uuid
+  status            String   @default("pending")
+  check_in_date     DateTime @db.Date
+  check_out_date    DateTime @db.Date
+  guest_name        String
+  guest_phone       String?
+  guest_email       String?
+  adult_count       Int      @default(1)
+  child_count       Int      @default(0)
+  infant_count      Int      @default(0)
+  guest_count       Int      @default(1)
+  operational_notes String   @default("")
+  guest_notes       String   @default("")
+  created_at        DateTime @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime @default(now()) @updatedAt @db.Timestamptz(6)
 
-  property                   properties                   @relation(fields: [property_id], references: [id], onDelete: Restrict)
-  primary_room               rooms?                        @relation(fields: [primary_room_id, property_id], references: [id, property_id], onDelete: Restrict)
-  reservation_external_refs  reservation_external_refs[]
-  reservation_room_allocations reservation_room_allocations[]
-  guest_requests             guest_requests[]
+  property                      properties                    @relation(fields: [property_id], references: [id], onDelete: Restrict)
+  primary_room                  rooms?                        @relation("reservation_primary_room", fields: [primary_room_id, property_id], references: [id, property_id], onDelete: Restrict)
+  guest_requests                guest_requests[]
+  legacy_guest_reservation_backfills legacy_guest_reservation_backfills[]
+  provider_reservation_import_rows provider_reservation_import_rows[]
+  reservation_external_refs     reservation_external_refs[]
+  reservation_room_allocations  reservation_room_allocations[]
 
   @@index([property_id, check_in_date, check_out_date])
   @@index([status])
 }
 
 model reservation_external_refs {
-  id                    String   @id @default(uuid())
-  reservation_id        String
-  channel_id            String
-  external_account_id   String?
-  channel_listing_id    String?
+  id                      String    @id @default(uuid()) @db.Uuid
+  reservation_id          String    @db.Uuid
+  channel_id              String    @db.Uuid
+  external_account_id     String?   @db.Uuid
+  channel_listing_id      String?   @db.Uuid
   provider_reservation_id String?
-  confirmation_code     String?
-  raw_status            String?
-  source_status         String?
-  booked_at             DateTime?
-  source_created_at     DateTime?
-  source_updated_at     DateTime?
-  created_at            DateTime @default(now())
+  confirmation_code       String?
+  raw_status              String?
+  source_status           String?
+  booked_at               DateTime? @db.Timestamptz(6)
+  source_created_at       DateTime? @db.Timestamptz(6)
+  source_updated_at       DateTime? @db.Timestamptz(6)
+  last_synced_at          DateTime? @db.Timestamptz(6)
+  payload_metadata        Json      @default("{}")
+  created_at              DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at              DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
 
-  reservation       reservations    @relation(fields: [reservation_id], references: [id], onDelete: Cascade)
-  channel           channels        @relation(fields: [channel_id], references: [id], onDelete: Restrict)
-  external_account external_accounts? @relation(fields: [external_account_id], references: [id], onDelete: Restrict)
-  channel_listing  channel_listings? @relation(fields: [channel_listing_id], references: [id], onDelete: Restrict)
+  reservation      reservations       @relation(fields: [reservation_id], references: [id], onDelete: Cascade)
+  channel          channels           @relation(fields: [channel_id], references: [id], onDelete: Restrict)
+  external_account external_accounts? @relation(fields: [external_account_id, channel_id], references: [id, channel_id], onDelete: Restrict)
+  channel_listing  channel_listings?  @relation(fields: [channel_listing_id, external_account_id], references: [id, external_account_id], onDelete: Restrict)
 
   @@index([reservation_id])
-  @@index([channel_id])
+  @@index([channel_listing_id])
+  @@index([channel_id, external_account_id, provider_reservation_id], map: "refs_provider_res_idx")
+  @@index([channel_id, external_account_id, confirmation_code], map: "refs_confirmation_idx")
 }
 
 model reservation_room_allocations {
-  id            String   @id @default(uuid())
-  reservation_id String
-  room_id       String
-  role          String   @default("stay") // stay, primary, overflow, split_stay
-  created_at    DateTime @default(now())
+  id              String   @id @default(uuid()) @db.Uuid
+  reservation_id  String   @db.Uuid
+  room_id         String   @db.Uuid
+  allocation_role String   @default("stay")
+  sort_order      Int      @default(1)
+  notes           String   @default("")
+  created_at      DateTime @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime @default(now()) @updatedAt @db.Timestamptz(6)
 
   reservation reservations @relation(fields: [reservation_id], references: [id], onDelete: Cascade)
   room        rooms        @relation(fields: [room_id], references: [id], onDelete: Restrict)
 
-  @@index([reservation_id])
+  @@unique([reservation_id, room_id])
+  @@index([room_id])
 }
-
-// =============================================================================
-// OPERATIONAL TABLES
-// =============================================================================
-
-model guest_requests {
-  id          String   @id @default(uuid())
-  reservation_id String?
-  property_id String
-  room_id     String?
-  request_type String
-  description String
-  priority    String   @default("normal")
-  status      String   @default("pending")
-  created_at  DateTime @default(now())
-
-  property    properties @relation(fields: [property_id], references: [id], onDelete: Restrict)
-  reservation reservations? @relation(fields: [reservation_id], references: [id], onDelete: SetNull)
-  room        rooms?       @relation(fields: [room_id], references: [id], onDelete: SetNull)
-
-  @@index([property_id])
-  @@index([reservation_id])
-}
-
-model maintenance_issues {
-  id          String   @id @default(uuid())
-  property_id String
-  room_id    String?
-  title       String
-  description String
-  severity    String   @default("medium")
-  status      String   @default("open")
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-
-  property properties @relation(fields: [property_id], references: [id], onDelete: Restrict)
-  room     rooms?     @relation(fields: [room_id], references: [id], onDelete: SetNull)
-
-  @@index([property_id])
-  @@index([status])
-}
-
-// =============================================================================
-// BACKFILL / IMPORT MAPPING (for legacy guest migration)
-// =============================================================================
 
 model legacy_guest_reservation_backfills {
-  id                String   @id @default(uuid())
-  legacy_guest_id    String
-  new_reservation_id String
-  imported_at       DateTime @default(now())
+  id                    String   @id @default(uuid()) @db.Uuid
+  guest_id              String   @db.Uuid
+  reservation_id        String   @db.Uuid
+  source_check_in_status String  @default("")
+  source_booking_source String   @default("")
+  field_mapping         Json     @default("{}")
+  backfilled_at         DateTime @default(now()) @db.Timestamptz(6)
+  created_at            DateTime @default(now()) @db.Timestamptz(6)
 
-  @@index([legacy_guest_id])
-  @@index([new_reservation_id])
+  guest       guests        @relation(fields: [guest_id], references: [id], onDelete: Restrict)
+  reservation reservations  @relation(fields: [reservation_id], references: [id], onDelete: Cascade)
+
+  @@unique([guest_id])
+  @@unique([reservation_id])
+  @@index([reservation_id])
 }
 
 model provider_reservation_import_rows {
-  id                  String   @id @default(uuid())
-  import_batch_id     String
-  channel_id          String
-  external_account_id String?
-  provider_reservation_id String
-  confirmation_code   String?
-  guest_name          String
-  check_in_date       DateTime
-  check_out_date     DateTime
-  listing_title      String?
-  room_name           String?
-  status              String   @default("pending")
-  raw_data            Json?
-  created_at          DateTime @default(now())
+  id                          String    @id @default(uuid()) @db.Uuid
+  channel_id                  String    @db.Uuid
+  external_account_id         String    @db.Uuid
+  source_file                 String
+  source_row_number           Int?
+  provider_reservation_id     String?
+  confirmation_code           String?
+  raw_status                  String    @default("")
+  guest_name                  String
+  guest_contact               String?
+  adult_count                 Int       @default(0)
+  child_count                 Int       @default(0)
+  infant_count                Int       @default(0)
+  guest_count                 Int       @default(0)
+  check_in_date               DateTime  @db.Date
+  check_out_date              DateTime  @db.Date
+  booked_at                   DateTime? @db.Timestamptz(6)
+  provider_listing_id         String?
+  listing_alias_value         String?
+  raw_payload                 Json      @default("{}")
+  resolved_channel_listing_id String?   @db.Uuid
+  resolution_status           String    @default("pending")
+  resolution_method           String?
+  resolution_notes            String    @default("")
+  reservation_id              String?   @db.Uuid
+  created_at                  DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at                  DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
 
-  @@index([import_batch_id])
-  @@index([status])
-}
+  channel                  channels           @relation(fields: [channel_id], references: [id], onDelete: Restrict)
+  external_account         external_accounts  @relation(fields: [external_account_id, channel_id], references: [id, channel_id], onDelete: Restrict)
+  resolved_channel_listing channel_listings?  @relation(fields: [resolved_channel_listing_id, external_account_id], references: [id, external_account_id], onDelete: Restrict)
+  reservation              reservations?      @relation(fields: [reservation_id], references: [id], onDelete: SetNull)
 
-model provider_reservation_import_report {
-  id            String   @id @default(uuid())
-  import_batch_id String @unique
-  channel_id    String
-  imported_count Int      @default(0)
-  skipped_count  Int      @default(0)
-  error_count    Int      @default(0)
-  report         Json?
-  created_at     DateTime @default(now())
-}
-
-model provider_reservation_unmapped_imports {
-  id                  String   @id @default(uuid())
-  import_batch_id     String
-  provider_reservation_id String
-  guest_name          String
-  listing_title       String?
-  check_in_date       DateTime
-  check_out_date     DateTime
-  reason              String
-  raw_data            Json?
-  created_at          DateTime @default(now())
-
-  @@index([import_batch_id])
+  @@index([resolution_status])
+  @@index([resolved_channel_listing_id])
+  @@index([external_account_id, source_file, source_row_number])
+  @@index([channel_id, external_account_id, confirmation_code], map: "provider_import_confirmation_idx")
+  @@index([channel_id, external_account_id, provider_reservation_id], map: "provider_import_provider_res_idx")
 }

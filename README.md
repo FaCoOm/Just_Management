@@ -20,9 +20,11 @@ The Prisma schema in `prisma/schema.prisma` mirrors:
 ```bash
 cd backend
 npm install
-cp .env.example .env  # Edit DATABASE_URL
+cp .env.example .env  # Edit DATABASE_URL for Azure PostgreSQL
 npx prisma generate
-npx prisma db push   # Creates tables from Prisma schema
+npm run db:validate
+npm run db:verify:migration
+npm run db:deploy   # Creates tables from Prisma migrations
 npm run dev
 ```
 

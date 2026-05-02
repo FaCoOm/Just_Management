@@ -1,30 +1,28 @@
-# Supabase Migrations Guide
+# Track B SQL Reference Migrations
 
-## Scope
-- This folder owns SQL schema and seed data.
-- Current files cover schema creation plus demo portfolio seeding.
+**IMPORTANT: These SQL files are schema-intent reference only. They mirror Track A Supabase
+migrations for documentation and design purposes.**
 
-## Current Contract
-- Core tables: `properties`, `rooms`, `guests`, `guest_requests`, `maintenance_issues`.
-- The frontend reads these tables through `src/hooks/use-dashboard-data.ts`.
-- Frontend type expectations live in `src/types/database.ts`.
-- Schema drift here will surface as broken UI and type mismatches there.
+## Do NOT deploy these to Azure PostgreSQL.
 
-## Migration Rules
-- Keep migrations small and purpose-specific.
-- Follow the existing timestamped filename pattern.
-- Enable RLS for new tables unless the task explicitly changes the security model.
-- Review policies as carefully as schema because the dashboard currently depends on public demo reads.
-- Prefer additive changes over destructive rewrites.
+Azure deployment uses `backend/prisma/migrations/` generated from `backend/prisma/schema.prisma`.
 
-## Seed Data Rules
-- Treat seed files as demo data, not production truth.
-- Preserve relationship integrity across properties, rooms, guests, requests, and maintenance issues.
-- Keep idempotent patterns like `ON CONFLICT ... DO NOTHING` when extending stable seed rows.
-- Be careful with procedural seed blocks because one change can fan out across many generated rows.
+Supabase RLS policies in these files (roles `anon`, `authenticated`, RLS enablement) are Supabase-only
+and **will fail** on Azure PostgreSQL. The Prisma migration is the canonical schema source for Azure.
 
-## Verification
-- Reconcile schema changes with `src/types/database.ts`.
-- Reconcile column or table changes with `src/hooks/use-dashboard-data.ts` queries.
-- Watch for RLS or policy regressions if data stops appearing in the dashboard.
-- Run `npm run typecheck` and `npm run build` after frontend-facing schema changes are mirrored locally.
+## What these files are good for:
+- Understanding the business schema contract
+- Comparing Track A vs Track B parity
+- Documenting intended constraints, indexes, and seed data patterns
+- Reference when adding new features that need schema changes (update
+  `backend/prisma/schema.prisma` first, then generate a new migration)
+
+## What these files are NOT:
+- Executable migration SQL for Azure
+- The source of truth for Track B deployment
+- A replacement for Prisma migrations
+
+## Verification for Track B
+- Run `cd backend && npm run db:verify:migration` to check the Prisma migration.
+- Run `cd backend && npm run db:validate` to validate the Prisma schema.
+- Run `cd backend && npm run build` to confirm backend TypeScript with generated client.
