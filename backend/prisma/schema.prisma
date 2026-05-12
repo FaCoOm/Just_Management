@@ -340,3 +340,38 @@ model provider_reservation_import_rows {
   @@index([channel_id, external_account_id, confirmation_code], map: "provider_import_confirmation_idx")
   @@index([channel_id, external_account_id, provider_reservation_id], map: "provider_import_provider_res_idx")
 }
+
+model sync_runs {
+  id                String    @id @default(uuid()) @db.Uuid
+  source_type       String
+  source_account    String?
+  endpoint          String
+  is_dry_run        Boolean   @default(false)
+  status            String    @default("started")
+  processed_count   Int       @default(0)
+  created_count     Int       @default(0)
+  updated_count     Int       @default(0)
+  skipped_count     Int       @default(0)
+  dead_letter_count Int       @default(0)
+  started_at        DateTime  @default(now()) @db.Timestamptz(6)
+  finished_at       DateTime? @db.Timestamptz(6)
+  config_snapshot   Json      @default("{}")
+
+  sync_dead_letters sync_dead_letters[]
+}
+
+model sync_dead_letters {
+  id                 String    @id @default(uuid()) @db.Uuid
+  sync_run_id        String    @db.Uuid
+  source_file        String?
+  source_row_number  Int?
+  failure_code       String
+  failure_reason     String
+  normalized_payload Json      @default("{}")
+  created_at         DateTime  @default(now()) @db.Timestamptz(6)
+
+  sync_run sync_runs @relation(fields: [sync_run_id], references: [id], onDelete: Cascade)
+
+  @@index([sync_run_id])
+  @@index([source_file, source_row_number])
+}

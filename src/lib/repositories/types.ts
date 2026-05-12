@@ -1,6 +1,5 @@
 /**
- * Repository types for Track A / Track B abstraction.
- * Define interfaces here; implement for Supabase (Track A) and future backend (Track B).
+ * Repository types for the Track B REST/Prisma abstraction.
  */
 
 import type {
@@ -8,6 +7,7 @@ import type {
   Room,
   GuestRequest,
   MaintenanceIssue,
+  OccupancySeriesPoint,
   Reservation,
   ReservationStatus,
 } from "@/types/database";
@@ -31,6 +31,8 @@ export interface ReservationRepository extends Repository<Reservation> {
   getByPropertyId(propertyId: string): Promise<Reservation[]>;
   getByDateRange(startDate: string, endDate: string): Promise<Reservation[]>;
   getByStatus(statuses: ReservationStatus[]): Promise<Reservation[]>;
+  getByCheckInDate(date: string): Promise<Reservation[]>;
+  getByCheckOutDate(date: string): Promise<Reservation[]>;
 }
 
 // Guest request repository
@@ -44,11 +46,20 @@ export interface MaintenanceRepository extends Repository<MaintenanceIssue> {
   getOpenIssues(): Promise<MaintenanceIssue[]>;
 }
 
-// Repository factory - Track A uses Supabase, Track B will use REST API
+export interface StatsRepository {
+  getOccupancy(
+    days: number,
+    endDate: string,
+    propertyId?: string
+  ): Promise<OccupancySeriesPoint[]>;
+}
+
+// Repository factory - Track B uses the REST API backend
 export interface RepositoryFactory {
   properties: PropertyRepository;
   rooms: RoomRepository;
   reservations: ReservationRepository;
   guestRequests: GuestRequestRepository;
   maintenance: MaintenanceRepository;
+  stats: StatsRepository;
 }

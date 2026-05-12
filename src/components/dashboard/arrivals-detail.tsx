@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { formatVietnamDate } from "@/lib/vietnam-time";
 import type { Guest, Property, Room } from "@/types/database";
 
 interface ArrivalsDetailProps {
@@ -15,21 +16,17 @@ interface ArrivalsDetailProps {
 }
 
 export function ArrivalsDetail({ guests, properties, rooms }: ArrivalsDetailProps) {
-  const arrivals = guests.filter((g) =>
-    ["Pending", "Check-In Pending"].includes(g.check_in_status)
-  );
-
   const grouped = properties
     .map((p) => ({
       property: p,
-      guests: arrivals.filter((g) => g.property_id === p.id),
+      guests: guests.filter((g) => g.property_id === p.id),
     }))
     .filter((g) => g.guests.length > 0);
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="font-serif text-lg">Arrivals Detail</CardTitle>
+        <CardTitle className="font-serif text-lg">Arrivals Today</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {grouped.map(({ property, guests: propGuests }) => (
@@ -45,13 +42,7 @@ export function ArrivalsDetail({ guests, properties, rooms }: ArrivalsDetailProp
                   .map((n) => n[0])
                   .join("")
                   .slice(0, 2);
-                const eta = guest.eta
-                  ? new Date(guest.eta).toLocaleTimeString("en-US", {
-                      hour: "numeric",
-                      minute: "2-digit",
-                      hour12: true,
-                    })
-                  : "TBD";
+                const eta = guest.eta ? formatVietnamDate(guest.eta) : "TBD";
 
                 return (
                   <div
@@ -68,7 +59,7 @@ export function ArrivalsDetail({ guests, properties, rooms }: ArrivalsDetailProp
                         {guest.guest_name}
                       </p>
                       <p className="text-[11px] text-muted-foreground">
-                        {room?.room_type} {room?.room_number} &middot; ETA {eta}
+                        {room?.room_type} {room?.room_number} &middot; Check-in {eta}
                       </p>
                     </div>
                     {guest.is_vip && (
@@ -84,7 +75,7 @@ export function ArrivalsDetail({ guests, properties, rooms }: ArrivalsDetailProp
         ))}
         {grouped.length === 0 && (
           <p className="text-sm text-muted-foreground text-center py-6">
-            No upcoming arrivals
+            No arrivals scheduled today
           </p>
         )}
       </CardContent>

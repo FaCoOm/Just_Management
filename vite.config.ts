@@ -11,4 +11,14 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  server: {
+    // In Track B mode, proxy /api calls to the Express backend.
+    // Set VITE_TRACK=B in .env to use the REST API backend instead of Supabase.
+    proxy: {
+      "/api": {
+        target: "http://localhost:3001",
+        changeOrigin: true,
+      },
+    },
+  },
 })

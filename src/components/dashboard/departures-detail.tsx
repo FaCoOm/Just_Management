@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { formatVietnamDate } from "@/lib/vietnam-time";
 import type { Guest, Property, Room } from "@/types/database";
 
 interface DeparturesDetailProps {
@@ -15,21 +16,17 @@ interface DeparturesDetailProps {
 }
 
 export function DeparturesDetail({ guests, properties, rooms }: DeparturesDetailProps) {
-  const departures = guests.filter(
-    (g) => g.check_in_status === "Check-Out Pending"
-  );
-
   const grouped = properties
     .map((p) => ({
       property: p,
-      guests: departures.filter((g) => g.property_id === p.id),
+      guests: guests.filter((g) => g.property_id === p.id),
     }))
     .filter((g) => g.guests.length > 0);
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="font-serif text-lg">Departures Detail</CardTitle>
+        <CardTitle className="font-serif text-lg">Departures Today</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {grouped.map(({ property, guests: propGuests }) => (
@@ -45,12 +42,7 @@ export function DeparturesDetail({ guests, properties, rooms }: DeparturesDetail
                   .map((n) => n[0])
                   .join("")
                   .slice(0, 2);
-                const etd = guest.etd
-                  ? new Date(guest.etd).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                    })
-                  : "TBD";
+                const etd = guest.etd ? formatVietnamDate(guest.etd) : "TBD";
 
                 return (
                   <div
@@ -81,7 +73,7 @@ export function DeparturesDetail({ guests, properties, rooms }: DeparturesDetail
         ))}
         {grouped.length === 0 && (
           <p className="text-sm text-muted-foreground text-center py-6">
-            No pending departures
+            No pending departures today
           </p>
         )}
       </CardContent>

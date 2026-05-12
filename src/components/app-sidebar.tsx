@@ -15,6 +15,7 @@ import {
   ChevronDown,
   Coffee,
 } from "lucide-react";
+import { Link, useRouterState } from "@tanstack/react-router";
 import {
   Sidebar,
   SidebarContent,
@@ -43,14 +44,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { PageId } from "@/App";
 
-interface AppSidebarProps {
-  currentPage: PageId;
-  onNavigate: (page: PageId) => void;
-}
+export function AppSidebar() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
 
-export function AppSidebar({ currentPage, onNavigate }: AppSidebarProps) {
   return (
     <Sidebar>
       <SidebarHeader className="border-b border-sidebar-border px-4 py-3">
@@ -75,21 +72,19 @@ export function AppSidebar({ currentPage, onNavigate }: AppSidebarProps) {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton
-                  isActive={currentPage === "dashboard"}
-                  onClick={() => onNavigate("dashboard")}
-                >
-                  <LayoutDashboard />
-                  <span>Dashboard</span>
+                <SidebarMenuButton asChild isActive={pathname === "/"}>
+                  <Link to="/">
+                    <LayoutDashboard />
+                    <span>Dashboard</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton
-                  isActive={currentPage === "reservations"}
-                  onClick={() => onNavigate("reservations")}
-                >
-                  <CalendarCheck />
-                  <span>Reservations</span>
+                <SidebarMenuButton asChild isActive={pathname === "/reservations"}>
+                  <Link to="/reservations">
+                    <CalendarCheck />
+                    <span>Reservations</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
@@ -101,10 +96,7 @@ export function AppSidebar({ currentPage, onNavigate }: AppSidebarProps) {
               <Collapsible className="group/collapsible">
                 <SidebarMenuItem>
                   <CollapsibleTrigger asChild>
-                    <SidebarMenuButton
-                      isActive={currentPage === "guests"}
-                      onClick={() => onNavigate("guests")}
-                    >
+                    <SidebarMenuButton isActive={pathname === "/guests"}>
                       <Users />
                       <span>Guest Profiles</span>
                       <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
@@ -113,8 +105,8 @@ export function AppSidebar({ currentPage, onNavigate }: AppSidebarProps) {
                   <CollapsibleContent>
                     <SidebarMenuSub>
                       <SidebarMenuSubItem>
-                        <SidebarMenuSubButton onClick={() => onNavigate("guests")}>
-                          All Guests
+                        <SidebarMenuSubButton asChild>
+                          <Link to="/guests">All Guests</Link>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
                       <SidebarMenuSubItem>
@@ -135,7 +127,7 @@ export function AppSidebar({ currentPage, onNavigate }: AppSidebarProps) {
               <Collapsible defaultOpen className="group/collapsible">
                 <SidebarMenuItem>
                   <CollapsibleTrigger asChild>
-                    <SidebarMenuButton isActive={currentPage === "rooms"}>
+                    <SidebarMenuButton isActive={pathname === "/rooms"}>
                       <BedDouble />
                       <span>Rooms & Suites</span>
                       <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
@@ -144,8 +136,8 @@ export function AppSidebar({ currentPage, onNavigate }: AppSidebarProps) {
                   <CollapsibleContent>
                     <SidebarMenuSub>
                       <SidebarMenuSubItem>
-                        <SidebarMenuSubButton onClick={() => onNavigate("rooms")}>
-                          Floor Plan
+                        <SidebarMenuSubButton asChild>
+                          <Link to="/rooms">Floor Plan</Link>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
                       <SidebarMenuSubItem>
@@ -205,12 +197,11 @@ export function AppSidebar({ currentPage, onNavigate }: AppSidebarProps) {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton
-                  isActive={currentPage === "maintenance"}
-                  onClick={() => onNavigate("maintenance")}
-                >
-                  <Wrench />
-                  <span>Maintenance Logs</span>
+                <SidebarMenuButton asChild isActive={pathname === "/maintenance"}>
+                  <Link to="/maintenance">
+                    <Wrench />
+                    <span>Maintenance Logs</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>

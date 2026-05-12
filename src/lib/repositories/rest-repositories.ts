@@ -1,0 +1,153 @@
+/**
+ * REST API implementation of repository interfaces (Track B).
+ * Calls the Express/Prisma backend instead of Supabase.
+ */
+import type {
+  PropertyRepository,
+  RoomRepository,
+  ReservationRepository,
+  GuestRequestRepository,
+  MaintenanceRepository,
+  RepositoryFactory,
+  StatsRepository,
+} from "./types";
+
+type FetchFn = typeof fetch;
+
+// Use the global fetch API (Node 18+ or browser).
+// In Vite dev, calls are proxied; in production, point at the deployed API.
+const apiFetch: FetchFn = (...args) => fetch(...args);
+
+function apiUrl(path: string): string {
+  const base = import.meta.env.VITE_TRACK_B_API_URL ?? "http://localhost:3001";
+  return `${base}${path}`;
+}
+
+function withQuery(
+  path: string,
+  params: Record<string, string | number | undefined>
+) {
+  const search = new URLSearchParams();
+
+  for (const [key, value] of Object.entries(params)) {
+    if (value !== undefined) {
+      search.set(key, String(value));
+    }
+  }
+
+  const query = search.toString();
+  return query ? `${path}?${query}` : path;
+}
+
+async function getJson<T>(path: string): Promise<T> {
+  const res = await apiFetch(apiUrl(path));
+  if (!res.ok) {
+    throw new Error(`Request failed (${res.status}) for ${path}`);
+  }
+  return res.json();
+}
+
+// Property repository implementation
+const propertyRepo: PropertyRepository = {
+  async getAll() {
+    return getJson("/api/properties");
+  },
+  async getById(id) {
+    const res = await apiFetch(apiUrl(`/api/properties/${id}`));
+    return res.ok ? res.json() : null;
+  },
+};
+
+// Room repository implementation
+const roomRepo: RoomRepository = {
+  async getAll() {
+    return getJson("/api/rooms");
+  },
+  async getById(id) {
+    const res = await apiFetch(apiUrl(`/api/rooms/${id}`));
+    return res.ok ? res.json() : null;
+  },
+  async getByPropertyId(propertyId) {
+    return getJson(`/api/rooms?property_id=${propertyId}`);
+  },
+};
+
+// Reservation repository implementation
+const reservationRepo: ReservationRepository = {
+  async getAll() {
+    return getJson("/api/reservations");
+  },
+  async getById(id) {
+    const res = await apiFetch(apiUrl(`/api/reservations/${id}`));
+    return res.ok ? res.json() : null;
+  },
+  async getByPropertyId(propertyId) {
+    return getJson(`/api/reservations?property_id=${propertyId}`);
+  },
+  async getByDateRange(startDate, endDate) {
+    return getJson(`/api/reservations?start_date=${startDate}&end_date=${endDate}`);
+  },
+  async getByStatus(statuses) {
+    // Pass first status as primary filter; backend can be extended for multi-status
+    return getJson(`/api/reservations?status=${statuses[0]}`);
+  },
+  async getByCheckInDate(date) {
+    return getJson(withQuery("/api/reservations", { check_in_date: date }));
+  },
+  async getByCheckOutDate(date) {
+    return getJson(withQuery("/api/reservations", { check_out_date: date }));
+  },
+};
+
+// Guest request repository implementation
+const guestRequestRepo: GuestRequestRepository = {
+  async getAll() {
+    return getJson("/api/guest-requests");
+  },
+  async getById(id) {
+    const res = await apiFetch(apiUrl(`/api/guest-requests/${id}`));
+    return res.ok ? res.json() : null;
+  },
+  async getByPropertyId(propertyId) {
+    return getJson(`/api/guest-requests?property_id=${propertyId}`);
+  },
+};
+
+// Maintenance repository implementation
+const maintenanceRepo: MaintenanceRepository = {
+  async getAll() {
+    return getJson("/api/maintenance");
+  },
+  async getById(id) {
+    const res = await apiFetch(apiUrl(`/api/maintenance/${id}`));
+    return res.ok ? res.json() : null;
+  },
+  async getByPropertyId(propertyId) {
+    return getJson(`/api/maintenance?property_id=${propertyId}`);
+  },
+  async getOpenIssues() {
+    return getJson("/api/maintenance?status=Open");
+  },
+};
+
+const statsRepo: StatsRepository = {
+  async getOccupancy(days, endDate, propertyId) {
+    return getJson(
+      withQuery("/api/stats/occupancy", {
+        days,
+        end_date: endDate,
+        property_id: propertyId,
+      })
+    );
+  },
+};
+
+// Repository factory for Track B (REST API)
+export const createRestRepositories = (): RepositoryFactory => ({
+  properties: propertyRepo,
+  rooms: roomRepo,
+  reservations: reservationRepo,
+  guestRequests: guestRequestRepo,
+  maintenance: maintenanceRepo,
+  stats: statsRepo,
+});

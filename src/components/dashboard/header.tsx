@@ -2,8 +2,15 @@ import { Search, Bell, CalendarDays, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
+import { formatVietnamDate, formatVietnamRangeLabel } from "@/lib/vietnam-time";
 
-export function DashboardHeader() {
+interface DashboardHeaderProps {
+  today: string;
+}
+
+export function DashboardHeader({ today }: DashboardHeaderProps) {
+  const rangeLabel = formatVietnamRangeLabel(today, 7);
+
   return (
     <header className="flex h-14 items-center gap-3 border-b border-border bg-card px-4">
       <SidebarTrigger className="-ml-1" />
@@ -11,9 +18,14 @@ export function DashboardHeader() {
 
       <div className="flex flex-1 items-center gap-3">
         <div className="hidden md:block">
-          <h2 className="text-sm font-semibold">Hello Robert</h2>
+          <h2 className="text-sm font-semibold">Portfolio Dashboard</h2>
           <p className="text-xs text-muted-foreground">
-            Welcome back to Latte Lounge
+            Vietnam time (GMT+7) · {formatVietnamDate(today, {
+              weekday: "long",
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })}
           </p>
         </div>
       </div>
@@ -42,7 +54,7 @@ export function DashboardHeader() {
           className="hidden h-8 text-xs lg:flex"
         >
           <CalendarDays className="h-3.5 w-3.5" />
-          Apr 03 - Apr 09, 2026
+          {rangeLabel}
         </Button>
       </div>
     </header>

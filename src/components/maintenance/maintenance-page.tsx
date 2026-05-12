@@ -1,4 +1,14 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import {
+  flexRender,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+  type ColumnDef,
+  type PaginationState,
+  type SortingState,
+} from "@tanstack/react-table";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
@@ -21,9 +31,26 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useDashboardData } from "@/hooks/use-dashboard-data";
+import { formatVietnamDate, getVietnamToday } from "@/lib/vietnam-time";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Wrench, Plus, Search, TriangleAlert, Clock, CircleCheck, ListFilter as Filter } from "lucide-react";
-import type { Severity, MaintenanceStatus } from "@/types/database";
+import {
+  Wrench,
+  Plus,
+  Search,
+  TriangleAlert,
+  Clock,
+  CircleCheck,
+  ListFilter as Filter,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
+import type {
+  MaintenanceIssue,
+  MaintenanceStatus,
+  Property,
+  Room,
+  Severity,
+} from "@/types/database";
 
 const severityConfig: Record<
   Severity,
@@ -80,24 +107,147 @@ function MaintenanceSkeleton() {
   );
 }
 
+type MaintenanceTableMeta = {
+  properties: Property[];
+  rooms: Room[];
+};
+
+function buildMaintenanceColumns(
+  properties: Property[],
+  rooms: Room[]
+): ColumnDef<MaintenanceIssue>[] {
+  return [
+    {
+      id: "issue",
+      accessorKey: "title",
+      header: "Issue",
+      cell: ({ row }) => {
+        const issue = row.original;
+        const statConfig = statusConfig[issue.status] ?? statusConfig.Open;
+        const StatusIcon = statConfig.icon;
+
+        return (
+          <div className="flex items-start gap-2.5">
+            <StatusIcon
+              className={`mt-0.5 h-3.5 w-3.5 shrink-0 ${statConfig.className}`}
+            />
+            <div>
+              <p className="text-xs font-medium truncate">{issue.title}</p>
+              <p className="text-[10px] text-muted-foreground line-clamp-1">
+                {issue.description}
+              </p>
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      id: "property",
+      accessorFn: (row) =>
+        properties.find((p) => p.id === row.property_id)?.name ?? "",
+      header: "Property",
+      cell: ({ row, table }) => {
+        const meta = table.options.meta as MaintenanceTableMeta;
+        const property = meta.properties.find(
+          (p) => p.id === row.original.property_id
+        );
+
+        return (
+          <span className="text-xs text-muted-foreground">
+            {property?.name ?? "—"}
+          </span>
+        );
+      },
+    },
+    {
+      id: "room",
+      accessorFn: (row) => {
+        const room = rooms.find((r) => r.id === row.room_id);
+        return room ? `${room.room_number} ${room.room_type}` : "Common Area";
+      },
+      header: "Room",
+      cell: ({ row, table }) => {
+        const meta = table.options.meta as MaintenanceTableMeta;
+        const room = meta.rooms.find((r) => r.id === row.original.room_id);
+
+        return room ? (
+          <span className="text-xs">
+            {room.room_number}
+            <span className="ml-1 text-[10px] text-muted-foreground">
+              {room.room_type}
+            </span>
+          </span>
+        ) : (
+          <span className="text-xs text-muted-foreground">Common Area</span>
+        );
+      },
+    },
+    {
+      id: "severity",
+      accessorKey: "severity",
+      sortingFn: (a, b) =>
+        (severityConfig[a.original.severity]?.order ?? 99) -
+        (severityConfig[b.original.severity]?.order ?? 99),
+      header: "Severity",
+      cell: ({ row }) => {
+        const sevConfig =
+          severityConfig[row.original.severity] ?? severityConfig.Low;
+
+        return (
+          <Badge
+            variant="outline"
+            className={`text-[10px] ${sevConfig.className}`}
+          >
+            {row.original.severity}
+          </Badge>
+        );
+      },
+    },
+    {
+      id: "status",
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => (
+        <span className="text-xs text-muted-foreground">
+          {row.original.status}
+        </span>
+      ),
+    },
+    {
+      id: "reported",
+      accessorKey: "created_at",
+      sortingFn: (a, b) =>
+        new Date(a.original.created_at).getTime() -
+        new Date(b.original.created_at).getTime(),
+      header: "Reported",
+      cell: ({ row }) => {
+        const date = formatVietnamDate(row.original.created_at);
+
+        return (
+          <span className="text-xs text-muted-foreground">{date}</span>
+        );
+      },
+    },
+  ];
+}
+
 export function MaintenancePage() {
-  const { maintenance, properties, rooms, loading } = useDashboardData();
+  const { maintenance, properties, rooms, loading } = useDashboardData(getVietnamToday());
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [severityFilter, setSeverityFilter] = useState<string>("all");
   const [propertyFilter, setPropertyFilter] = useState<string>("all");
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: "severity", desc: false },
+  ]);
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 12,
+  });
 
-  if (loading) {
-    return (
-      <div className="flex h-full flex-col">
-        <MaintenanceHeader />
-        <MaintenanceSkeleton />
-      </div>
-    );
-  }
-
-  const filtered = maintenance
-    .filter((m) => {
+  const filtered = useMemo(
+    () =>
+      maintenance.filter((m) => {
       const matchSearch =
         m.title.toLowerCase().includes(search.toLowerCase()) ||
         m.description.toLowerCase().includes(search.toLowerCase());
@@ -107,12 +257,35 @@ export function MaintenancePage() {
       const matchProperty =
         propertyFilter === "all" || m.property_id === propertyFilter;
       return matchSearch && matchStatus && matchSeverity && matchProperty;
-    })
-    .sort(
-      (a, b) =>
-        (severityConfig[a.severity]?.order ?? 99) -
-        (severityConfig[b.severity]?.order ?? 99)
+      }),
+    [maintenance, search, statusFilter, severityFilter, propertyFilter]
+  );
+
+  const columns = useMemo(
+    () => buildMaintenanceColumns(properties, rooms),
+    [properties, rooms]
+  );
+
+  const table = useReactTable({
+    data: filtered,
+    columns,
+    state: { sorting, pagination },
+    onSortingChange: setSorting,
+    onPaginationChange: setPagination,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    meta: { properties, rooms } satisfies MaintenanceTableMeta,
+  });
+
+  if (loading) {
+    return (
+      <div className="flex h-full flex-col">
+        <MaintenanceHeader />
+        <MaintenanceSkeleton />
+      </div>
     );
+  }
 
   const openCount = maintenance.filter((m) => m.status === "Open").length;
   const inProgressCount = maintenance.filter(
@@ -214,11 +387,20 @@ export function MaintenancePage() {
                     <Input
                       placeholder="Search issues..."
                       value={search}
-                      onChange={(e) => setSearch(e.target.value)}
+                      onChange={(e) => {
+                        setSearch(e.target.value);
+                        table.setPageIndex(0);
+                      }}
                       className="h-8 w-44 pl-8 text-xs"
                     />
                   </div>
-                  <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <Select
+                    value={statusFilter}
+                    onValueChange={(value) => {
+                      setStatusFilter(value);
+                      table.setPageIndex(0);
+                    }}
+                  >
                     <SelectTrigger className="h-8 w-36 text-xs">
                       <Filter className="mr-1.5 h-3 w-3" />
                       <SelectValue placeholder="Status" />
@@ -232,7 +414,10 @@ export function MaintenancePage() {
                   </Select>
                   <Select
                     value={severityFilter}
-                    onValueChange={setSeverityFilter}
+                    onValueChange={(value) => {
+                      setSeverityFilter(value);
+                      table.setPageIndex(0);
+                    }}
                   >
                     <SelectTrigger className="h-8 w-32 text-xs">
                       <SelectValue placeholder="Severity" />
@@ -247,7 +432,10 @@ export function MaintenancePage() {
                   </Select>
                   <Select
                     value={propertyFilter}
-                    onValueChange={setPropertyFilter}
+                    onValueChange={(value) => {
+                      setPropertyFilter(value);
+                      table.setPageIndex(0);
+                    }}
                   >
                     <SelectTrigger className="h-8 w-40 text-xs">
                       <SelectValue placeholder="Property" />
@@ -264,102 +452,105 @@ export function MaintenancePage() {
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="p-0">
+            <CardContent className="space-y-3 p-0 pb-3">
               <Table>
                 <TableHeader>
-                  <TableRow className="border-t border-border">
-                    <TableHead className="pl-4 text-xs">Issue</TableHead>
-                    <TableHead className="text-xs">Property</TableHead>
-                    <TableHead className="text-xs">Room</TableHead>
-                    <TableHead className="text-xs">Severity</TableHead>
-                    <TableHead className="text-xs">Status</TableHead>
-                    <TableHead className="text-xs">Reported</TableHead>
-                  </TableRow>
+                  {table.getHeaderGroups().map((headerGroup) => (
+                    <TableRow
+                      key={headerGroup.id}
+                      className="border-t border-border"
+                    >
+                      {headerGroup.headers.map((header) => (
+                        <TableHead
+                          key={header.id}
+                          className={`text-xs ${
+                            header.column.getCanSort()
+                              ? "cursor-pointer select-none hover:bg-muted/50"
+                              : ""
+                          } ${header.column.id === "issue" ? "pl-4" : ""}`}
+                          onClick={header.column.getToggleSortingHandler()}
+                        >
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                          {{
+                            asc: " ↑",
+                            desc: " ↓",
+                          }[header.column.getIsSorted() as string] ?? ""}
+                        </TableHead>
+                      ))}
+                    </TableRow>
+                  ))}
                 </TableHeader>
                 <TableBody>
-                  {filtered.length === 0 ? (
+                  {table.getRowModel().rows.length === 0 ? (
                     <TableRow>
                       <TableCell
-                        colSpan={6}
+                        colSpan={columns.length}
                         className="py-10 text-center text-sm text-muted-foreground"
                       >
                         No issues found
                       </TableCell>
                     </TableRow>
                   ) : (
-                    filtered.map((issue) => {
-                      const property = properties.find(
-                        (p) => p.id === issue.property_id
-                      );
-                      const room = rooms.find((r) => r.id === issue.room_id);
-                      const sevConfig =
-                        severityConfig[issue.severity] ??
-                        severityConfig.Low;
-                      const statConfig =
-                        statusConfig[issue.status] ?? statusConfig.Open;
-                      const StatusIcon = statConfig.icon;
-                      const date = new Date(issue.created_at).toLocaleDateString(
-                        "en-US",
-                        { month: "short", day: "numeric" }
-                      );
-
-                      return (
-                        <TableRow
-                          key={issue.id}
-                          className="cursor-pointer hover:bg-muted/40"
-                        >
-                          <TableCell className="pl-4 py-2.5 max-w-[260px]">
-                            <div className="flex items-start gap-2.5">
-                              <StatusIcon
-                                className={`mt-0.5 h-3.5 w-3.5 shrink-0 ${statConfig.className}`}
-                              />
-                              <div>
-                                <p className="text-xs font-medium truncate">
-                                  {issue.title}
-                                </p>
-                                <p className="text-[10px] text-muted-foreground line-clamp-1">
-                                  {issue.description}
-                                </p>
-                              </div>
-                            </div>
-                          </TableCell>
-                          <TableCell className="py-2.5 text-xs text-muted-foreground">
-                            {property?.name ?? "—"}
-                          </TableCell>
-                          <TableCell className="py-2.5 text-xs">
-                            {room ? (
-                              <span>
-                                {room.room_number}
-                                <span className="ml-1 text-muted-foreground text-[10px]">
-                                  {room.room_type}
-                                </span>
-                              </span>
-                            ) : (
-                              <span className="text-muted-foreground">
-                                Common Area
-                              </span>
+                    table.getRowModel().rows.map((row) => (
+                      <TableRow
+                        key={row.id}
+                        className="cursor-pointer hover:bg-muted/40"
+                      >
+                        {row.getVisibleCells().map((cell) => (
+                          <TableCell
+                            key={cell.id}
+                            className={
+                              cell.column.id === "issue"
+                                ? "pl-4 py-2.5 max-w-[260px]"
+                                : "py-2.5"
+                            }
+                          >
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
                             )}
                           </TableCell>
-                          <TableCell className="py-2.5">
-                            <Badge
-                              variant="outline"
-                              className={`text-[10px] ${sevConfig.className}`}
-                            >
-                              {issue.severity}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="py-2.5 text-xs text-muted-foreground">
-                            {issue.status}
-                          </TableCell>
-                          <TableCell className="py-2.5 text-xs text-muted-foreground">
-                            {date}
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })
+                        ))}
+                      </TableRow>
+                    ))
                   )}
                 </TableBody>
               </Table>
+              <div className="flex flex-col gap-2 px-4 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-xs text-muted-foreground">
+                  Page {table.getState().pagination.pageIndex + 1} of{" "}
+                  {table.getPageCount() || 1} · {filtered.length} row(s)
+                </p>
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-8 gap-1 text-xs"
+                    disabled={!table.getCanPreviousPage()}
+                    onClick={() => table.previousPage()}
+                  >
+                    <ChevronLeft className="h-3.5 w-3.5" />
+                    Prev
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-8 gap-1 text-xs"
+                    disabled={!table.getCanNextPage()}
+                    onClick={() => table.nextPage()}
+                  >
+                    Next
+                    <ChevronRight className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>

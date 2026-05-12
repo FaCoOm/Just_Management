@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight, Search, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,12 +7,21 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  addDaysToVietnamDate,
+  formatVietnamDate,
+  formatVietnamMonthLabel,
+  getVietnamWeekStrip,
+  isSameVietnamDate,
+  isVietnamDateWithinStay,
+} from "@/lib/vietnam-time";
 import type { Guest, Room, Property } from "@/types/database";
 
 interface BookingsPanelProps {
   guests: Guest[];
   rooms: Room[];
   properties: Property[];
+  today: string;
 }
 
 function getInitials(name: string) {
@@ -23,31 +32,43 @@ function getInitials(name: string) {
     .slice(0, 2);
 }
 
-function formatTime(date: string | null) {
-  if (!date) return "";
-  return new Date(date).toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-  });
-}
-
-const weekDays = [
-  { day: "Tue", date: "07" },
-  { day: "Wed", date: "08" },
-  { day: "Thu", date: "09", active: true },
-  { day: "Fri", date: "10" },
-  { day: "Sat", date: "11" },
-];
-
-export function BookingsPanel({ guests, rooms, properties }: BookingsPanelProps) {
+export function BookingsPanel({
+  guests,
+  rooms,
+  properties,
+  today,
+}: BookingsPanelProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedDate, setSelectedDate] = useState(today);
 
-  const arrivals = guests.filter((g) =>
-    ["Pending", "Check-In Pending"].includes(g.check_in_status)
+  useEffect(() => {
+    setSelectedDate(today);
+  }, [today]);
+
+  const weekDays = useMemo(
+    () =>
+      getVietnamWeekStrip(selectedDate).map((day) => ({
+        ...day,
+        active: day.dateKey === selectedDate,
+      })),
+    [selectedDate]
   );
-  const inHouse = guests.filter((g) => g.check_in_status === "Checked In");
-  const departures = guests.filter((g) => g.check_in_status === "Check-Out Pending");
+
+  const arrivals = guests.filter(
+    (guest) =>
+      ["Pending", "Check-In Pending"].includes(guest.check_in_status) &&
+      isSameVietnamDate(guest.eta, selectedDate)
+  );
+  const inHouse = guests.filter(
+    (guest) =>
+      ["Checked In", "Check-Out Pending"].includes(guest.check_in_status) &&
+      isVietnamDateWithinStay(selectedDate, guest.eta, guest.etd)
+  );
+  const departures = guests.filter(
+    (guest) =>
+      ["Check-Out Pending", "Checked Out"].includes(guest.check_in_status) &&
+      isSameVietnamDate(guest.etd, selectedDate)
+  );
 
   const filteredBySearch = (list: Guest[]) =>
     searchQuery
@@ -60,24 +81,35 @@ export function BookingsPanel({ guests, rooms, properties }: BookingsPanelProps)
     const room = rooms.find((r) => r.id === guest.room_id);
     const property = properties.find((p) => p.id === guest.property_id);
     const initials = getInitials(guest.guest_name);
-    const checkInTime = formatTime(guest.eta);
+    const arrivalDate = guest.eta ? formatVietnamDate(guest.eta) : "TBD";
+    const departureDate = guest.etd ? formatVietnamDate(guest.etd) : "TBD";
+
+    const timelineLabel =
+      guest.check_in_status === "Checked In" ||
+      guest.check_in_status === "Check-Out Pending"
+        ? `${arrivalDate} - ${departureDate} stay`
+        : guest.check_in_status === "Checked Out"
+          ? `Checked out ${departureDate}`
+          : `Arrives ${arrivalDate}`;
 
     const statusConfig = guest.is_vip
       ? { label: "VIP", className: "bg-emerald-100 text-emerald-700 border-emerald-200" }
       : guest.check_in_status === "Checked In"
       ? { label: "Confirmed", className: "bg-emerald-50 text-emerald-700 border-emerald-200" }
-      : { label: "Pending", className: "bg-amber-50 text-amber-700 border-amber-200" };
+      : guest.check_in_status === "Checked Out"
+        ? { label: "Checked Out", className: "bg-muted text-muted-foreground border-border" }
+        : { label: "Pending", className: "bg-amber-50 text-amber-700 border-amber-200" };
 
     return (
       <div className="rounded-lg border border-border bg-card p-3 space-y-2">
         <div className="flex items-start justify-between">
           <div>
             <p className="text-sm font-semibold">
-              {guest.guest_name} &mdash; {room?.room_type ?? "Room"}{" "}
+              {guest.guest_name} - {room?.room_type ?? "Room"}{" "}
               {room?.room_number ?? ""}
             </p>
             <p className="text-xs text-muted-foreground">
-              {checkInTime ? `${checkInTime} Check-in` : "Check-in time TBD"}
+              {timelineLabel}
             </p>
           </div>
         </div>
@@ -137,22 +169,40 @@ export function BookingsPanel({ guests, rooms, properties }: BookingsPanelProps)
 
       <div className="px-4 py-3 space-y-3">
         <div className="flex items-center justify-between">
-          <Button variant="ghost" size="icon" className="h-7 w-7">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7"
+            onClick={() => setSelectedDate(addDaysToVietnamDate(selectedDate, -30))}
+          >
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <span className="text-sm font-medium">April 2026</span>
-          <Button variant="ghost" size="icon" className="h-7 w-7">
+          <span className="text-sm font-medium">
+            {formatVietnamMonthLabel(selectedDate)}
+          </span>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7"
+            onClick={() => setSelectedDate(addDaysToVietnamDate(selectedDate, 30))}
+          >
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
 
         <div className="flex items-center justify-between gap-1">
-          <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6 shrink-0"
+            onClick={() => setSelectedDate(addDaysToVietnamDate(selectedDate, -1))}
+          >
             <ChevronLeft className="h-3 w-3" />
           </Button>
           {weekDays.map((d) => (
             <button
-              key={d.date}
+              key={d.dateKey}
+              onClick={() => setSelectedDate(d.dateKey)}
               className={`flex flex-1 flex-col items-center rounded-lg py-1.5 text-xs transition-colors ${
                 d.active
                   ? "bg-harbor text-harbor-foreground"
@@ -163,7 +213,12 @@ export function BookingsPanel({ guests, rooms, properties }: BookingsPanelProps)
               <span className="text-sm font-semibold">{d.date}</span>
             </button>
           ))}
-          <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6 shrink-0"
+            onClick={() => setSelectedDate(addDaysToVietnamDate(selectedDate, 1))}
+          >
             <ChevronRight className="h-3 w-3" />
           </Button>
         </div>

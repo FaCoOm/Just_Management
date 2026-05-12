@@ -15,8 +15,9 @@ import {
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { useVietnamClock } from "@/hooks/use-vietnam-clock";
+import { formatVietnamRelativeDay } from "@/lib/vietnam-time";
 import type { Guest, Room } from "@/types/database";
-import { formatDistanceToNow } from "date-fns";
 
 interface RecentArrivalsProps {
   guests: Guest[];
@@ -24,8 +25,14 @@ interface RecentArrivalsProps {
 }
 
 export function RecentArrivals({ guests, rooms }: RecentArrivalsProps) {
-  const recentGuests = guests
-    .filter((g) => g.check_in_status === "Checked In" && g.room_id)
+  const { now } = useVietnamClock();
+  const recentGuests = [...guests]
+    .filter((guest) => guest.check_in_status === "Checked In" && guest.room_id)
+    .sort((left, right) => {
+      const leftTime = left.eta ? new Date(left.eta).getTime() : 0;
+      const rightTime = right.eta ? new Date(right.eta).getTime() : 0;
+      return rightTime - leftTime;
+    })
     .slice(0, 5);
 
   return (
@@ -56,7 +63,7 @@ export function RecentArrivals({ guests, rooms }: RecentArrivalsProps) {
                 .join("")
                 .slice(0, 2);
               const timeAgo = guest.eta
-                ? formatDistanceToNow(new Date(guest.eta), { addSuffix: true })
+                ? formatVietnamRelativeDay(guest.eta, now)
                 : "recently";
 
               return (

@@ -14,18 +14,24 @@
     "db:push": "prisma db push",
     "db:diff:init": "prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script",
     "db:studio": "prisma studio",
-    "db:verify:migration": "node scripts/verify-azure-migration.mjs"
+    "db:verify:migration": "node scripts/verify-azure-migration.mjs",
+    "verify-ingestion": "tsx scripts/verify-ingestion.ts",
+    "verify:all": "npm run build && npm run verify-ingestion"
   },
   "dependencies": {
     "@prisma/client": "^6.0.0",
-    "express": "^4.18.2",
     "cors": "^2.8.5",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "googleapis": "^154.0.0",
+    "multer": "^2.1.1",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
-    "@types/express": "^4.17.21",
-    "@types/node": "^20.10.0",
     "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/multer": "^2.1.0",
+    "@types/node": "^20.10.0",
     "prisma": "^6.0.0",
     "tsx": "^4.6.0",
     "typescript": "^5.3.0"

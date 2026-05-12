@@ -135,3 +135,10 @@ export interface PropertyMetrics {
   occupiedRooms: number;
   maintenanceOpen: number;
 }
+
+export interface OccupancySeriesPoint {
+  date: string;
+  occupied: number;
+  available: number;
+  totalRooms: number;
+}

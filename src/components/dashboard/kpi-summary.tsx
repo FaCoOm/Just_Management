@@ -9,8 +9,6 @@ import {
   LogOut,
   BedDouble,
   Wrench,
-  TrendingUp,
-  TrendingDown,
 } from "lucide-react";
 
 interface KpiSummaryProps {
@@ -27,32 +25,24 @@ export function KpiSummary({ totals }: KpiSummaryProps) {
     {
       title: "Arrivals Today",
       value: totals.arrivals,
-      delta: "+3.2%",
-      deltaUp: true,
       icon: LogIn,
       iconBg: "bg-chart-1/10 text-chart-1",
     },
     {
       title: "Departures Today",
       value: totals.departures,
-      delta: "+1.8%",
-      deltaUp: true,
       icon: LogOut,
       iconBg: "bg-chart-2/10 text-chart-2",
     },
     {
       title: "Occupancy Rate",
       value: `${totals.occupancyRate}%`,
-      delta: "+5.1%",
-      deltaUp: true,
       icon: BedDouble,
       iconBg: "bg-chart-4/10 text-chart-4",
     },
     {
       title: "Maintenance Open",
       value: totals.maintenanceOpen,
-      delta: "-2",
-      deltaUp: false,
       icon: Wrench,
       iconBg: "bg-chart-3/10 text-chart-3",
     },
@@ -74,18 +64,6 @@ export function KpiSummary({ totals }: KpiSummaryProps) {
             <div className="flex items-baseline gap-2">
               <span className="text-2xl font-bold tracking-tight">
                 {card.value}
-              </span>
-              <span
-                className={`flex items-center gap-0.5 text-xs font-medium ${
-                  card.deltaUp ? "text-emerald-600" : "text-emerald-600"
-                }`}
-              >
-                {card.deltaUp ? (
-                  <TrendingUp className="h-3 w-3" />
-                ) : (
-                  <TrendingDown className="h-3 w-3" />
-                )}
-                {card.delta}
               </span>
             </div>
           </CardContent>

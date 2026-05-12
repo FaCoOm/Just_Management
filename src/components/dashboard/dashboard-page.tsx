@@ -6,10 +6,12 @@ import { RecentArrivals } from "./recent-arrivals";
 import { BranchComparison } from "./branch-comparison";
 import { ArrivalsDetail } from "./arrivals-detail";
 import { DeparturesDetail } from "./departures-detail";
+import { CheckoutsToday } from "./checkouts-today";
 import { OccupancyDetail } from "./occupancy-detail";
 import { MaintenanceDetail } from "./maintenance-detail";
 import { BookingsPanel } from "./bookings-panel";
 import { useDashboardData } from "@/hooks/use-dashboard-data";
+import { useVietnamClock } from "@/hooks/use-vietnam-clock";
 import { Skeleton } from "@/components/ui/skeleton";
 
 function DashboardSkeleton() {
@@ -30,6 +32,7 @@ function DashboardSkeleton() {
 }
 
 export function DashboardPage() {
+  const { today } = useVietnamClock();
   const {
     properties,
     rooms,
@@ -37,13 +40,16 @@ export function DashboardPage() {
     maintenance,
     metrics,
     totals,
+    todayArrivals,
+    todayDepartures,
+    todayCheckouts,
     loading,
-  } = useDashboardData();
+  } = useDashboardData(today);
 
   if (loading) {
     return (
       <div className="flex h-full flex-col">
-        <DashboardHeader />
+        <DashboardHeader today={today} />
         <DashboardSkeleton />
       </div>
     );
@@ -51,14 +57,14 @@ export function DashboardPage() {
 
   return (
     <div className="flex h-full max-h-svh flex-col">
-      <DashboardHeader />
+      <DashboardHeader today={today} />
 
       <div className="flex flex-1 overflow-hidden">
         <div className="flex-1 overflow-y-auto">
           <div className="space-y-4 p-4">
             <KpiSummary totals={totals} />
 
-            <OccupancyChart />
+            <OccupancyChart properties={properties} today={today} />
 
             <div className="grid gap-4 md:grid-cols-2">
               <RevenueOverview />
@@ -69,19 +75,27 @@ export function DashboardPage() {
 
             <div className="grid gap-4 md:grid-cols-2">
               <ArrivalsDetail
-                guests={guests}
+                guests={todayArrivals}
                 properties={properties}
                 rooms={rooms}
               />
-              <DeparturesDetail
-                guests={guests}
+              <CheckoutsToday
+                guests={todayCheckouts}
                 properties={properties}
                 rooms={rooms}
               />
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
+              <DeparturesDetail
+                guests={todayDepartures}
+                properties={properties}
+                rooms={rooms}
+              />
               <OccupancyDetail metrics={metrics} />
+            </div>
+
+            <div className="grid gap-4">
               <MaintenanceDetail
                 maintenance={maintenance}
                 properties={properties}
@@ -95,6 +109,7 @@ export function DashboardPage() {
             guests={guests}
             rooms={rooms}
             properties={properties}
+            today={today}
           />
         </div>
       </div>

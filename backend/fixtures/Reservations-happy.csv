@@ -1,0 +1,5 @@
+Confirmation code,Status,Guest name,Contact,Check-in,Checkout,Adults,Children,Infants,Listing
+"HMX1234567","Confirmed","John Doe","+123456789","2026-05-01","2026-05-05",2,0,0,"Test Listing 1"
+"HMX9876543","Currently hosting","Jane Smith","+987654321","2026-05-02","2026-05-06",1,1,0,"Test Listing 2"
+"HMX9999999","Confirmed","Lost Guest","","2026-05-03","2026-05-04",1,0,0,"Unresolved Listing Name"
+"","Confirmed","No Code Guest","","2026-05-03","2026-05-04",1,0,0,"Test Listing 1"

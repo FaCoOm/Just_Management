@@ -1,29 +1,40 @@
-# Sprint 1 Status — 2026-04-30
+# Sprint 1 Status — 2026-05-02
 
 ## What exists
 
-### Schema (migration applied)
-- `supabase/migrations/20260430095000_001_add_reservation_core.sql` — all 3 tables DDL confirmed correct
-- `reservations` ✓
-- `reservation_external_refs` ✓
-- `reservation_room_allocations` ✓
+### Schema (Track A — Supabase)
+- `supabase/migrations/` — 7 SQL reference files (schema intent only for Track B)
+- 14 PostgreSQL tables across reservation core, provider edge, operations, and import/backfill
 
-### DB state
-- All 3 tables exist but contain **0 rows**
-- No seed data has been inserted
+### Schema (Track B — Azure PostgreSQL)
+- `backend/prisma/schema.prisma` — 14-model schema mirroring Track A contract
+- `backend/prisma/migrations/20260502000000_init_track_b/migration.sql` — Azure-ready initial migration
+  - Includes `CREATE EXTENSION pgcrypto`, `set_updated_at_timestamp()` trigger, triggers for all 9 tables with `updated_at`
+  - No Supabase RLS — uses standard PostgreSQL; Azure deployment path is `npx prisma migrate deploy`
+
+### DB Deployment
+
+Track B deploys to Azure PostgreSQL via Prisma migrations:
+
+```bash
+cd backend
+cp .env.example .env  # Set DATABASE_URL pointing at Azure PostgreSQL Flexible Server
+npx prisma generate
+npm run db:validate
+npm run db:verify:migration
+npm run db:deploy
+npm run build
+```
 
 ## Where we stopped
-Task 4 verification was blocked because seed data was never inserted into the new tables.
-The plan claims data exists but the DB is empty — this is the evidence gap.
+
+Azure migration path is now established. The Prisma migration contains all 14 tables, indexes, FKs, triggers, and extension setup. Ready for Azure deployment when `DATABASE_URL` is configured.
 
 ## What needs to happen next
-1. Insert seed data into `reservations`, `reservation_external_refs`, `reservation_room_allocations`
-2. Re-verify all 3 scenarios (single-room, composite, unmapped)
-3. Continue Tasks 5–17
+1. Configure `DATABASE_URL` in `.env` with actual Azure PostgreSQL connection string
+2. Run `npm run db:deploy` against Azure PostgreSQL
+3. Seed data (optional — Supabase seed SQL is reference-only; Azure seed should be Prisma/API-driven)
+4. Verify all endpoints via `npm run dev`
 
 ## Plan file
 `.sisyphus/plans/airbnb-postgres-schema.md`
-
-## Relevant prior sessions (from context)
-- `ses_22...` — created the migration, then subagent fix attempt aborted
-- 5-session backlog shows Tasks 0–3 were completed across sessions `ses_21...` and `ses_22...`
