@@ -10,8 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useDashboardData } from "@/hooks/use-dashboard-data";
-import { getVietnamToday } from "@/lib/vietnam-time";
+import { useRoomsPageData } from "@/hooks/use-page-data";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BedDouble, Layers, Settings2 } from "lucide-react";
 import type { RoomStatus } from "@/types/database";
@@ -71,7 +70,7 @@ function RoomsSkeleton() {
 }
 
 export function RoomsPage() {
-  const { rooms, properties, guests, loading } = useDashboardData(getVietnamToday());
+  const { rooms, properties, guests, loading } = useRoomsPageData();
   const [propertyFilter, setPropertyFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");

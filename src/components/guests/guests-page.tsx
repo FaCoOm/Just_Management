@@ -24,8 +24,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { useDashboardData } from "@/hooks/use-dashboard-data";
-import { getVietnamToday } from "@/lib/vietnam-time";
+import { useGuestsPageData } from "@/hooks/use-page-data";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Search,
@@ -197,7 +196,7 @@ function buildGuestColumns(
 }
 
 export function GuestsPage() {
-  const { guests, rooms, properties, loading } = useDashboardData(getVietnamToday());
+  const { guests, rooms, properties, loading } = useGuestsPageData();
   const [search, setSearch] = useState("");
   const [vipOnly, setVipOnly] = useState(false);
   const [sorting, setSorting] = useState<SortingState>([]);

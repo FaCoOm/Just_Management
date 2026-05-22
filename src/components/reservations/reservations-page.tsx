@@ -31,8 +31,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { useDashboardData } from "@/hooks/use-dashboard-data";
-import { formatVietnamDate, getVietnamToday } from "@/lib/vietnam-time";
+import { useReservationsPageData } from "@/hooks/use-page-data";
+import { formatVietnamDate } from "@/lib/vietnam-time";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Search,
@@ -239,7 +239,7 @@ function buildColumns(rooms: Room[], properties: Property[]): ColumnDef<Guest>[]
 }
 
 export function ReservationsPage() {
-  const { guests, rooms, properties, loading } = useDashboardData(getVietnamToday());
+  const { guests, rooms, properties, loading } = useReservationsPageData();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [propertyFilter, setPropertyFilter] = useState<string>("all");

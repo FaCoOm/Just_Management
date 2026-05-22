@@ -47,6 +47,7 @@ model rooms {
   reservation_room_allocations reservation_room_allocations[]
 
   @@unique([id, property_id])
+  @@index([property_id])
 }
 
 model guests {
@@ -66,6 +67,9 @@ model guests {
   room                               rooms?                               @relation(fields: [room_id], references: [id], onDelete: Restrict)
   guest_requests                     guest_requests[]
   legacy_guest_reservation_backfills legacy_guest_reservation_backfills[]
+
+  @@index([property_id, created_at])
+  @@index([room_id])
 }
 
 model guest_requests {
@@ -101,6 +105,9 @@ model maintenance_issues {
 
   property properties @relation(fields: [property_id], references: [id], onDelete: Restrict)
   room     rooms?     @relation(fields: [room_id], references: [id], onDelete: Restrict)
+
+  @@index([property_id, status, created_at])
+  @@index([status, created_at])
 }
 
 model channels {
@@ -138,6 +145,7 @@ model external_accounts {
 
   @@unique([channel_id, account_key])
   @@unique([id, channel_id])
+  @@index([channel_id])
 }
 
 model channel_listings {
@@ -234,6 +242,10 @@ model reservations {
 
   @@index([property_id, check_in_date, check_out_date])
   @@index([status])
+  @@index([property_id, status, check_in_date, check_out_date])
+  @@index([status, check_in_date, check_out_date])
+  @@index([check_in_date, check_out_date])
+  @@index([created_at])
 }
 
 model reservation_external_refs {

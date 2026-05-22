@@ -7,6 +7,7 @@ import "dotenv/config";
 
 import express, { type NextFunction, type Request, type RequestHandler, type Response } from "express";
 import cors from "cors";
+import compression from "compression";
 import { PrismaClient } from "@prisma/client";
 import { registerIngestRoutes } from "./ingest/routes";
 
@@ -26,6 +27,8 @@ const RESERVATION_STATUSES = new Set([
 const DEFAULT_ALLOWED_ORIGINS = [
   "http://localhost:5173",
   "http://localhost:5174",
+  "http://localhost:4173",
+  "http://127.0.0.1:4173",
 ];
 const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(",").map((origin) => origin.trim())
@@ -43,6 +46,7 @@ app.use(
     },
   })
 );
+app.use(compression());
 app.use(express.json({ limit: "1mb" }));
 
 registerIngestRoutes(app);
@@ -82,6 +86,31 @@ function clampDays(value: string | undefined, fallback = 30) {
   return Math.min(Math.max(parsed, 1), 60);
 }
 
+function getOptionalPagination(query: Request["query"]): { take?: number; skip?: number } {
+  const limitValue = typeof query.limit === "string" ? query.limit : undefined;
+  const offsetValue = typeof query.offset === "string" ? query.offset : undefined;
+
+  if (!limitValue && !offsetValue) {
+    return {};
+  }
+
+  const parsedLimit = Number.parseInt(limitValue ?? "100", 10);
+  const parsedOffset = Number.parseInt(offsetValue ?? "0", 10);
+
+  return {
+    take: Math.min(Math.max(Number.isNaN(parsedLimit) ? 100 : parsedLimit, 1), 500),
+    skip: Math.max(Number.isNaN(parsedOffset) ? 0 : parsedOffset, 0),
+  };
+}
+
+function setShortCache(res: Response, seconds: number) {
+  res.set("Cache-Control", `private, max-age=${seconds}, stale-while-revalidate=${seconds}`);
+}
+
+function setNoStore(res: Response) {
+  res.set("Cache-Control", "no-store");
+}
+
 function isValidDateKey(value: string) {
   if (!ISO_DATE_PATTERN.test(value)) return false;
   const date = toDateOnly(value);
@@ -104,7 +133,19 @@ app.get("/health", (_, res) => {
 // =============================================================================
 
 app.get("/api/properties", asyncHandler(async (_, res) => {
-  const properties = await prisma.properties.findMany({ orderBy: { name: "asc" } });
+  setShortCache(res, 300);
+  const properties = await prisma.properties.findMany({
+    orderBy: { name: "asc" },
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      total_rooms: true,
+      location: true,
+      status: true,
+      created_at: true,
+    },
+  });
   res.json(properties);
 }));
 
@@ -113,6 +154,7 @@ app.get("/api/properties", asyncHandler(async (_, res) => {
 // =============================================================================
 
 app.get("/api/reservations", asyncHandler(async (req, res) => {
+  setNoStore(res);
   const {
     property_id,
     status,
@@ -121,6 +163,7 @@ app.get("/api/reservations", asyncHandler(async (req, res) => {
     check_in_date,
     check_out_date,
   } = req.query;
+  const pagination = getOptionalPagination(req.query);
 
   const where: any = {};
   if (property_id) where.property_id = property_id;
@@ -159,14 +202,39 @@ app.get("/api/reservations", asyncHandler(async (req, res) => {
     where.check_out_date = { lte: new Date(end_date as string) };
   }
 
-  const reservations = await prisma.reservations.findMany({
-    where,
-    orderBy: { check_in_date: "asc" },
-  });
+  const [reservations, total] = await Promise.all([
+    prisma.reservations.findMany({
+      where,
+      ...pagination,
+      orderBy: { check_in_date: "asc" },
+      select: {
+        id: true,
+        property_id: true,
+        primary_room_id: true,
+        status: true,
+        check_in_date: true,
+        check_out_date: true,
+        guest_name: true,
+        guest_phone: true,
+        guest_email: true,
+        adult_count: true,
+        child_count: true,
+        infant_count: true,
+        guest_count: true,
+        operational_notes: true,
+        guest_notes: true,
+        created_at: true,
+        updated_at: true,
+      },
+    }),
+    prisma.reservations.count({ where }),
+  ]);
+  res.set("X-Total-Count", String(total));
   res.json(reservations);
 }));
 
 app.get("/api/stats/occupancy", asyncHandler(async (req, res) => {
+  setShortCache(res, 30);
   const propertyId =
     typeof req.query.property_id === "string" ? req.query.property_id : undefined;
   const days = clampDays(
@@ -189,6 +257,15 @@ app.get("/api/stats/occupancy", asyncHandler(async (req, res) => {
     prisma.properties.findMany({
       where: propertyWhere,
       orderBy: { name: "asc" },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        total_rooms: true,
+        location: true,
+        status: true,
+        created_at: true,
+      },
     }),
     prisma.rooms.findMany({
       where: propertyId ? { property_id: propertyId } : undefined,
@@ -204,7 +281,11 @@ app.get("/api/stats/occupancy", asyncHandler(async (req, res) => {
         check_in_date: { lt: toDateOnly(endExclusive) },
         check_out_date: { gt: toDateOnly(startDate) },
       },
-      include: {
+      select: {
+        id: true,
+        primary_room_id: true,
+        check_in_date: true,
+        check_out_date: true,
         reservation_room_allocations: {
           select: { room_id: true },
         },
@@ -281,9 +362,29 @@ app.get("/api/reservations/:id", asyncHandler(async (req, res) => {
 // =============================================================================
 
 app.get("/api/rooms", asyncHandler(async (req, res) => {
+  setShortCache(res, 60);
   const { property_id } = req.query;
+  const pagination = getOptionalPagination(req.query);
   const where: any = property_id ? { property_id: property_id as string } : {};
-  const rooms = await prisma.rooms.findMany({ where });
+  const [rooms, total] = await Promise.all([
+    prisma.rooms.findMany({
+      where,
+      ...pagination,
+      select: {
+        id: true,
+        property_id: true,
+        room_number: true,
+        room_name: true,
+        room_type: true,
+        status: true,
+        passcode: true,
+        floor: true,
+        created_at: true,
+      },
+    }),
+    prisma.rooms.count({ where }),
+  ]);
+  res.set("X-Total-Count", String(total));
   res.json(rooms);
 }));
 
@@ -292,14 +393,31 @@ app.get("/api/rooms", asyncHandler(async (req, res) => {
 // =============================================================================
 
 app.get("/api/maintenance", asyncHandler(async (req, res) => {
+  setNoStore(res);
   const { property_id, status } = req.query;
+  const pagination = getOptionalPagination(req.query);
   const where: any = {};
   if (property_id) where.property_id = property_id;
   if (status) where.status = status;
-  const issues = await prisma.maintenance_issues.findMany({
-    where,
-    orderBy: { created_at: "desc" },
-  });
+  const [issues, total] = await Promise.all([
+    prisma.maintenance_issues.findMany({
+      where,
+      ...pagination,
+      orderBy: { created_at: "desc" },
+      select: {
+        id: true,
+        property_id: true,
+        room_id: true,
+        title: true,
+        description: true,
+        severity: true,
+        status: true,
+        created_at: true,
+      },
+    }),
+    prisma.maintenance_issues.count({ where }),
+  ]);
+  res.set("X-Total-Count", String(total));
   res.json(issues);
 }));
 
@@ -308,14 +426,55 @@ app.get("/api/maintenance", asyncHandler(async (req, res) => {
 // =============================================================================
 
 app.get("/api/channels", asyncHandler(async (_, res) => {
-  const channels = await prisma.channels.findMany({ include: { external_accounts: true } });
+  setShortCache(res, 300);
+  const channels = await prisma.channels.findMany({
+    select: {
+      id: true,
+      slug: true,
+      display_name: true,
+      status: true,
+      created_at: true,
+      updated_at: true,
+      external_accounts: {
+        select: {
+          id: true,
+          channel_id: true,
+          account_key: true,
+          display_name: true,
+          status: true,
+          archived_at: true,
+          last_synced_at: true,
+          last_sync_started_at: true,
+          last_sync_error: true,
+          created_at: true,
+          updated_at: true,
+        },
+      },
+    },
+  });
   res.json(channels);
 }));
 
 app.get("/api/external-accounts", asyncHandler(async (req, res) => {
+  setShortCache(res, 300);
   const { channel_id } = req.query;
   const where: any = channel_id ? { channel_id: channel_id as string } : {};
-  const accounts = await prisma.external_accounts.findMany({ where });
+  const accounts = await prisma.external_accounts.findMany({
+    where,
+    select: {
+      id: true,
+      channel_id: true,
+      account_key: true,
+      display_name: true,
+      status: true,
+      archived_at: true,
+      last_synced_at: true,
+      last_sync_started_at: true,
+      last_sync_error: true,
+      created_at: true,
+      updated_at: true,
+    },
+  });
   res.json(accounts);
 }));
 
@@ -324,15 +483,33 @@ app.get("/api/external-accounts", asyncHandler(async (req, res) => {
 // =============================================================================
 
 app.get("/api/guest-requests", asyncHandler(async (req, res) => {
+  setNoStore(res);
   const { property_id, guest_id, reservation_id } = req.query;
+  const pagination = getOptionalPagination(req.query);
   const where: any = {};
   if (property_id) where.property_id = property_id;
   if (guest_id) where.guest_id = guest_id;
   if (reservation_id) where.reservation_id = reservation_id;
-  const requests = await prisma.guest_requests.findMany({
-    where,
-    orderBy: { created_at: "desc" },
-  });
+  const [requests, total] = await Promise.all([
+    prisma.guest_requests.findMany({
+      where,
+      ...pagination,
+      orderBy: { created_at: "desc" },
+      select: {
+        id: true,
+        guest_id: true,
+        room_id: true,
+        property_id: true,
+        reservation_id: true,
+        request_type: true,
+        notes: true,
+        is_completed: true,
+        created_at: true,
+      },
+    }),
+    prisma.guest_requests.count({ where }),
+  ]);
+  res.set("X-Total-Count", String(total));
   res.json(requests);
 }));
 
@@ -341,14 +518,34 @@ app.get("/api/guest-requests", asyncHandler(async (req, res) => {
 // =============================================================================
 
 app.get("/api/guests", asyncHandler(async (req, res) => {
+  setNoStore(res);
   const { property_id, room_id } = req.query;
+  const pagination = getOptionalPagination(req.query);
   const where: any = {};
   if (property_id) where.property_id = property_id;
   if (room_id) where.room_id = room_id;
-  const guests = await prisma.guests.findMany({
-    where,
-    orderBy: { created_at: "desc" },
-  });
+  const [guests, total] = await Promise.all([
+    prisma.guests.findMany({
+      where,
+      ...pagination,
+      orderBy: { created_at: "desc" },
+      select: {
+        id: true,
+        property_id: true,
+        room_id: true,
+        guest_name: true,
+        eta: true,
+        etd: true,
+        check_in_status: true,
+        booking_source: true,
+        is_vip: true,
+        guest_count: true,
+        created_at: true,
+      },
+    }),
+    prisma.guests.count({ where }),
+  ]);
+  res.set("X-Total-Count", String(total));
   res.json(guests);
 }));
 

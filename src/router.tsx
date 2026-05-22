@@ -1,12 +1,7 @@
-import { createRootRoute, createRoute, createRouter, Outlet } from "@tanstack/react-router";
+import { createRootRoute, createRoute, createRouter, lazyRouteComponent, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-import { DashboardPage } from "@/components/dashboard/dashboard-page";
-import { ReservationsPage } from "@/components/reservations/reservations-page";
-import { GuestsPage } from "@/components/guests/guests-page";
-import { RoomsPage } from "@/components/rooms/rooms-page";
-import { MaintenancePage } from "@/components/maintenance/maintenance-page";
 
 const rootRoute = createRootRoute({
   component: function RootLayout() {
@@ -25,31 +20,46 @@ const rootRoute = createRootRoute({
 const dashboardRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
-  component: DashboardPage,
+  component: lazyRouteComponent(
+    () => import("@/components/dashboard/dashboard-page"),
+    "DashboardPage"
+  ),
 });
 
 const reservationsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/reservations",
-  component: ReservationsPage,
+  component: lazyRouteComponent(
+    () => import("@/components/reservations/reservations-page"),
+    "ReservationsPage"
+  ),
 });
 
 const guestsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/guests",
-  component: GuestsPage,
+  component: lazyRouteComponent(
+    () => import("@/components/guests/guests-page"),
+    "GuestsPage"
+  ),
 });
 
 const roomsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/rooms",
-  component: RoomsPage,
+  component: lazyRouteComponent(
+    () => import("@/components/rooms/rooms-page"),
+    "RoomsPage"
+  ),
 });
 
 const maintenanceRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/maintenance",
-  component: MaintenancePage,
+  component: lazyRouteComponent(
+    () => import("@/components/maintenance/maintenance-page"),
+    "MaintenancePage"
+  ),
 });
 
 const routeTree = rootRoute.addChildren([

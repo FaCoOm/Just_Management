@@ -1,0 +1,1878 @@
+{
+  "generatedAt": "2026-05-20T06:45:10.979Z",
+  "accountHierarchy": [
+    "Mujo",
+    "Ruby",
+    "Manuka"
+  ],
+  "backwardTraceOrder": [
+    "Manuka",
+    "Ruby",
+    "Mujo"
+  ],
+  "sourceFiles": {
+    "Mujo": "Mujo.csv",
+    "Ruby": "Ruby.csv",
+    "Manuka": "Manuka.csv"
+  },
+  "summary": {
+    "rowsByAccount": {
+      "Mujo": 63,
+      "Ruby": 13,
+      "Manuka": 4
+    },
+    "uniqueListingCount": 59,
+    "tierCounts": {
+      "manuka_ruby_mujo": 4,
+      "ruby_mujo": 9,
+      "mujo_only": 46
+    },
+    "duplicateIdsByAccount": {
+      "Mujo": [
+        "1025643172367576834",
+        "1243977598993622008",
+        "1422216271914476686",
+        "971128319108711511"
+      ]
+    },
+    "hierarchyValidation": {
+      "manukaSubsetOfRuby": true,
+      "rubySubsetOfMujo": true,
+      "missingFromRuby": [],
+      "missingFromMujo": []
+    }
+  },
+  "listings": [
+    {
+      "id": "30326178",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "Latte Lounge - Deluxe condo @District1 #BenThanh",
+      "internalName": "LL - Coffee 3 - Milk 3",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "30326178",
+          "Title": "Latte Lounge - Deluxe condo @District1 #BenThanh",
+          "Internal Name": "LL - Coffee 3 - Milk 3",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/30326178/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/30326178",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "33825990",
+      "canonicalAccount": "Ruby",
+      "visibilityTier": "ruby_mujo",
+      "visibleInAccounts": [
+        "Mujo",
+        "Ruby"
+      ],
+      "title": "Deluxe condo Queen bed with Bathtub #Central #D1",
+      "internalName": "LL - Milk 2 & Coffee 2",
+      "statusByAccount": {
+        "Mujo": "Listed",
+        "Ruby": "Đã đăng"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "33825990",
+          "Title": "Deluxe condo Queen bed with Bathtub #Central #D1",
+          "Internal Name": "LL - Milk 2 & Coffee 2",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/33825990/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/33825990",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        },
+        "Ruby": {
+          "ID": "33825990",
+          "Title": "Deluxe condo Queen bed with Bathtub #Central #D1",
+          "Internal Name": "LL - Milk 2 & Coffee 2",
+          "Type": "nhà",
+          "Location": "Quận 1, Việt Nam",
+          "Status": "Đã đăng",
+          "Host Editor URL": "https://www.airbnb.com.vn/hosting/listings/editor/33825990/details",
+          "Public URL": "https://www.airbnb.com.vn/rooms/33825990",
+          "Extracted At": "2026-05-19T09:14:59.762Z",
+          "sourceAccount": "Ruby"
+        }
+      }
+    },
+    {
+      "id": "33932700",
+      "canonicalAccount": "Manuka",
+      "visibilityTier": "manuka_ruby_mujo",
+      "visibleInAccounts": [
+        "Mujo",
+        "Ruby",
+        "Manuka"
+      ],
+      "title": "Latte Lounge - Estatic apartment - Local Vibe",
+      "internalName": "LL - Latte 2",
+      "statusByAccount": {
+        "Mujo": "Listed",
+        "Ruby": "Đã đăng",
+        "Manuka": "Đã đăng"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "33932700",
+          "Title": "Latte Lounge - Estatic apartment - Local Vibe",
+          "Internal Name": "LL - Latte 2",
+          "Type": "home",
+          "Location": "Thành phố Hồ Chí Minh, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/33932700/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/33932700",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        },
+        "Ruby": {
+          "ID": "33932700",
+          "Title": "Latte Lounge - Estatic apartment - Local Vibe",
+          "Internal Name": "LL - Latte 2",
+          "Type": "nhà",
+          "Location": "Thành phố Hồ Chí Minh, Việt Nam",
+          "Status": "Đã đăng",
+          "Host Editor URL": "https://www.airbnb.com.vn/hosting/listings/editor/33932700/details",
+          "Public URL": "https://www.airbnb.com.vn/rooms/33932700",
+          "Extracted At": "2026-05-19T09:14:59.762Z",
+          "sourceAccount": "Ruby"
+        },
+        "Manuka": {
+          "ID": "33932700",
+          "Title": "Latte Lounge - Estatic apartment - Local Vibe",
+          "Internal Name": "LL - Latte 2",
+          "Type": "nhà",
+          "Location": "Thành phố Hồ Chí Minh, Việt Nam",
+          "Status": "Đã đăng",
+          "Host Editor URL": "https://www.airbnb.com.vn/hosting/listings/editor/33932700/details",
+          "Public URL": "https://www.airbnb.com.vn/rooms/33932700",
+          "Extracted At": "2026-05-20T05:03:55.030Z",
+          "sourceAccount": "Manuka"
+        }
+      }
+    },
+    {
+      "id": "33985828",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "[Minh's Home] Modern Urban room in city central",
+      "internalName": "MH - 02",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "33985828",
+          "Title": "[Minh's Home] Modern Urban room in city central",
+          "Internal Name": "MH - 02",
+          "Type": "home",
+          "Location": "Phường 6, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/33985828/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/33985828",
+          "Extracted At": "2026-05-19T08:42:49.414Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "35025560",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "Minh's Home - Deluxe flat with elite balcony oasis",
+      "internalName": "MH - Kitchen",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "35025560",
+          "Title": "Minh's Home - Deluxe flat with elite balcony oasis",
+          "Internal Name": "MH - Kitchen",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/35025560/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/35025560",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "35171872",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "[Minh's Home] the comfortable bed in central city",
+      "internalName": "MH - 03",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "35171872",
+          "Title": "[Minh's Home] the comfortable bed in central city",
+          "Internal Name": "MH - 03",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/35171872/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/35171872",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "36806697",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "IconSaigon- luxurious river view large balcony",
+      "internalName": "TheO - A 21.12A",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "36806697",
+          "Title": "IconSaigon- luxurious river view large balcony",
+          "Internal Name": "TheO - A 21.12A",
+          "Type": "home",
+          "Location": "Thành phố Hồ Chí Minh, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/36806697/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/36806697",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "38033716",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "Cochinchine -Deluxe Travel Guru Condo #D1 #Netflix",
+      "internalName": "CC 304",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "38033716",
+          "Title": "Cochinchine -Deluxe Travel Guru Condo #D1 #Netflix",
+          "Internal Name": "CC 304",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/38033716/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/38033716",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "38445696",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "Saigonese lifestay - Balcony Central of city",
+      "internalName": "MH - Rose",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "38445696",
+          "Title": "Saigonese lifestay - Balcony Central of city",
+          "Internal Name": "MH - Rose",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/38445696/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/38445696",
+          "Extracted At": "2026-05-19T08:42:49.417Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "610413483450717080",
+      "canonicalAccount": "Ruby",
+      "visibilityTier": "ruby_mujo",
+      "visibleInAccounts": [
+        "Mujo",
+        "Ruby"
+      ],
+      "title": "Stunning and Cozy Expert View in the downtown.",
+      "internalName": "23 - Sugar",
+      "statusByAccount": {
+        "Mujo": "Listed",
+        "Ruby": "Đã đăng"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "610413483450717080",
+          "Title": "Stunning and Cozy Expert View in the downtown.",
+          "Internal Name": "23 - Sugar",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/610413483450717080/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/610413483450717080",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        },
+        "Ruby": {
+          "ID": "610413483450717080",
+          "Title": "Stunning and Cozy Expert View in the downtown.",
+          "Internal Name": "23 - Sugar",
+          "Type": "nhà",
+          "Location": "Quận 1, Việt Nam",
+          "Status": "Đã đăng",
+          "Host Editor URL": "https://www.airbnb.com.vn/hosting/listings/editor/610413483450717080/details",
+          "Public URL": "https://www.airbnb.com.vn/rooms/610413483450717080",
+          "Extracted At": "2026-05-19T09:14:59.763Z",
+          "sourceAccount": "Ruby"
+        }
+      }
+    },
+    {
+      "id": "617035429130532997",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "Comfortable bed room central city #NetflixRuby - Ruby 3",
+      "internalName": "",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "617035429130532997",
+          "Title": "Comfortable bed room central city #NetflixRuby - Ruby 3",
+          "Internal Name": "",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/617035429130532997/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/617035429130532997",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "617780185772213304",
+      "canonicalAccount": "Ruby",
+      "visibilityTier": "ruby_mujo",
+      "visibleInAccounts": [
+        "Mujo",
+        "Ruby"
+      ],
+      "title": "Latte Lounge - Minimalist Haven just off Ben Thanh",
+      "internalName": "LL - Coffee 2",
+      "statusByAccount": {
+        "Mujo": "Listed",
+        "Ruby": "Đã đăng"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "617780185772213304",
+          "Title": "Latte Lounge - Minimalist Haven just off Ben Thanh",
+          "Internal Name": "LL - Coffee 2",
+          "Type": "home",
+          "Location": "Thành phố Hồ Chí Minh, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/617780185772213304/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/617780185772213304",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        },
+        "Ruby": {
+          "ID": "617780185772213304",
+          "Title": "Latte Lounge - Minimalist Haven just off Ben Thanh",
+          "Internal Name": "LL - Coffee 2",
+          "Type": "nhà",
+          "Location": "Thành phố Hồ Chí Minh, Việt Nam",
+          "Status": "Đã đăng",
+          "Host Editor URL": "https://www.airbnb.com.vn/hosting/listings/editor/617780185772213304/details",
+          "Public URL": "https://www.airbnb.com.vn/rooms/617780185772213304",
+          "Extracted At": "2026-05-19T09:14:59.762Z",
+          "sourceAccount": "Ruby"
+        }
+      }
+    },
+    {
+      "id": "623736874112019841",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "Amazing view of central city - River view",
+      "internalName": "TheO - B 9.08",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "623736874112019841",
+          "Title": "Amazing view of central city - River view",
+          "Internal Name": "TheO - B 9.08",
+          "Type": "home",
+          "Location": "Thủ Thiêm, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/623736874112019841/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/623736874112019841",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "626377907415079569",
+      "canonicalAccount": "Ruby",
+      "visibilityTier": "ruby_mujo",
+      "visibleInAccounts": [
+        "Mujo",
+        "Ruby"
+      ],
+      "title": "Street view - Saigon busy life - balcony Studio",
+      "internalName": "23 - Sugar",
+      "statusByAccount": {
+        "Mujo": "Listed",
+        "Ruby": "Đã đăng"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "626377907415079569",
+          "Title": "Street view - Saigon busy life - balcony Studio",
+          "Internal Name": "23 - Sugar",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/626377907415079569/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/626377907415079569",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        },
+        "Ruby": {
+          "ID": "626377907415079569",
+          "Title": "Street view - Saigon busy life - balcony Studio",
+          "Internal Name": "23 - Sugar",
+          "Type": "nhà",
+          "Location": "Quận 1, Việt Nam",
+          "Status": "Đã đăng",
+          "Host Editor URL": "https://www.airbnb.com.vn/hosting/listings/editor/626377907415079569/details",
+          "Public URL": "https://www.airbnb.com.vn/rooms/626377907415079569",
+          "Extracted At": "2026-05-19T09:14:59.763Z",
+          "sourceAccount": "Ruby"
+        }
+      }
+    },
+    {
+      "id": "634559839785018333",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "Luxurious high-class flat river view.",
+      "internalName": "TheO - B 20.12A Main",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "634559839785018333",
+          "Title": "Luxurious high-class flat river view.",
+          "Internal Name": "TheO - B 20.12A Main",
+          "Type": "home",
+          "Location": "Thủ Thiêm, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/634559839785018333/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/634559839785018333",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "658512569686225020",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "Cochinchine - Vibrant Studio in CBD #D1",
+      "internalName": "CC 403",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "658512569686225020",
+          "Title": "Cochinchine - Vibrant Studio in CBD #D1",
+          "Internal Name": "CC 403",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/658512569686225020/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/658512569686225020",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "704042592082831501",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "The Crest - 2BRs flat at the heart of the city",
+      "internalName": "TC - C 12.02",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "704042592082831501",
+          "Title": "The Crest - 2BRs flat at the heart of the city",
+          "Internal Name": "TC - C 12.02",
+          "Type": "home",
+          "Location": "Hồ Chí Minh, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/704042592082831501/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/704042592082831501",
+          "Extracted At": "2026-05-19T08:42:49.417Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "709238790946621287",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "Fully furnished big balcony central D1",
+      "internalName": "MH - Kitchen",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "709238790946621287",
+          "Title": "Fully furnished big balcony central D1",
+          "Internal Name": "MH - Kitchen",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/709238790946621287/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/709238790946621287",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "721333400928589616",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "Minh's Home - Deluxe and comfy room",
+      "internalName": "MH - 05",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "721333400928589616",
+          "Title": "Minh's Home - Deluxe and comfy room",
+          "Internal Name": "MH - 05",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/721333400928589616/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/721333400928589616",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "721334527290853201",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "Cochinchine Delxue flat at the city #Central",
+      "internalName": "CC 402",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "721334527290853201",
+          "Title": "Cochinchine Delxue flat at the city #Central",
+          "Internal Name": "CC 402",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/721334527290853201/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/721334527290853201",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "835819243002871362",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "Cochinchine-Flat in bustling downtown area",
+      "internalName": "CC 303 (301 cũ)",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "835819243002871362",
+          "Title": "Cochinchine-Flat in bustling downtown area",
+          "Internal Name": "CC 303 (301 cũ)",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/835819243002871362/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/835819243002871362",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "874784830445566937",
+      "canonicalAccount": "Ruby",
+      "visibilityTier": "ruby_mujo",
+      "visibleInAccounts": [
+        "Mujo",
+        "Ruby"
+      ],
+      "title": "Cochinchine - Cozy and Luxurious Condo.",
+      "internalName": "CC - 401",
+      "statusByAccount": {
+        "Mujo": "Listed",
+        "Ruby": "Đã đăng"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "874784830445566937",
+          "Title": "Cochinchine - Cozy and Luxurious Condo.",
+          "Internal Name": "CC - 401",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/874784830445566937/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/874784830445566937",
+          "Extracted At": "2026-05-19T08:42:49.414Z",
+          "sourceAccount": "Mujo"
+        },
+        "Ruby": {
+          "ID": "874784830445566937",
+          "Title": "Cochinchine - Cozy and Luxurious Condo.",
+          "Internal Name": "CC - 401",
+          "Type": "nhà",
+          "Location": "Quận 1, Việt Nam",
+          "Status": "Đã đăng",
+          "Host Editor URL": "https://www.airbnb.com.vn/hosting/listings/editor/874784830445566937/details",
+          "Public URL": "https://www.airbnb.com.vn/rooms/874784830445566937",
+          "Extracted At": "2026-05-19T09:14:59.762Z",
+          "sourceAccount": "Ruby"
+        }
+      }
+    },
+    {
+      "id": "900425253573700866",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "Stylish & Vibrant Home in SaiGon",
+      "internalName": "23 - Sugar",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "900425253573700866",
+          "Title": "Stylish & Vibrant Home in SaiGon",
+          "Internal Name": "23 - Sugar",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/900425253573700866/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/900425253573700866",
+          "Extracted At": "2026-05-19T08:42:49.417Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "906741375655824033",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "Beautiful studio 2 brs balcony central district 1",
+      "internalName": "MH - Lotus",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "906741375655824033",
+          "Title": "Beautiful studio 2 brs balcony central district 1",
+          "Internal Name": "MH - Lotus",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/906741375655824033/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/906741375655824033",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "941818794395146358",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "Cochinchine - cozy and ideal retreat #D1 #Central",
+      "internalName": "CC - 401",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "941818794395146358",
+          "Title": "Cochinchine - cozy and ideal retreat #D1 #Central",
+          "Internal Name": "CC - 401",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/941818794395146358/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/941818794395146358",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "947584081523929277",
+      "canonicalAccount": "Manuka",
+      "visibilityTier": "manuka_ruby_mujo",
+      "visibleInAccounts": [
+        "Mujo",
+        "Ruby",
+        "Manuka"
+      ],
+      "title": "Comfortable bed local lifestyle party st DeTham D1",
+      "internalName": "23 - Pepper",
+      "statusByAccount": {
+        "Mujo": "Listed",
+        "Ruby": "Đã đăng",
+        "Manuka": "Đã đăng"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "947584081523929277",
+          "Title": "Comfortable bed local lifestyle party st DeTham D1",
+          "Internal Name": "23 - Pepper",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/947584081523929277/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/947584081523929277",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        },
+        "Ruby": {
+          "ID": "947584081523929277",
+          "Title": "Comfortable bed local lifestyle party st DeTham D1",
+          "Internal Name": "23 - Pepper",
+          "Type": "nhà",
+          "Location": "Quận 1, Việt Nam",
+          "Status": "Đã đăng",
+          "Host Editor URL": "https://www.airbnb.com.vn/hosting/listings/editor/947584081523929277/details",
+          "Public URL": "https://www.airbnb.com.vn/rooms/947584081523929277",
+          "Extracted At": "2026-05-19T09:14:59.762Z",
+          "sourceAccount": "Ruby"
+        },
+        "Manuka": {
+          "ID": "947584081523929277",
+          "Title": "Comfortable bed local lifestyle party st DeTham D1",
+          "Internal Name": "23 - Pepper",
+          "Type": "nhà",
+          "Location": "Quận 1, Việt Nam",
+          "Status": "Đã đăng",
+          "Host Editor URL": "https://www.airbnb.com.vn/hosting/listings/editor/947584081523929277/details",
+          "Public URL": "https://www.airbnb.com.vn/rooms/947584081523929277",
+          "Extracted At": "2026-05-20T05:03:55.030Z",
+          "sourceAccount": "Manuka"
+        }
+      }
+    },
+    {
+      "id": "967132428321022763",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "#The Opera panoramic city - Saigon river view.",
+      "internalName": "TheO - B 16.09",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "967132428321022763",
+          "Title": "#The Opera panoramic city - Saigon river view.",
+          "Internal Name": "TheO - B 16.09",
+          "Type": "home",
+          "Location": "Thủ Đức, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/967132428321022763/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/967132428321022763",
+          "Extracted At": "2026-05-19T08:42:49.414Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "970899503442907449",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "Cozy Apartment in city central #D1 #CBD",
+      "internalName": "LL - Coffee 3",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "970899503442907449",
+          "Title": "Cozy Apartment in city central #D1 #CBD",
+          "Internal Name": "LL - Coffee 3",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/970899503442907449/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/970899503442907449",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "971128319108711511",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "Mujo - Deluxe duplex city centralRuby - Ruby 2",
+      "internalName": "",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "971128319108711511",
+          "Title": "Mujo - Deluxe duplex city centralRuby - Ruby 2",
+          "Internal Name": "",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/971128319108711511/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/971128319108711511",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "976264991109844916",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "Heart of city central District 1 Amazing placeRuby - Ruby 5",
+      "internalName": "",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "976264991109844916",
+          "Title": "Heart of city central District 1 Amazing placeRuby - Ruby 5",
+          "Internal Name": "",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/976264991109844916/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/976264991109844916",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "998079044087243294",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "Stunning Newly-Decorated flat#Your perfect retreat",
+      "internalName": "TheO - A 21.12A",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "998079044087243294",
+          "Title": "Stunning Newly-Decorated flat#Your perfect retreat",
+          "Internal Name": "TheO - A 21.12A",
+          "Type": "home",
+          "Location": "Thủ Thiêm, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/998079044087243294/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/998079044087243294",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "1009132800895283205",
+      "canonicalAccount": "Ruby",
+      "visibilityTier": "ruby_mujo",
+      "visibleInAccounts": [
+        "Mujo",
+        "Ruby"
+      ],
+      "title": "Luxury Flat- river view center of HCM city",
+      "internalName": "23 - Salt",
+      "statusByAccount": {
+        "Mujo": "Listed",
+        "Ruby": "Đã đăng"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "1009132800895283205",
+          "Title": "Luxury Flat- river view center of HCM city",
+          "Internal Name": "23 - Salt",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/1009132800895283205/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/1009132800895283205",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        },
+        "Ruby": {
+          "ID": "1009132800895283205",
+          "Title": "Luxury Flat- river view center of HCM city",
+          "Internal Name": "23 - Salt",
+          "Type": "nhà",
+          "Location": "Quận 1, Việt Nam",
+          "Status": "Đã đăng",
+          "Host Editor URL": "https://www.airbnb.com.vn/hosting/listings/editor/1009132800895283205/details",
+          "Public URL": "https://www.airbnb.com.vn/rooms/1009132800895283205",
+          "Extracted At": "2026-05-19T09:14:59.763Z",
+          "sourceAccount": "Ruby"
+        }
+      }
+    },
+    {
+      "id": "1011814110760557099",
+      "canonicalAccount": "Ruby",
+      "visibilityTier": "ruby_mujo",
+      "visibleInAccounts": [
+        "Mujo",
+        "Ruby"
+      ],
+      "title": "Latte Lounge - Stylish & Vibrant near Ben Thanh",
+      "internalName": "LL - Latte 1",
+      "statusByAccount": {
+        "Mujo": "Listed",
+        "Ruby": "Đã đăng"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "1011814110760557099",
+          "Title": "Latte Lounge - Stylish & Vibrant near Ben ThanhC 12.02",
+          "Internal Name": "",
+          "Type": "home",
+          "Location": "Thành phố Hồ Chí Minh, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/1011814110760557099/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/1011814110760557099",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        },
+        "Ruby": {
+          "ID": "1011814110760557099",
+          "Title": "Latte Lounge - Stylish & Vibrant near Ben Thanh",
+          "Internal Name": "LL - Latte 1",
+          "Type": "nhà",
+          "Location": "Thành phố Hồ Chí Minh, Việt Nam",
+          "Status": "Đã đăng",
+          "Host Editor URL": "https://www.airbnb.com.vn/hosting/listings/editor/1011814110760557099/details",
+          "Public URL": "https://www.airbnb.com.vn/rooms/1011814110760557099",
+          "Extracted At": "2026-05-19T09:14:59.762Z",
+          "sourceAccount": "Ruby"
+        }
+      }
+    },
+    {
+      "id": "1011852212780194618",
+      "canonicalAccount": "Ruby",
+      "visibilityTier": "ruby_mujo",
+      "visibleInAccounts": [
+        "Mujo",
+        "Ruby"
+      ],
+      "title": "Latte Lounge - Deluxe D1 Retreat above Coffee Shop",
+      "internalName": "LL - Coffee 3",
+      "statusByAccount": {
+        "Mujo": "Listed",
+        "Ruby": "Đã đăng"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "1011852212780194618",
+          "Title": "Latte Lounge - Deluxe D1 Retreat above Coffee Shop",
+          "Internal Name": "LL - Coffee 3",
+          "Type": "home",
+          "Location": "Thành phố Hồ Chí Minh, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/1011852212780194618/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/1011852212780194618",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        },
+        "Ruby": {
+          "ID": "1011852212780194618",
+          "Title": "Latte Lounge - Deluxe D1 Retreat above Coffee Shop",
+          "Internal Name": "LL - Coffee 3",
+          "Type": "nhà",
+          "Location": "Thành phố Hồ Chí Minh, Việt Nam",
+          "Status": "Đã đăng",
+          "Host Editor URL": "https://www.airbnb.com.vn/hosting/listings/editor/1011852212780194618/details",
+          "Public URL": "https://www.airbnb.com.vn/rooms/1011852212780194618",
+          "Extracted At": "2026-05-19T09:14:59.762Z",
+          "sourceAccount": "Ruby"
+        }
+      }
+    },
+    {
+      "id": "1011857801959266928",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "The Crest Luxurious flat: Your Serene Oasis.",
+      "internalName": "TC - 8.05",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "1011857801959266928",
+          "Title": "The Crest Luxurious flat: Your Serene Oasis.",
+          "Internal Name": "TC - 8.05",
+          "Type": "home",
+          "Location": "Thủ Thiêm, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/1011857801959266928/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/1011857801959266928",
+          "Extracted At": "2026-05-19T08:42:49.417Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "1025643172367576834",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "Mujo - Cozy Studio near Ben ThanhRuby - Ruby 3",
+      "internalName": "",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "1025643172367576834",
+          "Title": "Mujo - Cozy Studio near Ben ThanhRuby - Ruby 3",
+          "Internal Name": "",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/1025643172367576834/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/1025643172367576834",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "1027230099688745912",
+      "canonicalAccount": "Manuka",
+      "visibilityTier": "manuka_ruby_mujo",
+      "visibleInAccounts": [
+        "Mujo",
+        "Ruby",
+        "Manuka"
+      ],
+      "title": "Glamorous Cozy Unit in CBD",
+      "internalName": "LL - Coffee 1",
+      "statusByAccount": {
+        "Mujo": "Listed",
+        "Ruby": "Đã đăng",
+        "Manuka": "Đã đăng"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "1027230099688745912",
+          "Title": "Glamorous Cozy Unit in CBD",
+          "Internal Name": "LL - Coffee 1",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/1027230099688745912/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/1027230099688745912",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        },
+        "Ruby": {
+          "ID": "1027230099688745912",
+          "Title": "Glamorous Cozy Unit in CBD",
+          "Internal Name": "LL - Coffee 1",
+          "Type": "nhà",
+          "Location": "Quận 1, Việt Nam",
+          "Status": "Đã đăng",
+          "Host Editor URL": "https://www.airbnb.com.vn/hosting/listings/editor/1027230099688745912/details",
+          "Public URL": "https://www.airbnb.com.vn/rooms/1027230099688745912",
+          "Extracted At": "2026-05-19T09:14:59.762Z",
+          "sourceAccount": "Ruby"
+        },
+        "Manuka": {
+          "ID": "1027230099688745912",
+          "Title": "Glamorous Cozy Unit in CBD",
+          "Internal Name": "LL - Coffee 1",
+          "Type": "nhà",
+          "Location": "Quận 1, Việt Nam",
+          "Status": "Đã đăng",
+          "Host Editor URL": "https://www.airbnb.com.vn/hosting/listings/editor/1027230099688745912/details",
+          "Public URL": "https://www.airbnb.com.vn/rooms/1027230099688745912",
+          "Extracted At": "2026-05-20T05:03:55.030Z",
+          "sourceAccount": "Manuka"
+        }
+      }
+    },
+    {
+      "id": "1027327396117322855",
+      "canonicalAccount": "Manuka",
+      "visibilityTier": "manuka_ruby_mujo",
+      "visibleInAccounts": [
+        "Mujo",
+        "Ruby",
+        "Manuka"
+      ],
+      "title": "Latte Lounge - Heart of D1 #Netflix #Central",
+      "internalName": "LL - Milk 3",
+      "statusByAccount": {
+        "Mujo": "Listed",
+        "Ruby": "Đã đăng",
+        "Manuka": "Đã đăng"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "1027327396117322855",
+          "Title": "Latte Lounge - Heart of D1 #Netflix #Central",
+          "Internal Name": "LL - Milk 3",
+          "Type": "home",
+          "Location": "Thành phố Hồ Chí Minh, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/1027327396117322855/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/1027327396117322855",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        },
+        "Ruby": {
+          "ID": "1027327396117322855",
+          "Title": "Latte Lounge - Heart of D1 #Netflix #Central",
+          "Internal Name": "LL - Milk 3",
+          "Type": "nhà",
+          "Location": "Thành phố Hồ Chí Minh, Việt Nam",
+          "Status": "Đã đăng",
+          "Host Editor URL": "https://www.airbnb.com.vn/hosting/listings/editor/1027327396117322855/details",
+          "Public URL": "https://www.airbnb.com.vn/rooms/1027327396117322855",
+          "Extracted At": "2026-05-19T09:14:59.762Z",
+          "sourceAccount": "Ruby"
+        },
+        "Manuka": {
+          "ID": "1027327396117322855",
+          "Title": "Latte Lounge - Heart of D1 #Netflix #Central",
+          "Internal Name": "LL - Milk 3",
+          "Type": "nhà",
+          "Location": "Thành phố Hồ Chí Minh, Việt Nam",
+          "Status": "Đã đăng",
+          "Host Editor URL": "https://www.airbnb.com.vn/hosting/listings/editor/1027327396117322855/details",
+          "Public URL": "https://www.airbnb.com.vn/rooms/1027327396117322855",
+          "Extracted At": "2026-05-20T05:03:55.030Z",
+          "sourceAccount": "Manuka"
+        }
+      }
+    },
+    {
+      "id": "1038036702132923614",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "The Crest - Opulent flat - Deluxe Interior",
+      "internalName": "TC - 8.05",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "1038036702132923614",
+          "Title": "The Crest - Opulent flat - Deluxe Interior",
+          "Internal Name": "TC - 8.05",
+          "Type": "home",
+          "Location": "Thủ Đức, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/1038036702132923614/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/1038036702132923614",
+          "Extracted At": "2026-05-19T08:42:49.417Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "1068503554643930212",
+      "canonicalAccount": "Ruby",
+      "visibilityTier": "ruby_mujo",
+      "visibleInAccounts": [
+        "Mujo",
+        "Ruby"
+      ],
+      "title": "Latte Lounge: Tailored Urban Retreat in D1",
+      "internalName": "LL - Latte 1",
+      "statusByAccount": {
+        "Mujo": "Listed",
+        "Ruby": "Đã đăng"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "1068503554643930212",
+          "Title": "Latte Lounge: Tailored Urban Retreat in D1",
+          "Internal Name": "LL - Latte 1",
+          "Type": "home",
+          "Location": "Thành phố Hồ Chí Minh, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/1068503554643930212/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/1068503554643930212",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        },
+        "Ruby": {
+          "ID": "1068503554643930212",
+          "Title": "Latte Lounge: Tailored Urban Retreat in D1",
+          "Internal Name": "LL - Latte 1",
+          "Type": "nhà",
+          "Location": "Thành phố Hồ Chí Minh, Việt Nam",
+          "Status": "Đã đăng",
+          "Host Editor URL": "https://www.airbnb.com.vn/hosting/listings/editor/1068503554643930212/details",
+          "Public URL": "https://www.airbnb.com.vn/rooms/1068503554643930212",
+          "Extracted At": "2026-05-19T09:14:59.763Z",
+          "sourceAccount": "Ruby"
+        }
+      }
+    },
+    {
+      "id": "1074346693203065393",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "Golden apartment. Bridge view fantastic place",
+      "internalName": "TheO - B 9.08",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "1074346693203065393",
+          "Title": "Golden apartment. Bridge view fantastic place",
+          "Internal Name": "TheO - B 9.08",
+          "Type": "home",
+          "Location": "Quận 2, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/1074346693203065393/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/1074346693203065393",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "1085966232361698602",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "Latte Lounge - Vibrate stylish studio balconyRuby",
+      "internalName": "",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "1085966232361698602",
+          "Title": "Latte Lounge - Vibrate stylish studio balconyRuby",
+          "Internal Name": "",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/1085966232361698602/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/1085966232361698602",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "1108153591275283750",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "Cochinchine-Spectacular CBD view flat #Central",
+      "internalName": "CC 302",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "1108153591275283750",
+          "Title": "Cochinchine-Spectacular CBD view flat #Central",
+          "Internal Name": "CC 302",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/1108153591275283750/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/1108153591275283750",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "1125771412150136916",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "Aesthetical and comfy flat #D1 #CBD",
+      "internalName": "LL - C&M2",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "1125771412150136916",
+          "Title": "Aesthetical and comfy flat #D1 #CBD",
+          "Internal Name": "LL - C&M2",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/1125771412150136916/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/1125771412150136916",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "1127840889038070312",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "1 step down fashion st 2 beds heart of Central",
+      "internalName": "CC 404",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "1127840889038070312",
+          "Title": "1 step down fashion st 2 beds heart of Central",
+          "Internal Name": "CC 404",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/1127840889038070312/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/1127840889038070312",
+          "Extracted At": "2026-05-19T08:42:49.414Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "1128539993344845174",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "Street view - Saigon busy life - balcony StudioRuby - Ruby 5",
+      "internalName": "",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "1128539993344845174",
+          "Title": "Street view - Saigon busy life - balcony StudioRuby - Ruby 5",
+          "Internal Name": "",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/1128539993344845174/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/1128539993344845174",
+          "Extracted At": "2026-05-19T08:42:49.417Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "1129430435619939821",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "Minh's Home Aesthetic flat in CBD #D1 #Netflix",
+      "internalName": "MH - Lotus",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "1129430435619939821",
+          "Title": "Minh's Home Aesthetic flat in CBD #D1 #Netflix",
+          "Internal Name": "MH - Lotus",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/1129430435619939821/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/1129430435619939821",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "1132837426599440407",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "The luxurious apartment- Saigon river view",
+      "internalName": "TheO - A 21.12A",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "1132837426599440407",
+          "Title": "The luxurious apartment- Saigon river view",
+          "Internal Name": "TheO - A 21.12A",
+          "Type": "home",
+          "Location": "Thủ Đức, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/1132837426599440407/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/1132837426599440407",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "1148956570061542037",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "5* luxurious apartment-Saigon river view",
+      "internalName": "TheO - B 15.12A",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "1148956570061542037",
+          "Title": "5* luxurious apartment-Saigon river view",
+          "Internal Name": "TheO - B 15.12A",
+          "Type": "home",
+          "Location": "Thành phố Hồ Chí Minh, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/1148956570061542037/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/1148956570061542037",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "1177750027917510947",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "Modern Oasis in the Bustling City",
+      "internalName": "TheO - A 21.12A",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "1177750027917510947",
+          "Title": "Modern Oasis in the Bustling City",
+          "Internal Name": "TheO - A 21.12A",
+          "Type": "home",
+          "Location": "Quận 2, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/1177750027917510947/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/1177750027917510947",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "1222766842706606549",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "Cochinchine Central D1 Cozy Compact Studio",
+      "internalName": "CC - 402",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "1222766842706606549",
+          "Title": "Cochinchine Central D1 Cozy Compact Studio",
+          "Internal Name": "CC - 402",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/1222766842706606549/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/1222766842706606549",
+          "Extracted At": "2026-05-19T08:42:49.414Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "1239420729074718515",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "[Minh's Home] Modern and Cozy in the City Central.",
+      "internalName": "MH - 01",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "1239420729074718515",
+          "Title": "[Minh's Home] Modern and Cozy in the City Central.",
+          "Internal Name": "MH - 01",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/1239420729074718515/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/1239420729074718515",
+          "Extracted At": "2026-05-19T08:42:49.414Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "1243977598993622008",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "MUJO - Heart of D1 #Netflix #CentralRuby - Ruby 5",
+      "internalName": "",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "1243977598993622008",
+          "Title": "MUJO - Heart of D1 #Netflix #CentralRuby - Ruby 5",
+          "Internal Name": "",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/1243977598993622008/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/1243977598993622008",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "1355491770580714486",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "Cochinchine - Spectacular flat in prime location",
+      "internalName": "CC - 301",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "1355491770580714486",
+          "Title": "Cochinchine - Spectacular flat in prime location",
+          "Internal Name": "CC - 301",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/1355491770580714486/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/1355491770580714486",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "1376490999583530655",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "Chic D1 Studio Steps to Bui Vien Nightlife #D1Ruby",
+      "internalName": "",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "1376490999583530655",
+          "Title": "Chic D1 Studio Steps to Bui Vien Nightlife #D1Ruby",
+          "Internal Name": "",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/1376490999583530655/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/1376490999583530655",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "1420854728899157737",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "Latte Lounge - Boutique Hotel #D1",
+      "internalName": "LL - Coffee 2",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "1420854728899157737",
+          "Title": "Latte Lounge - Boutique Hotel #D1",
+          "Internal Name": "LL - Coffee 2",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/1420854728899157737/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/1420854728899157737",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "1421711169983410803",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "Studio heart central of city - 2brs BenThanh",
+      "internalName": "LL - coffee 3",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "1421711169983410803",
+          "Title": "Studio heart central of city - 2brs BenThanh",
+          "Internal Name": "LL - coffee 3",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/1421711169983410803/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/1421711169983410803",
+          "Extracted At": "2026-05-19T08:42:49.417Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "1422216271914476686",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "Mujo studio central of district 1 #BenThanhRuby -",
+      "internalName": "",
+      "statusByAccount": {
+        "Mujo": "Listed"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "1422216271914476686",
+          "Title": "Mujo studio central of district 1 #BenThanhRuby -",
+          "Internal Name": "",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "Listed",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/1422216271914476686/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/1422216271914476686",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    },
+    {
+      "id": "1536890357047173351",
+      "canonicalAccount": "Mujo",
+      "visibilityTier": "mujo_only",
+      "visibleInAccounts": [
+        "Mujo"
+      ],
+      "title": "Luxury Apartment",
+      "internalName": "",
+      "statusByAccount": {
+        "Mujo": "In progress"
+      },
+      "sourceRows": {
+        "Mujo": {
+          "ID": "1536890357047173351",
+          "Title": "Luxury Apartment",
+          "Internal Name": "",
+          "Type": "home",
+          "Location": "Quận 1, Vietnam",
+          "Status": "In progress",
+          "Host Editor URL": "https://www.airbnb.co.uk/hosting/listings/editor/1536890357047173351/details",
+          "Public URL": "https://www.airbnb.co.uk/rooms/1536890357047173351",
+          "Extracted At": "2026-05-19T08:42:49.416Z",
+          "sourceAccount": "Mujo"
+        }
+      }
+    }
+  ]
+}

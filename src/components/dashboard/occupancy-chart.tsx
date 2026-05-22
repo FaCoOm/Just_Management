@@ -32,7 +32,7 @@ import {
 } from "@/lib/vietnam-time";
 import { cn } from "@/lib/utils";
 import type { OccupancySeriesPoint, Property } from "@/types/database";
-import { CalendarDays, ChevronLeft, ChevronRight, RotateCcw } from "lucide-react";
+import { ChevronLeft, ChevronRight, RotateCcw } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 const chartConfig = {

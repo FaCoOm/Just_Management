@@ -20,9 +20,9 @@ const BANNED_PATTERNS = [
   { pattern: /ENABLE\s+ROW\s+LEVEL\s+SECURITY/gi, name: "ENABLE ROW LEVEL SECURITY (RLS)" },
 ];
 
-const REQUIRED_PATTERNS = [
-  { pattern: /CREATE\s+EXTENSION\s+IF\s+NOT\s+EXISTS\s+pgcrypto/gi, name: "pgcrypto extension", optional: false },
-  { pattern: /CREATE\s+OR\s+REPLACE\s+FUNCTION\s+set_updated_at_timestamp/gi, name: "set_updated_at_timestamp trigger function", optional: false },
+const INIT_REQUIRED_PATTERNS = [
+  { pattern: /CREATE\s+EXTENSION\s+IF\s+NOT\s+EXISTS\s+pgcrypto/gi, name: "pgcrypto extension" },
+  { pattern: /CREATE\s+OR\s+REPLACE\s+FUNCTION\s+set_updated_at_timestamp/gi, name: "set_updated_at_timestamp trigger function" },
 ];
 
 let exitCode = 0;
@@ -37,7 +37,6 @@ function pass(msg) {
   console.log(`PASS: ${msg}`);
 }
 
-// Find the most recent migration directory
 if (!existsSync(migrationsDir)) {
   fail(`Prisma migrations directory not found: ${migrationsDir}`);
   process.exit(1);
@@ -53,45 +52,44 @@ if (entries.length === 0) {
   process.exit(1);
 }
 
-const latestMigrationDir = join(migrationsDir, entries[0].name);
-const migrationFile = join(latestMigrationDir, "migration.sql");
+const migrationSqlByName = entries.map((entry) => {
+  const migrationFile = join(migrationsDir, entry.name, "migration.sql");
 
-if (!existsSync(migrationFile)) {
-  fail(`migration.sql not found in ${latestMigrationDir}`);
-  process.exit(1);
-}
+  if (!existsSync(migrationFile)) {
+    fail(`migration.sql not found in ${join(migrationsDir, entry.name)}`);
+    return { name: entry.name, sql: "" };
+  }
 
-foundMigration = true;
-pass(`Found migration: ${entries[0].name}/migration.sql`);
+  foundMigration = true;
+  pass(`Found migration: ${entry.name}/migration.sql`);
+  return { name: entry.name, sql: readFileSync(migrationFile, "utf-8") };
+});
 
-const sql = readFileSync(migrationFile, "utf-8");
+const combinedSql = migrationSqlByName.map((migration) => migration.sql).join("\n");
 
-// Check for banned patterns (Supabase-only syntax)
-for (const { pattern, name } of BANNED_PATTERNS) {
-  if (pattern.test(sql)) {
-    fail(`Contains banned pattern: ${name} (remove from migration SQL)`);
-  } else {
-    pass(`No banned pattern: ${name}`);
+for (const { name, sql } of migrationSqlByName) {
+  for (const { pattern, name: patternName } of BANNED_PATTERNS) {
+    if (pattern.test(sql)) {
+      fail(`${name} contains banned pattern: ${patternName} (remove from migration SQL)`);
+    } else {
+      pass(`${name} has no banned pattern: ${patternName}`);
+    }
   }
 }
 
-// Check for required patterns
-for (const { pattern, name, optional } of REQUIRED_PATTERNS) {
-  if (pattern.test(sql)) {
-    pass(`Found required: ${name}`);
-  } else if (optional) {
-    console.log(`INFO: Optional pattern not found: ${name}`);
+for (const { pattern, name } of INIT_REQUIRED_PATTERNS) {
+  if (pattern.test(combinedSql)) {
+    pass(`Found required across migrations: ${name}`);
   } else {
-    fail(`Missing required: ${name} (add to migration SQL)`);
+    fail(`Missing required across migrations: ${name} (add to initial migration SQL)`);
   }
 }
 
-// Check that the migration has table DDL (basic sanity)
-const tableCount = (sql.match(/CREATE TABLE/gi) || []).length;
+const tableCount = (combinedSql.match(/CREATE TABLE/gi) || []).length;
 if (tableCount > 0) {
-  pass(`Contains ${tableCount} CREATE TABLE statements`);
+  pass(`Contains ${tableCount} CREATE TABLE statements across migrations`);
 } else {
-  fail("No CREATE TABLE statements found in migration");
+  fail("No CREATE TABLE statements found across migrations");
 }
 
 if (exitCode === 0) {

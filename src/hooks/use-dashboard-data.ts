@@ -62,7 +62,7 @@ function getCompatibilityBookingSource(reservation: Reservation) {
   return source || "Reservation";
 }
 
-function toDashboardGuest(reservation: Reservation): Guest {
+export function toDashboardGuest(reservation: Reservation): Guest {
   return {
     id: reservation.id,
     reservation_id: reservation.id,

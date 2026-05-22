@@ -30,8 +30,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useDashboardData } from "@/hooks/use-dashboard-data";
-import { formatVietnamDate, getVietnamToday } from "@/lib/vietnam-time";
+import { useMaintenancePageData } from "@/hooks/use-page-data";
+import { formatVietnamDate } from "@/lib/vietnam-time";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Wrench,
@@ -232,7 +232,7 @@ function buildMaintenanceColumns(
 }
 
 export function MaintenancePage() {
-  const { maintenance, properties, rooms, loading } = useDashboardData(getVietnamToday());
+  const { maintenance, properties, rooms, loading } = useMaintenancePageData();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [severityFilter, setSeverityFilter] = useState<string>("all");
