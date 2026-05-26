@@ -1,0 +1,15 @@
+{
+  "id": "T-9baeb042-aa8c-421d-9bfb-9890d3038a93",
+  "subject": "Consult performance agents",
+  "description": "Run parallel frontend, backend, and external best-practice consultations before implementation. QA: collect and incorporate agent outputs.",
+  "status": "completed",
+  "activeForm": "Consulting performance agents",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "qa": "background_output collected for all launched agents"
+  },
+  "repoURL": "",
+  "parentID": "",
+  "threadID": "ses_1bb2a3e20ffeQqV9PT5IdiLy5I"
+}

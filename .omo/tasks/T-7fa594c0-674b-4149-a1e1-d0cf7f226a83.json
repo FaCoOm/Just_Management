@@ -1,0 +1,10 @@
+{
+  "id": "T-7fa594c0-674b-4149-a1e1-d0cf7f226a83",
+  "subject": "Review backend plan docs",
+  "description": "Read manual reservation creation plan and execution guidelines; inspect backend constraints for POST /api/reservations.",
+  "status": "in_progress",
+  "activeForm": "Reviewing plan docs for backend route implementation",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_19c387ed3ffecrOH4n7jKFvU7U"
+}

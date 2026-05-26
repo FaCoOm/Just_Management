@@ -1,0 +1,23 @@
+{
+  "active_plan": "C:\\Users\\Fate_Conqueror\\Documents\\GitHub\\M_Management-track-b\\.sisyphus\\plans\\track-b-auto-sync-ingestion.md",
+  "started_at": "2026-05-03T13:54:49.5858389+10:00",
+  "session_ids": [
+    "ses_216fad902ffeLlbnzdVU1S79D5"
+  ],
+  "plan_name": "track-b-auto-sync-ingestion",
+  "agent": "atlas",
+  "session_origins": {
+    "ses_216fad902ffeLlbnzdVU1S79D5": "direct"
+  },
+  "task_sessions": {
+    "todo:1": {
+      "task_key": "todo:1",
+      "task_label": "1",
+      "task_title": "Define ingestion API contracts and request/response schemas",
+      "session_id": "ses_213fb3552ffeWTu8mL0sHzzHhC",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-05-03T04:36:51.327Z"
+    }
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "tables_verified": [
+    "channel_listings",
+    "channel_listing_aliases",
+    "listing_room_mappings"
+  ],
+  "table_row_counts": {
+    "channel_listings": 3,
+    "channel_listing_aliases": 10,
+    "listing_room_mappings": 4
+  },
+  "simple_listing": {
+    "provider_listing_id": "721334527290853201",
+    "title": "Cochinchine Delxue flat at the city #Central",
+    "internal_name": "CC 402",
+    "status": "listed",
+    "public_url": "https://www.airbnb.co.uk/rooms/721334527290853201",
+    "host_editor_url": "https://www.airbnb.co.uk/hosting/listings/editor/721334527290853201/details",
+    "extracted_at": "2026-04-08T02:53:46.25+00:00",
+    "last_synced_at": "2026-04-08T02:53:46.25+00:00",
+    "source_metadata": {
+      "source_file": "Main.csv",
+      "source_row": 14,
+      "inventory_shape": "simple"
+    }
+  },
+  "cc_alias_resolution": [
+    {
+      "alias_value": "CC - 402",
+      "channel_listing_id": "a3347d5e-aac9-4cfc-886a-a09772505bb0",
+      "provider_listing_id": "721334527290853201",
+      "title": "Cochinchine Delxue flat at the city #Central",
+      "internal_name": "CC 402"
+    },
+    {
+      "alias_value": "CC 402",
+      "channel_listing_id": "a3347d5e-aac9-4cfc-886a-a09772505bb0",
+      "provider_listing_id": "721334527290853201",
+      "title": "Cochinchine Delxue flat at the city #Central",
+      "internal_name": "CC 402"
+    }
+  ],
+  "cc_alias_distinct_listing_count": 1,
+  "unknown_alias_match_count": 0,
+  "composite_mapping": [
+    {
+      "channel_listing_id": "273c3fb5-c92a-45ea-b603-3076eed182e9",
+      "provider_listing_id": "1125771412150136916",
+      "title": "Aesthetical and comfy flat #D1 #CBD",
+      "internal_name": "LL - C&M2",
+      "composite_alias": "LL - Milk 2 & Coffee 2",
+      "property_slug": "latte-lounge",
+      "room_number": "101",
+      "room_name": "Latte Lounge Deluxe 101",
+      "mapping_role": "composite_component",
+      "sort_order": 1
+    },
+    {
+      "channel_listing_id": "273c3fb5-c92a-45ea-b603-3076eed182e9",
+      "provider_listing_id": "1125771412150136916",
+      "title": "Aesthetical and comfy flat #D1 #CBD",
+      "internal_name": "LL - C&M2",
+      "composite_alias": "LL - Milk 2 & Coffee 2",
+      "property_slug": "latte-lounge",
+      "room_number": "102",
+      "room_name": "Latte Lounge Suite 102",
+      "mapping_role": "composite_component",
+      "sort_order": 2
+    }
+  ],
+  "composite_room_count": 2,
+  "active_room_mapping_counts": [
+    {
+      "provider_listing_id": "1125771412150136916",
+      "active_room_mappings": 2
+    },
+    {
+      "provider_listing_id": "721334527290853201",
+      "active_room_mappings": 1
+    },
+    {
+      "provider_listing_id": "967132428321022763",
+      "active_room_mappings": 1
+    }
+  ]
+}

@@ -2,121 +2,98 @@
 ## Skill Loading
 
 Before substantial work:
-- Skill check: run `npx @tanstack/intent@latest list`, or use skills already listed in context.
-- Skill guidance: if one local skill clearly matches the task, run `npx @tanstack/intent@latest load <package>#<skill>` and follow the returned `SKILL.md`.
-- Monorepos: when working across packages, run the skill check from the workspace root and prefer the local skill for the package being changed.
-- Multiple matches: prefer the most specific local skill for the package or concern you are changing; load additional skills only when the task spans multiple packages or concerns.
+- Run `npx @tanstack/intent@latest list`, or use skills already listed in context.
+- If one local skill clearly matches, run `npx @tanstack/intent@latest load <package>#<skill>` and follow returned `SKILL.md`.
+- In monorepo-style work, run skill check from workspace root and prefer package-specific local skill.
 <!-- intent-skills:end -->
 
-# M_Management Track B Agent Guide
+# PROJECT KNOWLEDGE BASE
 
-## OpenCode Behavioral Overlay
+**Generated:** 2026-05-25
+**Commit:** b101bd6
+**Branch:** main
 
-Apply these Karpathy-style rules before touching code or docs. They are adapted from the public `forrestchang/andrej-karpathy-skills` repository, but tailored for this OpenCode repo instead of Claude Code or Cursor installation flows.
+## OVERVIEW
+Hospitality operations dashboard for 8 Vietnamese properties. Track B runtime: React 19 + TypeScript + Vite 7 frontend, TanStack Query/Router, Tailwind CSS v4/shadcn UI, Express + Prisma backend, Azure PostgreSQL.
 
-### 1. Think Before Coding
-- State assumptions explicitly when the request can mean more than one thing.
-- Do not silently choose between materially different interpretations.
-- If a simpler implementation exists, say so before building the heavier one.
-- If confusion remains after exploration, name it clearly instead of guessing.
+## STRUCTURE
+```text
+Just_Management/
+├── src/                       # Frontend app, router, hooks, repository seam, UI
+├── backend/                   # Express API, Prisma schema/migrations, ingestion
+├── backend/prisma/            # Canonical Track B Azure PostgreSQL schema history
+├── backend/src/ingest/        # Spreadsheet/provider ingest pipeline
+├── supabase/migrations/       # Track A schema-intent reference only
+├── docs/analysis/             # Architecture/performance notes; verify against code
+├── plans/                     # Product and implementation plans
+├── .omo/, .sisyphus/          # Agent state, evidence, plans; not runtime source
+└── database_design/           # Source-data mapping and listing classification artifacts
+```
 
-### 2. Simplicity First
-- Implement exactly what was requested and nothing speculative.
-- Do not add abstractions, configurability, or extension points without a concrete need in this repo.
-- Prefer the smallest diff that satisfies the request.
-- If a solution feels larger than the problem, reduce it.
+## REAL ENTRY POINTS
+- `src/main.tsx` mounts React, QueryClient, theme provider, and `RouterProvider`.
+- `src/router.tsx` defines TanStack Router shell, sidebar layout, and lazy page routes.
+- `src/components/dashboard/dashboard-page.tsx` assembles main dashboard panels.
+- `src/hooks/use-dashboard-data.ts` is dashboard data contract; it calls `createRestRepositories()`.
+- `src/hooks/use-page-data.ts` supplies reservations, guests, rooms, and maintenance pages.
+- `src/lib/repositories/index.ts` exports Track B REST repositories.
+- `backend/src/index.ts` is Express API entry point.
+- `backend/src/ingest/routes.ts` registers `/api/ingest/*` routes.
+- `backend/prisma/schema.prisma` is canonical Track B schema source.
 
-### 3. Surgical Changes
-- Touch only files that are directly relevant to the task.
-- Do not “clean up” adjacent code, comments, or formatting unless your change requires it.
-- Match existing repo patterns even if you would design them differently from scratch.
-- Remove only the dead code your own change creates; mention pre-existing dead code instead of deleting it.
-
-### 4. Goal-Driven Execution
-- Convert vague work into explicit pass/fail outcomes before implementation.
-- For multi-step work, state a short plan with verification after each step.
-- Do not claim success without evidence from real checks in this repo.
-- Manual QA is required for behavior changes; type checks alone are not enough.
-
-## Snapshot
-- Hospitality operations dashboard for 8 Vietnamese properties.
-- This worktree is **Track B**: a shared React 19 + TypeScript + Vite 7 frontend backed by a custom Node/Express + Prisma backend for Azure PostgreSQL.
-- Frontend UI stack: Tailwind CSS v4, shadcn/ui, Lucide, Recharts, TanStack Query, TanStack Router.
-- Frontend data access is **repository-driven** through `src/lib/repositories/`; `src/hooks/use-dashboard-data.ts` currently calls `createRestRepositories()`.
-- Booking source of truth is `reservations`; `guests` is a legacy compatibility model for guest-labeled UI surfaces.
-- `supabase/migrations/` in this repo is **reference-only schema intent**. Azure deployment uses `backend/prisma/schema.prisma` and generated Prisma migrations.
-- Treat older docs that describe the pre-repository or Supabase-first Track A runtime as historical context unless they agree with the current Track B README, repository code, and backend files.
-
-## Real Entry Points
-- `src/main.tsx` mounts the frontend app.
-- `src/App.tsx` builds the shell around the dashboard experience.
-- `src/components/dashboard/dashboard-page.tsx` is the main dashboard assembly point.
-- `src/hooks/use-dashboard-data.ts` is the frontend dashboard contract; it loads repository data and maps reservations into the legacy guest-shaped view model.
-- `src/lib/repositories/index.ts` exports the Track B REST repository factory.
-- `src/lib/repositories/types.ts` defines the branch-neutral repository interfaces the frontend depends on.
-- `backend/src/index.ts` is the Express API entry point.
-- `backend/src/ingest/` contains ingestion parsing, normalization, services, and routes.
-- `backend/prisma/schema.prisma` is the canonical Track B schema source.
-- `backend/prisma/migrations/` is the deployable migration history for Azure PostgreSQL.
-
-## Structure
-- `src/components/dashboard/` — app-specific dashboard panels and composition.
-- `src/components/ui/` — reusable primitives; prefer composition over editing them directly.
-- `src/hooks/` — shared hooks; dashboard derivations belong here, not in presentation components.
-- `src/lib/repositories/` — frontend repository contracts and REST implementation.
-- `src/types/` — shared frontend models and unions.
-- `backend/src/` — Express API handlers and ingestion logic.
-- `backend/src/ingest/` — spreadsheet ingestion contracts, parser, normalizer, route registration, and provider-sync services.
-- `backend/prisma/` — canonical Track B data model and migrations.
-- `backend/scripts/` — backend verification helpers such as migration and ingestion checks.
-- `supabase/migrations/` — Track A schema-intent reference only; do not deploy these to Azure.
-- `plans/` and `.sisyphus/plans/` — product and implementation planning artifacts.
-
-## Current Data Model
-- Retained operational core: `properties`, `rooms`, `guests`, `guest_requests`, `maintenance_issues`.
-- Reservation core: `reservations`, `reservation_room_allocations`.
-- Provider edge: `channels`, `external_accounts`, `channel_listings`, `channel_listing_aliases`, `listing_room_mappings`, `reservation_external_refs`.
-- Import and reconciliation: `legacy_guest_reservation_backfills`, `provider_reservation_import_rows`, plus related import metadata and sync fields in Track B.
-- Deferred beyond current scope: full PMS lifecycle (`stays`, folios/charges, room moves), owner/accounting ledgers, and production-grade auth/RBAC.
-
-## Where To Edit
-| Change | Primary location | Notes |
+## WHERE TO LOOK
+| Task | Location | Notes |
 |---|---|---|
-| Dashboard layout or panel ordering | `src/components/dashboard/dashboard-page.tsx` | Keep orchestration here. |
-| New panel or panel-specific rendering | `src/components/dashboard/` | Prefer props-driven panels. |
-| New dashboard metric or derived value | `src/hooks/use-dashboard-data.ts` | Keep calculations centralized and preserve existing KPI semantics. |
-| Frontend repository contract | `src/lib/repositories/types.ts` | Update this before changing frontend repository consumers. |
-| Track B frontend data access | `src/lib/repositories/rest-repositories.ts` | Frontend network access belongs here, not in hooks or panels. |
-| Frontend schema or field contract | `src/types/database.ts` | Update before consuming new fields in hooks/UI. |
-| Backend API contract | `backend/src/index.ts` | Keep response shapes compatible with repository interfaces. |
-| Ingestion flow | `backend/src/ingest/` | Keep parser, normalizer, routes, and provider services focused by responsibility. |
-| Track B canonical schema | `backend/prisma/schema.prisma` | Update schema first, then generate or adjust Prisma migrations. |
-| Track B deployable migrations | `backend/prisma/migrations/` | These are the Azure-safe migrations. |
-| Track A schema reference | `supabase/migrations/` | Update only when intentionally mirroring schema intent; these files are not deploy targets. |
-| Theme tokens, fonts, global styles | `src/index.css` | Use the existing Harbor/Brass token system. |
+| Dashboard layout/panel order | `src/components/dashboard/dashboard-page.tsx` | Keep orchestration here. |
+| Dashboard metric or derived value | `src/hooks/use-dashboard-data.ts` | Preserve existing KPI semantics. |
+| Page-level data loading | `src/hooks/use-page-data.ts` | Shared page hooks use repositories. |
+| Frontend repository contract | `src/lib/repositories/types.ts` | Change contract before consumers. |
+| REST data access | `src/lib/repositories/rest-repositories.ts` | Network construction belongs here. |
+| Frontend model fields | `src/types/database.ts` | Keep aligned with backend DTOs. |
+| Router/sidebar shell | `src/router.tsx` | Lazy routes live here. |
+| Backend API contract | `backend/src/index.ts` | Response shapes must satisfy repository types. |
+| Ingestion flow | `backend/src/ingest/` | Parser/normalizer/routes/services split. |
+| Prisma schema | `backend/prisma/schema.prisma` | Edit before migrations. |
+| Azure-safe migrations | `backend/prisma/migrations/` | Deployable Track B history. |
+| Theme tokens/global styles | `src/index.css` | Harbor/Brass + typography tokens. |
 
-## Conventions
+## CODE MAP
+| Symbol | Type | Location | Role |
+|---|---|---|---|
+| `router` | TanStack router | `src/router.tsx` | Root shell and lazy route tree. |
+| `DashboardPage` | Component | `src/components/dashboard/dashboard-page.tsx` | Dashboard composition layer. |
+| `useDashboardData` | Hook | `src/hooks/use-dashboard-data.ts` | Dashboard summary contract. |
+| `toDashboardGuest` | Mapper | `src/hooks/use-dashboard-data.ts` | Reservation → legacy guest view model. |
+| `createRestRepositories` | Factory | `src/lib/repositories/rest-repositories.ts` | Frontend REST adapter. |
+| `RepositoryFactory` | Interface | `src/lib/repositories/types.ts` | Frontend data contract. |
+| `registerIngestRoutes` | Function | `backend/src/ingest/routes.ts` | Ingest route registration. |
+| `schema.prisma` | Prisma schema | `backend/prisma/schema.prisma` | Azure PostgreSQL model truth. |
+
+## CONVENTIONS
+- Track B-only current code path: frontend calls REST repositories; no Supabase runtime adapter exists in `src/lib/repositories/`.
+- Booking source of truth is `reservations`; `guests` is legacy compatibility for guest-labeled UI.
+- Frontend business/data logic belongs in hooks or repositories, not presentation panels or UI primitives.
+- Backend owns Prisma access; frontend owns repository interfaces and REST calls only.
+- Provider-specific identifiers, raw statuses, and raw payloads stay at provider edge tables/metadata.
+- Migration style is additive during transition; do not drop compatibility tables without an approved plan.
+- Visual system: Harbor primary, Harbor Deep secondary, Brass accents, `Newsreader` headings, `Plus Jakarta Sans` body.
 - Use `@/*` imports for internal frontend paths.
-- Keep dashboard business logic in hooks or repositories, not in UI primitives.
-- Treat `src/components/ui` as generic building blocks with stable APIs.
-- Match the existing visual system: Harbor primary, Harbor Deep secondary, Brass accents, `Newsreader` headings, `Plus Jakarta Sans` body text.
-- Keep frontend typing explicit; shared contracts live in `src/types/database.ts` and `src/lib/repositories/types.ts`.
-- Preserve the repository boundary: frontend code should consume repositories, and backend code should own Prisma access.
-- Preserve additive migration style. Do not drop legacy compatibility structures during transitional work unless a plan explicitly authorizes it.
-- Keep provider-specific identifiers and raw statuses at the provider edge; do not leak them into core operational tables without intent.
-- For backend TypeScript, prefer typed request parsing and explicit validation over loose or implicit coercion.
 
-## Anti-Patterns
-- Do not revive a Supabase-first runtime in this worktree.
-- Do not put fetch calls, REST endpoint construction, or Prisma assumptions directly into dashboard panels.
-- Do not put dashboard semantics, booking logic, or backend data access into `src/components/ui` primitives.
-- Do not treat `guests` as the authoritative booking table; `reservations` is authoritative.
-- Do not apply `supabase/migrations/*.sql` directly to Azure PostgreSQL.
-- Do not copy Track A auth-adapter guidance into this repo unless those files actually exist here.
-- Do not hardcode secrets, API keys, database URLs, or allowed origins.
-- Do not trust older docs when they conflict with the current Track B README, repository code, Prisma schema, or backend package scripts.
+## ANTI-PATTERNS
+- Do not revive Supabase-first runtime or add a Supabase repository adapter without explicit architecture decision.
+- Do not put fetch calls, endpoint construction, or Prisma assumptions in dashboard panels.
+- Do not put dashboard semantics or hospitality-specific logic into `src/components/ui` primitives.
+- Do not treat `guests` as authoritative booking data.
+- Do not apply `supabase/migrations/*.sql` to Azure PostgreSQL.
+- Do not trust README or older docs when they conflict with current code, Prisma schema, or package scripts.
+- Do not hardcode secrets, database URLs, API keys, passcodes, or production origins.
 
-## Commands
+## UNIQUE STYLES
+- Dashboard pages preserve main-content plus `BookingsPanel` split; `BookingsPanel` appears at `xl` width.
+- REST list endpoints may use cache/count behavior intentionally; avoid changing semantics while editing docs or contracts.
+- Ingestion uses explicit `dryRun` contract and dead-letter style summaries.
+
+## COMMANDS
 Frontend:
 ```bash
 npm run dev
@@ -125,7 +102,7 @@ npm run build
 npm run preview
 ```
 
-Combined frontend + backend dev:
+Combined:
 ```bash
 npm run dev:all
 npm run build:all
@@ -144,24 +121,23 @@ npm run verify-ingestion
 npm run verify:all
 ```
 
-## Verification
-- There is no full automated test suite or CI pipeline in this repo.
-- Standard frontend verification is `npm run typecheck` and `npm run build` from repo root.
-- Standard backend verification is `cd backend && npm run build`.
-- For Prisma/schema work, also run `cd backend && npm run db:generate` and `cd backend && npm run db:validate`.
-- For migration safety work, run `cd backend && npm run db:verify:migration`.
-- For ingestion changes, run `cd backend && npm run verify-ingestion` or `npm run verify:all`.
-- For user-visible behavior changes, run the affected app or endpoint and report actual observed output; do not stop at type checks.
+## VERIFICATION
+- Frontend standard: `npm run typecheck`, then `npm run build`.
+- Backend standard: `cd backend && npm run build`.
+- Prisma/schema work: also run `cd backend && npm run db:generate`, `npm run db:validate`, `npm run db:verify:migration`.
+- Ingestion work: run `cd backend && npm run verify-ingestion` or `npm run verify:all`.
+- User-visible behavior: run app or endpoint and report observed output.
 
-## Reference Docs
-- `README.md` — current Track B runtime overview.
-- `src/components/dashboard/AGENTS.md` — dashboard composition and data-placement rules.
-- `src/components/ui/AGENTS.md` — primitive edit guardrails.
-- `supabase/migrations/AGENTS.md` — reference-only SQL guidance for Track B.
-- `backend/prisma/schema.prisma` — canonical Track B schema.
-- `backend/src/index.ts` — current API surface.
-
-## Local Overrides
+## LOCAL OVERRIDES
+- `backend/AGENTS.md` — backend subsystem rules.
+- `backend/prisma/AGENTS.md` — canonical schema and migration rules.
+- `backend/src/ingest/AGENTS.md` — ingestion pipeline rules.
 - `src/components/dashboard/AGENTS.md` — panel composition and dashboard data-contract rules.
+- `src/hooks/AGENTS.md` — frontend data hook and compatibility mapping rules.
 - `src/components/ui/AGENTS.md` — reusable primitive guardrails.
+- `src/lib/repositories/AGENTS.md` — frontend repository contract rules.
 - `supabase/migrations/AGENTS.md` — Track B SQL reference-only rules.
+
+## NOTES
+- README still describes old dual Track A/B switching; current code path is Track B REST-only.
+- `.omo/`, `.sisyphus/`, `.playwright-mcp/`, `.idea/`, and `.agent/` are tooling/state unless task explicitly targets agent config.

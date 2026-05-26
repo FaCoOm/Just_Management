@@ -1,0 +1,13 @@
+{
+  "id": "T-4fef86cb-c91d-4959-8a59-c0c6d9d4df1f",
+  "subject": "Generate AGENTS files",
+  "description": "Update root AGENTS.md and create or update selected child AGENTS.md files.",
+  "status": "completed",
+  "activeForm": "Generating AGENTS files",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "phase": "generate"
+  },
+  "threadID": "ses_1a2f043b3ffeFNTtfSRbvyk7Pc"
+}

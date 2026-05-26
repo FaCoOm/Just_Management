@@ -1,0 +1,15 @@
+{
+  "id": "T-c2c65676-e904-4678-aa4d-a2e2851c72b6",
+  "subject": "Identify performance implementation scope",
+  "description": "Locate changed performance-related paths and commands to verify without editing.",
+  "status": "completed",
+  "activeForm": "Identifying performance implementation scope",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "teamRunId": "f95779a1-33bb-40ac-a2a0-5a9f40b1813e",
+    "member": "qa-verifier",
+    "scopeFindings": "Working tree changes only docs/analysis files + .omo untracked. Verification still run full stack checks per lead request."
+  },
+  "threadID": "ses_1b1e53ce3ffeMnTgINUTFiL9R0"
+}

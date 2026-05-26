@@ -1,8 +1,9 @@
-import { Search, Bell, CalendarDays, ChevronDown } from "lucide-react";
+import { Search, Bell, CalendarDays, ChevronDown, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { formatVietnamDate, formatVietnamRangeLabel } from "@/lib/vietnam-time";
+import { useRunPipeline } from "@/hooks/use-run-pipeline";
 
 interface DashboardHeaderProps {
   today: string;
@@ -10,6 +11,7 @@ interface DashboardHeaderProps {
 
 export function DashboardHeader({ today }: DashboardHeaderProps) {
   const rangeLabel = formatVietnamRangeLabel(today, 7);
+  const runPipeline = useRunPipeline();
 
   return (
     <header className="flex h-14 items-center gap-3 border-b border-border bg-card px-4">
@@ -31,6 +33,17 @@ export function DashboardHeader({ today }: DashboardHeaderProps) {
       </div>
 
       <div className="flex items-center gap-1">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="hidden h-8 gap-1.5 text-xs sm:flex"
+          disabled={runPipeline.isPending}
+          onClick={() => runPipeline.mutate()}
+        >
+          <RefreshCw className={runPipeline.isPending ? "h-3.5 w-3.5 animate-spin" : "h-3.5 w-3.5"} />
+          {runPipeline.isPending ? "Syncing" : "Sync Now"}
+        </Button>
         <Button variant="ghost" size="icon" className="h-8 w-8">
           <Search className="h-4 w-4" />
         </Button>

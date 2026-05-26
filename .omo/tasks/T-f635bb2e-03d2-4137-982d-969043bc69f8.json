@@ -1,0 +1,13 @@
+{
+  "id": "T-f635bb2e-03d2-4137-982d-969043bc69f8",
+  "subject": "Discover project structure",
+  "description": "Fire explore agents, gather structural stats, read existing AGENTS.md files, inspect symbols and patterns.",
+  "status": "completed",
+  "activeForm": "Discovering project structure",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "phase": "discovery"
+  },
+  "threadID": "ses_1a2f043b3ffeFNTtfSRbvyk7Pc"
+}

@@ -7,6 +7,7 @@ import { RouterProvider } from "@tanstack/react-router"
 
 import "./index.css"
 import { ThemeProvider } from "@/components/theme-provider.tsx"
+import { Toaster } from "@/components/ui/sonner"
 import { createAppQueryClient } from "@/lib/query-client"
 import { router } from "./router"
 
@@ -38,6 +39,7 @@ createRoot(document.getElementById("root")!).render(
       <ThemeProvider>
         <ErrorBoundary>
           <RouterProvider router={router} />
+          <Toaster />
           {import.meta.env.DEV && (
             <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />
           )}

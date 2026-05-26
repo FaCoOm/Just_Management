@@ -1,0 +1,10 @@
+{
+  "id": "T-74edd4d0-023d-472d-af68-6c379cc35101",
+  "subject": "Implement POST /api/reservations",
+  "description": "Add route in backend/src/index.ts with validation, reference checks, prisma create, response shape parity.",
+  "status": "pending",
+  "activeForm": "Implementing POST /api/reservations route",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_19c387ed3ffecrOH4n7jKFvU7U"
+}

@@ -1,0 +1,12 @@
+{
+  "id": "T-6d12ca1d-b1c1-4ee6-b808-d164956ce53e",
+  "subject": "Clarify approval gate",
+  "description": "Ask one key product question after exploration, then present approaches and design for approval before any implementation.",
+  "status": "completed",
+  "activeForm": "Clarifying approval gate",
+  "blocks": [],
+  "blockedBy": [
+    "T-dd8a717c-ff25-43df-84c2-a1dbc0fff7ba"
+  ],
+  "threadID": "ses_1a2b624daffeM7HLtxvCDBXBLM"
+}

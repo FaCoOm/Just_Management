@@ -1,0 +1,12 @@
+{
+  "id": "T-910da3a2-1a93-4d27-9974-eaefb98417d4",
+  "subject": "Inspect implementation diff",
+  "description": "Inspect git status/diff for relevant changed files without reverting unrelated changes.",
+  "status": "pending",
+  "activeForm": "inspecting implementation diff",
+  "blocks": [],
+  "blockedBy": [
+    "T-fed8f05d-780a-4266-8ffd-a3e222122ab2"
+  ],
+  "threadID": "ses_1a04e88d1ffexJEDoQFYHTP6bB"
+}

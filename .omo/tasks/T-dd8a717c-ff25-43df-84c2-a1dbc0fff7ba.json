@@ -1,0 +1,12 @@
+{
+  "id": "T-dd8a717c-ff25-43df-84c2-a1dbc0fff7ba",
+  "subject": "Team-mode planning synthesis",
+  "description": "Use team members to produce user stories, database/schema plan, ingestion workflow plan, and Google access findings.",
+  "status": "completed",
+  "activeForm": "Coordinating team-mode planning",
+  "blocks": [],
+  "blockedBy": [
+    "T-6dff467b-451e-4bdb-870e-334522d8abc7"
+  ],
+  "threadID": "ses_1a2b624daffeM7HLtxvCDBXBLM"
+}

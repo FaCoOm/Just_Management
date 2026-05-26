@@ -1,0 +1,10 @@
+{
+  "id": "T-840d8ca5-48fc-4e83-9548-b295707fab1a",
+  "subject": "Inspect Prisma schema and migration pattern",
+  "description": "Read backend/prisma/schema.prisma and backend/prisma/migrations/20260502000000_init_track_b/migration.sql for append point, SQL style, and updated_at trigger pattern.",
+  "status": "in_progress",
+  "activeForm": "Inspecting Prisma append point and migration trigger style",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1a0956a4cffey4Uwsyqq3H9H55"
+}

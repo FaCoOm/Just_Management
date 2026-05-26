@@ -1,0 +1,10 @@
+{
+  "id": "T-f385d843-0678-4022-935b-829658638fcf",
+  "subject": "Write reservation sync overview doc",
+  "description": "Document current reservations read path, ingest sync path, dryRun behavior, manual creation limitation, operator workflow, future requirements, and verification commands in docs/analysis/reservation-sync-overview.md.",
+  "status": "completed",
+  "activeForm": "writing reservation sync overview doc",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_19d140d65ffe0AoOp6PFTlfTxZ"
+}

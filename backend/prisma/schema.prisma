@@ -152,6 +152,7 @@ model channel_listings {
   id                  String    @id @default(uuid()) @db.Uuid
   external_account_id String    @db.Uuid
   provider_listing_id String
+  owner               String    @default("mujo")
   title               String
   internal_name       String?
   listing_type        String    @default("home")
@@ -173,7 +174,9 @@ model channel_listings {
   reservation_external_refs        reservation_external_refs[]
 
   @@unique([external_account_id, provider_listing_id])
+  @@unique([provider_listing_id])
   @@unique([id, external_account_id])
+  @@index([owner])
 }
 
 model channel_listing_aliases {
@@ -386,4 +389,75 @@ model sync_dead_letters {
 
   @@index([sync_run_id])
   @@index([source_file, source_row_number])
+}
+
+model integration_connections {
+  id             String    @id @default(uuid()) @db.Uuid
+  user_id        String
+  identity_type  String    @default("user")
+  platform       String
+  connection_key String    @unique
+  display_name   String?
+  environment    String    @default("live")
+  status         String    @default("active")
+  last_used_at   DateTime? @db.Timestamptz(6)
+  last_error     String?
+  metadata       Json      @default("{}")
+  created_at     DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at     DateTime  @default(now()) @db.Timestamptz(6)
+
+  @@index([user_id, platform])
+  @@index([status])
+}
+
+model watched_files {
+  id                String    @id @default(uuid()) @db.Uuid
+  watch_dir         String
+  relative_path     String
+  size_bytes        BigInt
+  mtime             DateTime  @db.Timestamptz(6)
+  content_sha256    String
+  last_seen_at      DateTime  @default(now()) @db.Timestamptz(6)
+  last_processed_at DateTime? @db.Timestamptz(6)
+  last_sync_run_id  String?   @db.Uuid
+  status            String    @default("seen")
+  failure_reason    String?
+
+  @@unique([watch_dir, relative_path, content_sha256])
+  @@index([status])
+}
+
+model email_import_messages {
+  id                  String    @id @default(uuid()) @db.Uuid
+  connection_key      String
+  provider            String    @default("gmail")
+  provider_message_id String
+  thread_id           String?
+  internal_date       DateTime? @db.Timestamptz(6)
+  subject             String?
+  from_address        String?
+  attachment_filename String?
+  attachment_size     BigInt?
+  attachment_sha256   String?
+  status              String    @default("seen")
+  last_sync_run_id    String?   @db.Uuid
+  failure_reason      String?
+  created_at          DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime  @default(now()) @db.Timestamptz(6)
+
+  @@unique([connection_key, provider_message_id, attachment_sha256])
+  @@index([status])
+}
+
+model seed_batches {
+  id              String    @id @default(uuid()) @db.Uuid
+  source_dir      String
+  manifest_sha256 String
+  status          String    @default("started")
+  sync_run_id     String?   @db.Uuid
+  started_at      DateTime  @default(now()) @db.Timestamptz(6)
+  finished_at     DateTime? @db.Timestamptz(6)
+  notes           String?
+
+  @@index([source_dir, status])
 }

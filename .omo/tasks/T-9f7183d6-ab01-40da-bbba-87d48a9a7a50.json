@@ -1,0 +1,10 @@
+{
+  "id": "T-9f7183d6-ab01-40da-bbba-87d48a9a7a50",
+  "subject": "Run verification commands",
+  "description": "Run backend build and ingestion verification; collect durations and outputs.",
+  "status": "pending",
+  "activeForm": "Running backend verification commands",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_19c387ed3ffecrOH4n7jKFvU7U"
+}

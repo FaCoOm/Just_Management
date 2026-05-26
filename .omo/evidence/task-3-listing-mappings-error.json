@@ -1,0 +1,8 @@
+{
+  "duplicate_mapping_insert": {
+    "status": "error",
+    "constraint": "listing_room_mappings_unique_active_pair",
+    "message": "Failed to run sql query: ERROR:  23505: duplicate key value violates unique constraint \"listing_room_mappings_unique_active_pair\"",
+    "detail": "Key (channel_listing_id, room_id)=(a3347d5e-aac9-4cfc-886a-a09772505bb0, df3c986e-0822-4209-b519-fe02b96256f7) already exists."
+  }
+}

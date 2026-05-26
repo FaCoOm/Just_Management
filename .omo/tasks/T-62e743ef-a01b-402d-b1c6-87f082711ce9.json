@@ -1,0 +1,12 @@
+{
+  "id": "T-62e743ef-a01b-402d-b1c6-87f082711ce9",
+  "subject": "Verify Prisma connector migration",
+  "description": "Run db:generate, db:validate, db:verify:migration, and backend build; check diagnostics for changed files.",
+  "status": "pending",
+  "activeForm": "Verifying Prisma connector migration",
+  "blocks": [],
+  "blockedBy": [
+    "T-a426fc9f-1312-48f1-af59-628d289aa097"
+  ],
+  "threadID": "ses_1a0956a4cffey4Uwsyqq3H9H55"
+}

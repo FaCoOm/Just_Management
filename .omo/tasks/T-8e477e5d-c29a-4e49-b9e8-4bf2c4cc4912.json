@@ -1,0 +1,10 @@
+{
+  "id": "T-8e477e5d-c29a-4e49-b9e8-4bf2c4cc4912",
+  "subject": "Verify pipeline implementation",
+  "description": "Run backend/frontend build and ingestion verification commands fresh from current workspace.",
+  "status": "in_progress",
+  "activeForm": "running fresh verification commands",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1a04e88d1ffexJEDoQFYHTP6bB"
+}

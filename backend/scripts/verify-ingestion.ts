@@ -180,6 +180,39 @@ async function main() {
       throw new Error(`Google Sheets failure-path verification should return structured errors: ${JSON.stringify(sheetJson)}`);
     }
 
+    // 8. Pipeline scaffold status should be available without exposing secrets
+    console.log(`\n--- Running Test: Pipeline Status ---`);
+    const pipelineStatusRes = await fetch(`${API_URL}/pipeline/status`);
+    const pipelineStatusJson = await pipelineStatusRes.json();
+    console.log("Pipeline Status:", pipelineStatusRes.status);
+    console.log("Response:", JSON.stringify(pipelineStatusJson, null, 2));
+    if (pipelineStatusRes.status !== 200) {
+      throw new Error(`Pipeline status expected 200, got ${pipelineStatusRes.status}`);
+    }
+    if (!Array.isArray(pipelineStatusJson.connectors) || pipelineStatusJson.phase !== "scaffolded") {
+      throw new Error(`Pipeline status shape unexpected: ${JSON.stringify(pipelineStatusJson)}`);
+    }
+    if (JSON.stringify(pipelineStatusJson).includes("private_key")) {
+      throw new Error("Pipeline status leaked private credential material.");
+    }
+
+    // 9. Pipeline built-in run now executes dry-run import preview
+    console.log(`\n--- Running Test: Pipeline Built-In Dry Run ---`);
+    const pipelineRunRes = await fetch(`${API_URL}/pipeline/run`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ dryRun: true, mode: "built-in", targetKind: "listings" }),
+    });
+    const pipelineRunJson = await pipelineRunRes.json();
+    console.log("Pipeline Run Status:", pipelineRunRes.status);
+    console.log("Response:", JSON.stringify(pipelineRunJson, null, 2));
+    if (pipelineRunRes.status !== 200) {
+      throw new Error(`Pipeline built-in dry run expected 200, got ${pipelineRunRes.status}`);
+    }
+    if (pipelineRunJson.dryRun !== true || pipelineRunJson.processed <= 0 || !Array.isArray(pipelineRunJson.errors) || pipelineRunJson.errors.length !== 0) {
+      throw new Error(`Pipeline built-in dry run unexpected: ${JSON.stringify(pipelineRunJson)}`);
+    }
+
     const listingRows = await prisma.channel_listings.findMany({
       where: { title: { in: ["Test Listing 1", "Test Listing 2", "Test Listing 3"] } },
       orderBy: { title: "asc" },

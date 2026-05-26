@@ -1,0 +1,15 @@
+{
+  "id": "T-064e4c86-01fb-46ed-a97c-5d0df2f4aa3b",
+  "subject": "Implement Track B performance changes",
+  "description": "Apply minimal performance improvements: page-specific hooks, route code splitting, backend pagination/index-safe API improvements if confirmed by plan. QA: lsp diagnostics, typecheck/build, manual app/API use.",
+  "status": "completed",
+  "activeForm": "Implementing Track B performance changes",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "qa": "lsp diagnostics clean; npm run typecheck/build; backend build; manual API/browser verification"
+  },
+  "repoURL": "",
+  "parentID": "",
+  "threadID": "ses_1bb2a3e20ffeQqV9PT5IdiLy5I"
+}

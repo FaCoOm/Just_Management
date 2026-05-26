@@ -1,0 +1,12 @@
+{
+  "id": "T-a426fc9f-1312-48f1-af59-628d289aa097",
+  "subject": "Add connector models and migration",
+  "description": "Append four additive Prisma models to backend/prisma/schema.prisma and create backend/prisma/migrations/<timestamp>_pipeline_connectors/migration.sql with tables, indexes, unique constraints, and updated_at triggers.",
+  "status": "pending",
+  "activeForm": "Adding connector Prisma models and migration",
+  "blocks": [],
+  "blockedBy": [
+    "T-840d8ca5-48fc-4e83-9548-b295707fab1a"
+  ],
+  "threadID": "ses_1a0956a4cffey4Uwsyqq3H9H55"
+}

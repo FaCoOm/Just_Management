@@ -1,0 +1,10 @@
+{
+  "id": "T-7a40760d-85f2-40a5-b27e-9ed08e3c3100",
+  "subject": "Validate Azure PostgreSQL connection (m_management)",
+  "description": "Stage backend/.env, run prisma generate + lightweight connection probe (SELECT 1, list tables) against webdbmujo Azure host.",
+  "status": "completed",
+  "activeForm": "Validating Azure PostgreSQL connection",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1bbfc8d8bffe6dol2uBcV1IM4b"
+}

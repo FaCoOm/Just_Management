@@ -1,0 +1,10 @@
+{
+  "id": "T-517219a6-4e4d-456a-bd6d-d2c7b2bed699",
+  "subject": "Build listing classifier with Mujo > Ruby > Manuka backward tracing",
+  "description": "TS script that loads the three CSVs, computes ownership tier per listing, emits JSON + console summary, and validates the strict superset assumption.",
+  "status": "completed",
+  "activeForm": "Building listing classifier",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1bbfc8d8bffe6dol2uBcV1IM4b"
+}

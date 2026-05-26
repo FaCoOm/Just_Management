@@ -1,0 +1,13 @@
+{
+  "id": "T-8ef97f45-64fd-4a8b-8e00-d8a8a9c571cd",
+  "subject": "Review generated guidance",
+  "description": "Deduplicate parent and child content, trim generic advice, validate generated files.",
+  "status": "completed",
+  "activeForm": "Reviewing generated guidance",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "phase": "review"
+  },
+  "threadID": "ses_1a2f043b3ffeFNTtfSRbvyk7Pc"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "T-bdb86fd1-58a0-4b8d-a2aa-5a65ce427d1d",
+  "subject": "Analyze m_management schema seed plan",
+  "description": "Inspect database_design CSV/schema inputs and current Prisma schema. Identify complete default m_management schema/seeding plan and gaps. No code edits.",
+  "status": "completed",
+  "activeForm": "Analyzing m_management schema seed plan",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "teamRunId": "1cf5fa11-dbfc-4bda-9b9e-025c8c534fef",
+    "member": "schema-analyst"
+  },
+  "threadID": "ses_1a2b45afaffehIa07eoh6yzR1j"
+}

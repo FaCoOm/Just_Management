@@ -1,0 +1,12 @@
+{
+  "id": "T-ee1f5899-d94c-415b-bbe1-abd1f7428d2e",
+  "subject": "Report architecture to team lead",
+  "description": "Send concise architecture memo to lead, mark any team task if present, and provide completion notice. No code edits.",
+  "status": "pending",
+  "activeForm": "reporting architecture to team lead",
+  "blocks": [],
+  "blockedBy": [
+    "T-1152ff14-9f9b-45d8-b03c-163886f30a05"
+  ],
+  "threadID": "ses_1a2b459e5ffezmBK2aQJi0C4Pz"
+}

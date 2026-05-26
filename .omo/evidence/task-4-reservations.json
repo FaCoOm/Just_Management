@@ -1,0 +1,28 @@
+{
+  "tables_present": {
+    "reservations": true,
+    "reservation_external_refs": true,
+    "reservation_room_allocations": true
+  },
+  "single_room_reservation": {
+    "property_slug": "cochinchine",
+    "room_number": "101",
+    "provider_listing_id": "721334527290853201",
+    "reservation_id": "00703037-7f76-43c4-91f9-286c6b333243",
+    "status": "checked_in",
+    "check_in_date": "2026-04-08",
+    "check_out_date": "2026-04-29",
+    "guest_name": "Ti Pham",
+    "confirmation_code": "HMX44ZA85B",
+    "raw_status": "Currently hosting",
+    "allocation_role": "primary",
+    "allocation_count": 1,
+    "external_ref_count": 1,
+    "primary_room_id_matches_allocation": true
+  },
+  "table_row_counts": {
+    "reservations": 2,
+    "reservation_external_refs": 2,
+    "reservation_room_allocations": 1
+  }
+}

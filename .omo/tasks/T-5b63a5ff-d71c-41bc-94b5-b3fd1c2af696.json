@@ -1,0 +1,12 @@
+{
+  "id": "T-5b63a5ff-d71c-41bc-94b5-b3fd1c2af696",
+  "subject": "Produce minimal recommendations",
+  "description": "Return exact backend changes and verification commands without editing files.",
+  "status": "completed",
+  "activeForm": "Producing minimal recommendations",
+  "blocks": [],
+  "blockedBy": [
+    "T-1c348ad0-d04d-48ec-b248-f7a6ab35313e"
+  ],
+  "threadID": "ses_1bb19e381ffeJv2AfpirVjPc0t"
+}

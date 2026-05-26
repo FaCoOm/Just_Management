@@ -1,0 +1,10 @@
+{
+  "id": "T-e3b05581-e260-40cb-bba9-2a2705275542",
+  "subject": "Write database overview doc (postgres vs m_management, classifier model)",
+  "description": "Documentation explaining the two databases on the Azure server, why both exist, and how the classifier output maps to external_accounts / channel_listings / channel_listing_aliases.",
+  "status": "completed",
+  "activeForm": "Writing database overview documentation",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1bbfc8d8bffe6dol2uBcV1IM4b"
+}

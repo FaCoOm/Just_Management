@@ -1,0 +1,14 @@
+{
+  "id": "T-fac90bd2-18b5-4796-ab3d-04d44037439f",
+  "subject": "Inspect schema plan and migration patterns",
+  "description": "Read implementation plan sections 1.1-1.4, backend/prisma rules, existing schema tail, and init trigger pattern needed for additive connector models.",
+  "status": "pending",
+  "activeForm": "Inspecting schema plan and migration patterns",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "teamRunId": "306fad30-86a0-4033-b65b-48e7053367d3",
+    "member": "schema-additions"
+  },
+  "threadID": "ses_1a09b04c1ffeJYW6K2g0os0p4N"
+}

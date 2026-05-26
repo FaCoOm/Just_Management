@@ -1,0 +1,15 @@
+{
+  "id": "T-220f0df6-ecb2-43df-bfb8-b2147999aef1",
+  "subject": "Audit Google credential config evidence",
+  "description": "Locate repo/env references to Google service credentials and auth method without exposing secrets.",
+  "status": "completed",
+  "activeForm": "Auditing Google credential configuration evidence",
+  "blocks": [],
+  "blockedBy": [],
+  "owner": "credential-auditor",
+  "metadata": {
+    "teamRunId": "1cf5fa11-dbfc-4bda-9b9e-025c8c534fef",
+    "member": "credential-auditor"
+  },
+  "threadID": "ses_1a2b45af5ffeFkVphNA9FLz0to"
+}

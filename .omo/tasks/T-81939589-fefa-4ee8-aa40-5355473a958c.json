@@ -1,0 +1,13 @@
+{
+  "id": "T-81939589-fefa-4ee8-aa40-5355473a958c",
+  "subject": "Run performance profiling",
+  "description": "Profile current Track B webapp with build, API probes, browser/network checks, and produce evidence-backed markdown report. QA: commands and browser/API outputs recorded.",
+  "status": "completed",
+  "activeForm": "Performance profiling report completed",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "targetReport": "docs/analysis/PERFORMANCE_PROFILING_REPORT_2026-05-22.md"
+  },
+  "threadID": "ses_1b1efbbd9fferw6absp2qMVNmC"
+}

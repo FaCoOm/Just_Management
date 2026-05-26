@@ -1,0 +1,15 @@
+{
+  "id": "T-5e63e1dc-4f68-4497-83d0-15cd4e798edd",
+  "subject": "Probe API endpoints and capture request behavior",
+  "description": "Start backend, run HTTP probes for dashboard/repository endpoints, capture status/latency/request paths.",
+  "status": "completed",
+  "activeForm": "Probing API endpoints and capturing request behavior",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "teamRunId": "f95779a1-33bb-40ac-a2a0-5a9f40b1813e",
+    "member": "qa-verifier",
+    "probeSummary": "health/properties/reservations/stats endpoints probed on local backend dist build; invalid status handling verified 400; slow-request warning seen for /api/properties"
+  },
+  "threadID": "ses_1b1e53ce3ffeMnTgINUTFiL9R0"
+}

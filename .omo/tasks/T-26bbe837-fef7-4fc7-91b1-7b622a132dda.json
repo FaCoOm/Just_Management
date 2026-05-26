@@ -1,0 +1,12 @@
+{
+  "id": "T-26bbe837-fef7-4fc7-91b1-7b622a132dda",
+  "subject": "Verify pipeline work",
+  "description": "Run diagnostics/build/tests and summarize completion with deferred CSV/source sync noted.",
+  "status": "pending",
+  "activeForm": "Verifying pipeline work",
+  "blocks": [],
+  "blockedBy": [
+    "T-f5bc2bbc-eb28-40f4-a388-16759d9ea8df"
+  ],
+  "threadID": "ses_1a2b624daffeM7HLtxvCDBXBLM"
+}

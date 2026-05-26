@@ -1,20 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-  CardAction,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   ChartContainer,
@@ -24,14 +15,12 @@ import {
   ChartLegendContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-import { createRestRepositories } from "@/lib/repositories";
-import { dashboardKeys } from "@/lib/query-keys";
 import {
   addDaysToVietnamDate,
   formatVietnamDate,
 } from "@/lib/vietnam-time";
 import { cn } from "@/lib/utils";
-import type { OccupancySeriesPoint, Property } from "@/types/database";
+import type { OccupancySeriesPoint } from "@/types/database";
 import { ChevronLeft, ChevronRight, RotateCcw } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
@@ -41,21 +30,14 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 interface OccupancyChartProps {
-  properties: Property[];
+  data: OccupancySeriesPoint[];
   today: string;
 }
 
-export function OccupancyChart({ properties, today }: OccupancyChartProps) {
-  const repos = useMemo(() => createRestRepositories(), []);
-  const [propertyId, setPropertyId] = useState("all");
+export function OccupancyChart({ data, today }: OccupancyChartProps) {
   const [rangeDays, setRangeDays] = useState(7);
   const [windowStartDate, setWindowStartDate] = useState(today);
   const [selectedDate, setSelectedDate] = useState(today);
-
-  const windowEndDate = useMemo(
-    () => addDaysToVietnamDate(windowStartDate, rangeDays - 1),
-    [rangeDays, windowStartDate]
-  );
 
   useEffect(() => {
     setWindowStartDate(today);
@@ -71,16 +53,6 @@ export function OccupancyChart({ properties, today }: OccupancyChartProps) {
       setSelectedDate(windowStartDate);
     }
   }, [rangeDays, selectedDate, windowStartDate]);
-
-  const { data = [], isLoading } = useQuery<OccupancySeriesPoint[]>({
-    queryKey: dashboardKeys.occupancyStats(rangeDays, windowEndDate, propertyId),
-    queryFn: () =>
-      repos.stats.getOccupancy(
-        rangeDays,
-        windowEndDate,
-        propertyId === "all" ? undefined : propertyId
-      ),
-  });
 
   const pointsByDate = useMemo(
     () => new Map(data.map((point) => [point.date, point])),
@@ -133,21 +105,6 @@ export function OccupancyChart({ properties, today }: OccupancyChartProps) {
     <Card>
       <CardHeader>
         <CardTitle className="font-serif text-lg">Occupancy</CardTitle>
-        <CardAction>
-          <Select value={propertyId} onValueChange={setPropertyId}>
-            <SelectTrigger className="h-8 w-[100px] text-xs">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All</SelectItem>
-              {properties.map((property) => (
-                <SelectItem key={property.id} value={property.id}>
-                  {property.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </CardAction>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
@@ -274,11 +231,7 @@ export function OccupancyChart({ properties, today }: OccupancyChartProps) {
           </ScrollArea>
         </div>
 
-        {isLoading ? (
-          <div className="flex h-[260px] items-center justify-center text-sm text-muted-foreground">
-            Loading occupancy history...
-          </div>
-        ) : chartData.length === 0 ? (
+        {chartData.length === 0 ? (
           <div className="flex h-[260px] items-center justify-center text-sm text-muted-foreground">
             No occupancy data available
           </div>

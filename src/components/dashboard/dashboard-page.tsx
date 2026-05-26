@@ -43,6 +43,7 @@ export function DashboardPage() {
     todayArrivals,
     todayDepartures,
     todayCheckouts,
+    occupancySeries,
     loading,
   } = useDashboardData(today);
 
@@ -64,7 +65,7 @@ export function DashboardPage() {
           <div className="space-y-4 p-4">
             <KpiSummary totals={totals} />
 
-            <OccupancyChart properties={properties} today={today} />
+            <OccupancyChart data={occupancySeries} today={today} />
 
             <div className="grid gap-4 md:grid-cols-2">
               <RevenueOverview />

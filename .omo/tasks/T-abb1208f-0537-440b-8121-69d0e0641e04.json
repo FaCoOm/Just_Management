@@ -1,0 +1,10 @@
+{
+  "id": "T-abb1208f-0537-440b-8121-69d0e0641e04",
+  "subject": "Inspect target ingest files",
+  "description": "Read backend/src/ingest/normalizer.ts and backend/src/ingest/services/listings.ts to confirm current dead-code lines before editing.",
+  "status": "completed",
+  "activeForm": "Inspecting target ingest files",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1a3434757ffe2bgDg0eCOn1T5q"
+}

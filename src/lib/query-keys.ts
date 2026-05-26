@@ -5,6 +5,7 @@ const root = ["dashboard"] as const;
 
 export const dashboardKeys = {
   all: root,
+  summary: (date: string) => [...root, "summary", date] as const,
   properties: [...root, "properties"] as const,
   rooms: [...root, "rooms"] as const,
   reservations: [...root, "reservations"] as const,

@@ -1,0 +1,12 @@
+{
+  "id": "T-fed8f05d-780a-4266-8ffd-a3e222122ab2",
+  "subject": "Smoke integrations UI",
+  "description": "Start backend and Vite preview using npm.cmd on Windows, verify /settings/integrations renders required sections, then stop processes.",
+  "status": "pending",
+  "activeForm": "smoking integrations UI",
+  "blocks": [],
+  "blockedBy": [
+    "T-8e477e5d-c29a-4e49-b9e8-4bf2c4cc4912"
+  ],
+  "threadID": "ses_1a04e88d1ffexJEDoQFYHTP6bB"
+}

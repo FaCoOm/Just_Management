@@ -1,0 +1,13 @@
+{
+  "id": "T-3e2bd232-f196-42b7-8481-f3b4481e9c5f",
+  "subject": "Orchestrate performance team",
+  "description": "Create and coordinate team-mode profiling agents for Track B backend optimization before code changes.",
+  "status": "completed",
+  "activeForm": "Coordinating team-mode profiling",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "teamRunId": "2d9b5c66-2fa2-4e2d-8b5a-528622fd8cea"
+  },
+  "threadID": "ses_1b1efbbd9fferw6absp2qMVNmC"
+}

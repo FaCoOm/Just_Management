@@ -1,0 +1,10 @@
+{
+  "id": "T-02e8bb30-f416-45e5-8983-9056ca1f0187",
+  "subject": "Report results to lead",
+  "description": "Send route signature, validation table, examples, and command outputs to lead; mark team task complete.",
+  "status": "pending",
+  "activeForm": "Reporting backend implementation results to lead",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_19c387ed3ffecrOH4n7jKFvU7U"
+}

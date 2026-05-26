@@ -1,0 +1,15 @@
+{
+  "id": "T-1e2fe831-3ef2-4dfe-9687-25d5347633c4",
+  "subject": "Inventory backend entrypoints and scripts",
+  "description": "Read package/backend entrypoints and identify runtime/API shape evidence.",
+  "status": "completed",
+  "activeForm": "Inventorying backend entrypoints and scripts",
+  "blocks": [],
+  "blockedBy": [],
+  "owner": "backend-architecture-analyst",
+  "metadata": {
+    "teamRunId": "2d9b5c66-2fa2-4e2d-8b5a-528622fd8cea",
+    "teamTaskId": "6"
+  },
+  "threadID": "ses_1b1ef4f3affexD3sWBh0i5SCmC"
+}

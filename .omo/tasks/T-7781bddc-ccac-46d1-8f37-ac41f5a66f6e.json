@@ -1,0 +1,14 @@
+{
+  "id": "T-7781bddc-ccac-46d1-8f37-ac41f5a66f6e",
+  "subject": "Implement withone backend foundation files",
+  "description": "Create one integration client, connections wrapper, auth-token helper, webhook verifier, and /api/one routes.",
+  "status": "pending",
+  "activeForm": "Implementing withone backend foundation files",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "team": "pipeline-wave-1",
+    "member": "withone-foundations"
+  },
+  "threadID": "ses_1a09b04f6ffesSQ4EO2MC0Icas"
+}

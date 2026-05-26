@@ -1,0 +1,10 @@
+{
+  "id": "T-1c348ad0-d04d-48ec-b248-f7a6ab35313e",
+  "subject": "Review API performance surfaces",
+  "description": "Read backend/src/index.ts and backend/prisma/schema.prisma, find pagination/select/index/cache/compression/dashboard aggregation gaps.",
+  "status": "completed",
+  "activeForm": "Reviewing API performance surfaces",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1bb19e381ffeJv2AfpirVjPc0t"
+}

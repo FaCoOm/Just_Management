@@ -1,5 +1,150 @@
 # Track B Backend — Comprehensive Backend Analysis
 
+> **Current revision note:** This document now includes a 2026-05-22 performance profiling addendum. The addendum was created after a team-mode profiling run (`2d9b5c66-2fa2-4e2d-8b5a-528622fd8cea`) and direct local checks from the current worktree. Older sections remain useful for architecture inventory, but line references and performance conclusions should be read together with the addendum below.
+
+## 0. 2026-05-22 Performance Profiling Addendum
+
+### 0.1 Profiling scope
+
+Validated in this pass:
+
+- Express/Prisma backend entrypoint and read APIs: [backend/src/index.ts](../../backend/src/index.ts)
+- Ingest Prisma client usage: [backend/src/ingest/services/listings.ts](../../backend/src/ingest/services/listings.ts), [backend/src/ingest/services/reservations.ts](../../backend/src/ingest/services/reservations.ts)
+- Frontend REST boundary and dashboard load path: [src/lib/repositories/rest-repositories.ts](../../src/lib/repositories/rest-repositories.ts), [src/hooks/use-dashboard-data.ts](../../src/hooks/use-dashboard-data.ts), [src/components/dashboard/occupancy-chart.tsx](../../src/components/dashboard/occupancy-chart.tsx)
+- Page-level data hooks: [src/hooks/use-page-data.ts](../../src/hooks/use-page-data.ts)
+- Router chunking: [src/router.tsx](../../src/router.tsx)
+- Prisma schema/index state: [backend/prisma/schema.prisma](../../backend/prisma/schema.prisma)
+
+Excluded or not proven in this pass:
+
+- Azure Query Store, live production traces, and `EXPLAIN ANALYZE` against production-size data.
+- Auth/RBAC remediation. Security risks remain architectural blockers but were not optimized here.
+- Browser DevTools waterfall capture. Request order was source-validated and backend endpoints were locally probed.
+
+### 0.2 Commands and observed output
+
+| Command / probe | Observed result |
+|---|---:|
+| `npm run build` | `frontend_build_ms=12698` |
+| `cd backend; npm run build` | `backend_build_ms=6578` |
+| `cd backend; npm run db:validate` | Prisma schema valid |
+| `cd backend; npm run db:verify:migration` | Passed; 3 migrations checked, no Supabase/RLS patterns, 17 `CREATE TABLE` statements across migrations |
+
+Built backend was run on temporary port `3101` from `backend/dist/index.js`; safe GET endpoints were probed with `Invoke-WebRequest`:
+
+| Endpoint | Duration | Payload | Notes |
+|---|---:|---:|---|
+| `/health` | 6ms | 27 bytes | no DB work |
+| `/api/properties` | 522ms | 2 bytes | empty array from configured DB |
+| `/api/rooms` | 463ms | 2 bytes | `X-Total-Count: 0` |
+| `/api/reservations` | 121ms | 2 bytes | `X-Total-Count: 0` |
+| `/api/guest-requests` | 124ms | 2 bytes | `X-Total-Count: 0` |
+| `/api/maintenance` | 88ms | 2 bytes | `X-Total-Count: 0` |
+| `/api/reservations?check_in_date=2026-05-22` | 114ms | 2 bytes | `X-Total-Count: 0` |
+| `/api/reservations?check_out_date=2026-05-22` | 90ms | 2 bytes | `X-Total-Count: 0` |
+| `/api/stats/occupancy?days=7&end_date=2026-05-22` | 418ms | 449 bytes | server-side in-memory occupancy computation |
+
+Frontend production assets after build:
+
+| Asset | Size | Finding |
+|---|---:|---|
+| `index-Dk5I_Xpk.js` | 456,478 bytes | main shared app/vendor chunk |
+| `dashboard-page-BQoDrabE.js` | 412,057 bytes | large dashboard route chunk |
+| `index-DR5IapHy.css` | 128,343 bytes | global CSS |
+| `index-BUAdMev5.js` | 50,527 bytes | secondary shared chunk |
+| `use-dashboard-data-DhRlResL.js` | 17,992 bytes | dashboard data hook chunk |
+
+### 0.3 Current first-load path
+
+Dashboard route currently follows this path:
+
+```text
+TanStack Router lazy-loads dashboard route chunk
+→ DashboardPage mounts
+→ useDashboardData(today) creates REST repository instance
+→ 7 useQueries fire concurrently
+→ dashboard skeleton waits for all 7 query states
+→ dashboard content renders
+→ OccupancyChart mounts
+→ 8th occupancy stats query fires
+→ occupancy chart re-renders when stats return
+```
+
+Source evidence:
+
+- Top-level routes already use `lazyRouteComponent()` in [src/router.tsx#L20-L63](../../src/router.tsx#L20-L63).
+- Dashboard hook fires 7 queries in [src/hooks/use-dashboard-data.ts#L109-L142](../../src/hooks/use-dashboard-data.ts#L109-L142).
+- `OccupancyChart` owns its own `useQuery()` in [src/components/dashboard/occupancy-chart.tsx#L75-L83](../../src/components/dashboard/occupancy-chart.tsx#L75-L83).
+- `DashboardPage` does not mount `OccupancyChart` until the hook loading state clears in [src/components/dashboard/dashboard-page.tsx#L49-L68](../../src/components/dashboard/dashboard-page.tsx#L49-L68).
+
+### 0.4 Backend inefficiencies validated in current source
+
+| Inefficiency | Evidence | Impact |
+|---|---|---|
+| Lazy Prisma startup | `const prisma = new PrismaClient()` at [index.ts#L15](../../backend/src/index.ts#L15); server listens at [index.ts#L570-L572](../../backend/src/index.ts#L570-L572); no `$connect()` call | First DB route can pay connection/TLS/auth cost after server reports ready. |
+| Query-count doubling on list routes | `findMany()` + `count()` in reservations, rooms, maintenance, guest requests, guests at [index.ts#L205-L233](../../backend/src/index.ts#L205-L233), [index.ts#L369-L388](../../backend/src/index.ts#L369-L388), [index.ts#L402-L421](../../backend/src/index.ts#L402-L421), [index.ts#L493-L513](../../backend/src/index.ts#L493-L513), [index.ts#L527-L549](../../backend/src/index.ts#L527-L549) | `getAll()` callers ignore `X-Total-Count`, but backend still sends extra DB query. |
+| No dashboard summary endpoint | REST adapter has properties/rooms/reservations/requests/maintenance/stats repos only in [rest-repositories.ts#L50-L153](../../src/lib/repositories/rest-repositories.ts#L50-L153) | Dashboard aggregates in browser from multiple full-table endpoints. |
+| In-memory occupancy computation | `/api/stats/occupancy` loads properties, rooms, reservations and loops over day windows in [index.ts#L256-L345](../../backend/src/index.ts#L256-L345) | Acceptable at small scale; duplicates part of dashboard data work and remains separate waterfall. |
+| Separate Prisma clients for ingest | API client in [index.ts#L15](../../backend/src/index.ts#L15), listing ingest client in [listings.ts#L6](../../backend/src/ingest/services/listings.ts#L6), reservation ingest client in [reservations.ts#L5](../../backend/src/ingest/services/reservations.ts#L5) | Extra connection pools under concurrent API + ingest load. |
+
+### 0.5 Frontend load inefficiencies validated in current source
+
+| Inefficiency | Evidence | Impact |
+|---|---|---|
+| Dashboard 7-query burst | [use-dashboard-data.ts#L111-L142](../../src/hooks/use-dashboard-data.ts#L111-L142) | Chattiness over Express/Prisma/Azure boundary; skeleton waits on all. |
+| Full reservation fetch for dashboard | `repos.reservations.getAll()` in [use-dashboard-data.ts#L121-L124](../../src/hooks/use-dashboard-data.ts#L121-L124) and `/api/reservations` in [rest-repositories.ts#L77-L79](../../src/lib/repositories/rest-repositories.ts#L77-L79) | Dashboard downloads full reservation table to derive guests/metrics. |
+| Client-side legacy guest conversion | `reservations.map(toDashboardGuest)` in [use-dashboard-data.ts#L154](../../src/hooks/use-dashboard-data.ts#L154) | Browser work grows with reservations. |
+| Secondary hooks partly narrow only | `useReservationsPageData()` loads properties, rooms, reservations; `useGuestsPageData()` and `useRoomsPageData()` reuse it in [use-page-data.ts#L32-L74](../../src/hooks/use-page-data.ts#L32-L74) | Reservations/Guests/Rooms pages still fetch all reservations. |
+| Maintenance page is narrower | `useMaintenancePageData()` loads only properties, rooms, maintenance in [use-page-data.ts#L76-L103](../../src/hooks/use-page-data.ts#L76-L103) | Confirms earlier “every page uses dashboard hook” claim is stale. |
+| API URL defaults absolute localhost | [rest-repositories.ts#L21-L23](../../src/lib/repositories/rest-repositories.ts#L21-L23) | Deployed topology may force cross-origin/CORS unless `VITE_TRACK_B_API_URL` is changed. |
+
+### 0.6 Corrections to older claims in this document
+
+- **Top-level route code splitting is implemented.** The router imports `lazyRouteComponent` and applies it to Dashboard, Reservations, Guests, Rooms, and Maintenance routes in [src/router.tsx#L1-L63](../../src/router.tsx#L1-L63). Remaining frontend work is route data preloading and dashboard chunk/data reduction, not initial route laziness.
+- **Several proposed indexes already exist.** `rooms.property_id`, maintenance compound indexes, reservation status/date indexes, and API-oriented composite indexes exist in [schema.prisma#L49-L50](../../backend/prisma/schema.prisma#L49-L50), [schema.prisma#L109-L110](../../backend/prisma/schema.prisma#L109-L110), and [schema.prisma#L243-L248](../../backend/prisma/schema.prisma#L243-L248). Migration guard confirms `20260520000000_add_api_performance_indexes` is present.
+- **Page-specific hooks exist but are incomplete.** `use-page-data.ts` reduced Maintenance page overfetch, but Reservations/Guests/Rooms still rely on all reservations.
+- **Compression is already enabled.** `app.use(compression())` exists at [backend/src/index.ts#L49](../../backend/src/index.ts#L49). Further response/network work should focus on DTO shape, cache policy, and same-region/same-origin topology.
+
+### 0.7 Recommended optimization sequence now
+
+1. Add startup observability and Prisma warm-up: request timing middleware, route-tagged durations, optional Prisma query timing, and `await prisma.$connect()` before readiness.
+2. Make counts opt-in: only run `count()` when pagination metadata is requested by query param or repository method.
+3. Add `GET /api/dashboard/summary?date=YYYY-MM-DD&property_id=` returning dashboard totals, per-property metrics, arrivals/departures/checkouts, maintenance summary, lightweight recent arrivals, and occupancy series.
+4. Update frontend repository contracts and `useDashboardData()` to use the summary endpoint; remove `OccupancyChart` post-render fetch by passing summary occupancy data as props.
+5. Finish page-specific data contracts: Reservations/Guests/Rooms should request paginated/filterable DTOs instead of full reservations where possible.
+6. Add TanStack Router loader/query prefetch once summary query options exist; use router preload to start dashboard data before component mount.
+7. Re-run endpoint probe, production build, browser Network waterfall, and route navigation checks after each phase.
+
+### 0.8 Implemented optimization slice
+
+This pass implemented the first request-collapse and startup-warm-up slice:
+
+| Change | Evidence | Verification |
+|---|---|---|
+| Prisma startup warm-up | [backend/src/index.ts#L938-L954](../../backend/src/index.ts#L938-L954) | `cd backend; npm run build` passed |
+| Request timing header + slow request log | [backend/src/index.ts#L55-L78](../../backend/src/index.ts#L55-L78) | backend build passed |
+| Opt-in list counts | [backend/src/index.ts#L134-L149](../../backend/src/index.ts#L134-L149) plus list routes | `/api/reservations` no longer returned `X-Total-Count`; `/api/reservations?include_count=true` returned `X-Total-Count: 0` |
+| Dashboard summary endpoint | [backend/src/index.ts#L314-L518](../../backend/src/index.ts#L314-L518) | `/api/dashboard/summary?date=2026-05-22` returned 200 in 555ms locally |
+| Frontend summary repository | [src/lib/repositories/types.ts](../../src/lib/repositories/types.ts), [src/lib/repositories/rest-repositories.ts](../../src/lib/repositories/rest-repositories.ts) | `npm run typecheck` and `npm run build` passed |
+| Dashboard one-query path | [src/hooks/use-dashboard-data.ts#L92-L95](../../src/hooks/use-dashboard-data.ts#L92-L95) | grep confirmed only one dashboard `useQuery` remains in the hook |
+| Occupancy waterfall removed | [src/components/dashboard/occupancy-chart.tsx](../../src/components/dashboard/occupancy-chart.tsx) | grep found no `useQuery` in `OccupancyChart` |
+
+Post-change local probe:
+
+| Endpoint | Duration | Payload | Notes |
+|---|---:|---:|---|
+| `/api/dashboard/summary?date=2026-05-22` | 555ms | 707 bytes | replaces dashboard multi-request path |
+| `/api/reservations` | 85ms | 2 bytes | no default `X-Total-Count` |
+| `/api/reservations?include_count=true` | 79ms | 2 bytes | `X-Total-Count: 0` |
+
+Residual risks:
+
+- Summary endpoint currently preserves the existing dashboard contract by returning reservation-derived compatibility arrays. It collapses request count but does not yet minimize payload for production-size reservation tables.
+- Occupancy data is now summary-provided aggregate data for the dashboard-wide view. Per-property chart filtering should be reintroduced only after summary supports per-property series.
+- Live Azure Query Store / `EXPLAIN ANALYZE` remains required before adding more indexes or changing query plans.
+
+---
+
 ## 1. Scope + Boundaries
 
 **Analyzed:**

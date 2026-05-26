@@ -1,0 +1,10 @@
+{
+  "id": "T-c8c551c6-fcca-49a2-80cc-b102d903f953",
+  "subject": "Run typecheck, prisma validate, azure migration guard, frontend+backend builds",
+  "description": "",
+  "status": "completed",
+  "activeForm": "Running verifications across the stack",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_19e0357e6ffeCwZ5uhcpH4Og9q"
+}

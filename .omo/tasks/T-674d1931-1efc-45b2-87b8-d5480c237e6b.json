@@ -1,0 +1,12 @@
+{
+  "id": "T-674d1931-1efc-45b2-87b8-d5480c237e6b",
+  "subject": "Remove specified dead code",
+  "description": "Surgically remove only the unused isExcel, IngestValidationError, channelId, and listingId bindings/assignments.",
+  "status": "completed",
+  "activeForm": "Removing specified dead code",
+  "blocks": [],
+  "blockedBy": [
+    "T-abb1208f-0537-440b-8121-69d0e0641e04"
+  ],
+  "threadID": "ses_1a3434757ffe2bgDg0eCOn1T5q"
+}

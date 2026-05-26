@@ -1,0 +1,17 @@
+{
+  "id": "T-04878c44-80c5-4e2a-8f83-0f6ba60ccaad",
+  "subject": "Verify sheets adapter work",
+  "description": "Run diagnostics/build and route behavior checks where possible, then report completion to lead and mark team task completed.",
+  "status": "in_progress",
+  "activeForm": "Verifying sheets adapter work",
+  "blocks": [],
+  "blockedBy": [
+    "T-53addba3-8df5-4e14-a26e-8a70c9838de6"
+  ],
+  "metadata": {
+    "teamRunId": "306fad30-86a0-4033-b65b-48e7053367d3",
+    "member": "sheets-drive-adapters"
+  },
+  "repoURL": "C:\\Users\\Fate_Conqueror\\GitHub\\Just_Management",
+  "threadID": "ses_1a098b988ffeV8JXUL4hQXtImt"
+}

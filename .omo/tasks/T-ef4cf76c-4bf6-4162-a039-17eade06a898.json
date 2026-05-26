@@ -1,0 +1,13 @@
+{
+  "id": "T-ef4cf76c-4bf6-4162-a039-17eade06a898",
+  "subject": "Create performance report",
+  "description": "Create a consolidated markdown report covering current state, profiling findings locations, modified files, team config explanation, verification, and remaining work.",
+  "status": "pending",
+  "activeForm": "Creating consolidated report",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "target": "docs/analysis/PERFORMANCE_WORK_REPORT_2026-05-22.md"
+  },
+  "threadID": "ses_1b1efbbd9fferw6absp2qMVNmC"
+}

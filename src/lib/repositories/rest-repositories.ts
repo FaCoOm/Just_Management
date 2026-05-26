@@ -4,6 +4,7 @@
  */
 import type {
   PropertyRepository,
+  DashboardRepository,
   RoomRepository,
   ReservationRepository,
   GuestRequestRepository,
@@ -11,6 +12,7 @@ import type {
   RepositoryFactory,
   StatsRepository,
 } from "./types";
+import type { ReservationCreateInput } from "@/types/database";
 
 type FetchFn = typeof fetch;
 
@@ -47,6 +49,32 @@ async function getJson<T>(path: string): Promise<T> {
   return res.json();
 }
 
+async function postJson<T>(path: string, body: unknown): Promise<T> {
+  const res = await apiFetch(apiUrl(path), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(JSON.stringify(data));
+  }
+  return data;
+}
+
+// Property repository implementation
+const dashboardRepo: DashboardRepository = {
+  async getSummary(date, days, propertyId) {
+    return getJson(
+      withQuery("/api/dashboard/summary", {
+        date,
+        days,
+        property_id: propertyId,
+      })
+    );
+  },
+};
+
 // Property repository implementation
 const propertyRepo: PropertyRepository = {
   async getAll() {
@@ -74,6 +102,9 @@ const roomRepo: RoomRepository = {
 
 // Reservation repository implementation
 const reservationRepo: ReservationRepository = {
+  async create(input: ReservationCreateInput) {
+    return postJson("/api/reservations", input);
+  },
   async getAll() {
     return getJson("/api/reservations");
   },
@@ -144,6 +175,7 @@ const statsRepo: StatsRepository = {
 
 // Repository factory for Track B (REST API)
 export const createRestRepositories = (): RepositoryFactory => ({
+  dashboard: dashboardRepo,
   properties: propertyRepo,
   rooms: roomRepo,
   reservations: reservationRepo,

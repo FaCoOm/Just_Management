@@ -1,0 +1,10 @@
+{
+  "id": "T-4afe4a66-cdb5-4537-ae23-ef1e811ebe39",
+  "subject": "Explore current ingestion context",
+  "description": "Inspect existing backend ingest pipeline, Prisma/schema constraints, API contracts, docs, and package scripts relevant to runtime ingestion design. No code edits.",
+  "status": "in_progress",
+  "activeForm": "exploring current ingestion context",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1a2b459e5ffezmBK2aQJi0C4Pz"
+}

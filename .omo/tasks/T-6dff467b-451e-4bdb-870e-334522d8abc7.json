@@ -1,0 +1,10 @@
+{
+  "id": "T-6dff467b-451e-4bdb-870e-334522d8abc7",
+  "subject": "Explore data and services",
+  "description": "Inspect database_design files, current backend schema, ingestion code, and Google credential/service references before drafting user stories.",
+  "status": "completed",
+  "activeForm": "Exploring data and services",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1a2b624daffeM7HLtxvCDBXBLM"
+}

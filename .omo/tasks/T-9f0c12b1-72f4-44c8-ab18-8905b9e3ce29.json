@@ -1,0 +1,14 @@
+{
+  "id": "T-9f0c12b1-72f4-44c8-ab18-8905b9e3ce29",
+  "subject": "Verify withone foundation build and endpoints",
+  "description": "Run backend build and smoke test auth-token and connections endpoints.",
+  "status": "pending",
+  "activeForm": "Verifying withone foundation build and endpoints",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "team": "pipeline-wave-1",
+    "member": "withone-foundations"
+  },
+  "threadID": "ses_1a09b04f6ffesSQ4EO2MC0Icas"
+}

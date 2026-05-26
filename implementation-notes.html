@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Implementation Notes — Ingestion Sync Summary and QA Handoff</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body { font-family: ui-sans-serif, system-ui, sans-serif; max-width: 960px; margin: 2rem auto; padding: 0 1.25rem; line-height: 1.55; }
+    h1 { border-bottom: 2px solid currentColor; padding-bottom: .35rem; }
+    h2 { margin-top: 2.25rem; padding-bottom: .25rem; border-bottom: 1px solid #8884; }
+    .meta-block { background: #8881; padding: 1rem 1.25rem; border-radius: 8px; margin: 1rem 0 2rem; }
+    .meta-block dt { font-weight: 600; }
+    .meta-block dd { margin: 0 0 .5rem 0; font-family: ui-monospace, monospace; }
+    .entry { border-left: 4px solid #4a8; background: #4a81; padding: .85rem 1rem; margin: 1rem 0; border-radius: 0 6px 6px 0; }
+    .entry.deviation { border-left-color: #c63; background: #c631; }
+    .entry.tradeoff { border-left-color: #58c; background: #58c1; }
+    .entry.question { border-left-color: #c39; background: #c391; }
+    .entry.event { border-left-color: #888; background: #8881; }
+    .timestamp { font-family: ui-monospace, monospace; font-size: .85rem; opacity: .75; }
+    .entry h3 { margin: 0 0 .35rem 0; font-size: 1.05rem; }
+    .entry-meta { font-size: .8rem; opacity: .8; margin-bottom: .5rem; }
+    code { background: #8882; padding: .1rem .35rem; border-radius: 3px; font-size: .92em; }
+    pre { background: #8881; padding: .75rem 1rem; border-radius: 6px; overflow-x: auto; }
+    .toc a { text-decoration: none; }
+  </style>
+</head>
+<body>
+  <h1>Implementation Notes — Ingestion Sync Summary and QA Handoff</h1>
+
+  <dl class="meta-block">
+    <dt>Spec reference</dt><dd>User request: construct complete implementation summary and QA testing directory for another agent</dd>
+    <dt>Started</dt><dd>2026-05-26T15:27:57.1019718+10:00</dd>
+    <dt>Branch</dt><dd>main</dd>
+    <dt>Worktree</dt><dd>C:\Users\Fate_Conqueror\GitHub\Just_Management</dd>
+    <dt>Base commit</dt><dd>dd36f6037c516cd25964b30de59e716c6d81df46</dd>
+  </dl>
+
+  <nav class="toc">
+    <p><a href="#decisions">Design Decisions</a> &middot;
+       <a href="#deviations">Deviations</a> &middot;
+       <a href="#tradeoffs">Tradeoffs</a> &middot;
+       <a href="#questions">Open Questions</a> &middot;
+       <a href="#events">Worktree &amp; Branch Events</a></p>
+  </nav>
+
+  <h2 id="decisions">Design Decisions</h2>
+  <article class="entry">
+    <h3>Manual reservation tab remains a scaffold</h3>
+    <div class="entry-meta"><span class="timestamp">2026-05-26T16:08:41.5748040+10:00</span> &middot; files: <code>src/components/reservations/reservations-page.tsx</code></div>
+    <p><strong>Ambiguity:</strong> The user asked for manual reservation entry, but the current backend exposes reservation read endpoints and CSV ingestion, not a manual <code>POST /api/reservations</code> creation route.</p>
+    <p><strong>Choice:</strong> Build the manual reservation form as the default modal surface, but keep its submit action disabled with explicit copy explaining that backend support is still required.</p>
+    <p><strong>Why:</strong> This gives operators the intended UX shape without pretending manual writes exist or creating unverified data paths.</p>
+  </article>
+
+  <article class="entry">
+    <h3>CSV upload uses existing reservation ingestion contract</h3>
+    <div class="entry-meta"><span class="timestamp">2026-05-26T16:08:41.5748040+10:00</span> &middot; files: <code>src/components/reservations/reservations-page.tsx</code>, <code>backend/src/ingest/routes.ts</code></div>
+    <p><strong>Ambiguity:</strong> The requested CSV upload mode did not specify a new endpoint or whether it should reuse the admin integrations surface.</p>
+    <p><strong>Choice:</strong> Reuse <code>POST /api/ingest/reservations</code> with multipart file, <code>sourceAccount</code>, and mandatory <code>dryRun</code>.</p>
+    <p><strong>Why:</strong> That is the current real reservation sync mechanism and already routes through parser, normalizer, reconciliation, dead letters, and sync run tracking.</p>
+  </article>
+
+  <article class="entry">
+    <h3>Document current reservation sync as-is</h3>
+    <div class="entry-meta"><span class="timestamp">2026-05-26T16:08:41.5748040+10:00</span> &middot; files: <code>docs/analysis/reservation-sync-overview.md</code></div>
+    <p><strong>Ambiguity:</strong> The user asked what the current reservation database sync process is, not necessarily for new backend sync semantics.</p>
+    <p><strong>Choice:</strong> Write an overview of the existing CSV/provider sync path and explicitly call out that manual creation is not yet implemented server-side.</p>
+    <p><strong>Why:</strong> This separates verified current behavior from future implementation requirements.</p>
+  </article>
+
+  <article class="entry">
+    <h3>Store handoff artifacts under docs/qa/ingestion-sync</h3>
+    <div class="entry-meta"><span class="timestamp">2026-05-26T15:27:57.1019718+10:00</span> &middot; files: <code>docs/qa/ingestion-sync/*</code></div>
+    <p><strong>Ambiguity:</strong> The request asked for a QA testing directory but did not prescribe the location or file split.</p>
+    <p><strong>Choice:</strong> Use <code>docs/qa/ingestion-sync/</code> with separate files for implementation summary, QA instructions, evidence checklist, and report template.</p>
+    <p><strong>Why:</strong> The content is documentation/reference material, and the repo already uses <code>docs/</code> for analysis and implementation notes.</p>
+  </article>
+
+  <h2 id="deviations">Deviations</h2>
+  <!-- entries go here -->
+
+  <h2 id="tradeoffs">Tradeoffs</h2>
+  <article class="entry tradeoff">
+    <h3>Split QA handoff into multiple markdown files</h3>
+    <div class="entry-meta"><span class="timestamp">2026-05-26T15:27:57.1019718+10:00</span> &middot; files: <code>docs/qa/ingestion-sync/*</code></div>
+    <p><strong>Options:</strong></p>
+    <ul>
+      <li><strong>A (chosen):</strong> Multiple focused Markdown files — easier for another agent to consume by role: summary, test plan, evidence checklist, report template.</li>
+      <li><strong>B:</strong> One large Markdown file — simpler file count but harder to navigate and reuse as individual prompts.</li>
+    </ul>
+    <p><strong>Decision driver:</strong> The user specifically wants a directory for other agents, so multiple focused handoff artifacts improve delegation.</p>
+  </article>
+
+  <h2 id="questions">Open Questions</h2>
+  <!-- entries go here -->
+
+  <h2 id="events">Worktree &amp; Branch Events</h2>
+  <article class="entry event">
+    <h3>Reservation modal implementation approved</h3>
+    <div class="entry-meta"><span class="timestamp">2026-05-26T16:08:41.5748040+10:00</span> &middot; branch: <code>main</code> &middot; commit: <code>dd36f60</code> &middot; worktree: <code>C:\Users\Fate_Conqueror\GitHub\Just_Management</code></div>
+    <p>User approved the dialog design: hazed New Reservation modal, default manual form, CSV upload option, and sync overview documentation.</p>
+  </article>
+
+  <article class="entry event">
+    <h3>Implementation started</h3>
+    <div class="entry-meta"><span class="timestamp">2026-05-26T15:27:57.1019718+10:00</span> &middot; branch: <code>main</code> &middot; commit: <code>dd36f60</code></div>
+    <p>Read the request as a documentation handoff task: create a user-facing implementation summary and a QA testing package for another agent.</p>
+  </article>
+  <article class="entry event">
+    <h3>QA handoff directory created</h3>
+    <div class="entry-meta"><span class="timestamp">2026-05-26T15:40:37.1522741+10:00</span> &middot; branch: <code>main</code> &middot; commit: <code>dd36f60</code> &middot; worktree: <code>C:\Users\Fate_Conqueror\GitHub\Just_Management</code></div>
+    <p>Created <code>docs/qa/ingestion-sync/</code> with implementation summary, QA test plan, evidence checklist, and report template for third-party test execution.</p>
+  </article>
+  <article class="entry event">
+    <h3>Implementation complete</h3>
+    <div class="entry-meta"><span class="timestamp">2026-05-26T15:40:37.1522741+10:00</span> &middot; branch: <code>main</code> &middot; commit: <code>dd36f60</code> &middot; worktree: <code>C:\Users\Fate_Conqueror\GitHub\Just_Management</code></div>
+    <p>Completed the requested documentation package. No open questions remain for this handoff task.</p>
+  </article>
+</body>
+</html>

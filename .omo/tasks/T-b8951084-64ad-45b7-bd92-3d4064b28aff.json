@@ -1,0 +1,15 @@
+{
+  "id": "T-b8951084-64ad-45b7-bd92-3d4064b28aff",
+  "subject": "Run frontend/backend verification commands",
+  "description": "Execute required build/type/schema validation commands and capture raw outputs.",
+  "status": "completed",
+  "activeForm": "Running frontend/backend verification commands",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "teamRunId": "f95779a1-33bb-40ac-a2a0-5a9f40b1813e",
+    "member": "qa-verifier",
+    "checks": "frontend typecheck/build; backend build; prisma generate/validate; migration verification passed"
+  },
+  "threadID": "ses_1b1e53ce3ffeMnTgINUTFiL9R0"
+}

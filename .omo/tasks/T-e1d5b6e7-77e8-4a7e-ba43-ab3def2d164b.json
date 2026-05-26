@@ -1,0 +1,18 @@
+{
+  "id": "T-e1d5b6e7-77e8-4a7e-ba43-ab3def2d164b",
+  "subject": "Create backend analysis markdown report",
+  "description": "Write the constructed backend analysis output into an appropriately located markdown file and provide a command that enforces/recreates it.",
+  "status": "completed",
+  "activeForm": "Backend analysis markdown report created",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "scope": "documentation",
+    "requested_file": "markdown report",
+    "report": "docs/analysis/TRACK_B_BACKEND_ANALYSIS.md",
+    "verification": "Test-Path/Get-Item succeeded; markdown LSP unavailable (my-lsp not installed)"
+  },
+  "repoURL": "",
+  "parentID": "",
+  "threadID": "ses_1ba2ae12affeZNLpZLc0WJaR6P"
+}

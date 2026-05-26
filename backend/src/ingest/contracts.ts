@@ -14,6 +14,7 @@ export const ingestErrorCodes = [
   "UNRESOLVED_LISTING",
   "AMBIGUOUS_LISTING_MATCH",
   "CONFIG_AUTH_FAILURE",
+  "SYNC_NOT_IMPLEMENTED",
 ] as const;
 export type IngestErrorCode = (typeof ingestErrorCodes)[number];
 

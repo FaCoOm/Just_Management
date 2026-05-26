@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useQueries } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { createRestRepositories } from "@/lib/repositories";
 import { dashboardKeys } from "@/lib/query-keys";
 import type {
@@ -8,24 +8,11 @@ import type {
   Guest,
   GuestRequest,
   MaintenanceIssue,
+  OccupancySeriesPoint,
   PropertyMetrics,
   Reservation,
   ReservationStatus,
 } from "@/types/database";
-
-const ARRIVAL_RESERVATION_STATUSES: ReservationStatus[] = [
-  "pending",
-  "check_in_pending",
-];
-
-const DEPARTURE_RESERVATION_STATUSES: ReservationStatus[] = [
-  "check_out_pending",
-];
-
-const CHECKOUT_RESERVATION_STATUSES: ReservationStatus[] = [
-  "check_out_pending",
-  "checked_out",
-];
 
 const LEGACY_BOOKING_SOURCE_PATTERN = /booking_source=([^;]+)/i;
 const LEGACY_VIP_PATTERN = /is_vip=true/i;
@@ -79,13 +66,6 @@ export function toDashboardGuest(reservation: Reservation): Guest {
   };
 }
 
-function filterByStatuses(
-  reservations: Reservation[],
-  statuses: ReservationStatus[]
-) {
-  return reservations.filter((reservation) => statuses.includes(reservation.status));
-}
-
 interface DashboardData {
   properties: Property[];
   rooms: Room[];
@@ -103,142 +83,34 @@ interface DashboardData {
     occupancyRate: number;
     maintenanceOpen: number;
   };
+  occupancySeries: OccupancySeriesPoint[];
   loading: boolean;
 }
 
 export function useDashboardData(today: string): DashboardData {
   const repos = useMemo(() => createRestRepositories(), []);
-  const results = useQueries({
-    queries: [
-      {
-        queryKey: dashboardKeys.properties,
-        queryFn: () => repos.properties.getAll(),
-      },
-      {
-        queryKey: dashboardKeys.rooms,
-        queryFn: () => repos.rooms.getAll(),
-      },
-      {
-        queryKey: dashboardKeys.reservations,
-        queryFn: () => repos.reservations.getAll(),
-      },
-      {
-        queryKey: dashboardKeys.guestRequests,
-        queryFn: () => repos.guestRequests.getAll(),
-      },
-      {
-        queryKey: dashboardKeys.maintenance,
-        queryFn: () => repos.maintenance.getAll(),
-      },
-      {
-        queryKey: dashboardKeys.arrivalsByDate(today),
-        queryFn: () => repos.reservations.getByCheckInDate(today),
-      },
-      {
-        queryKey: dashboardKeys.departuresByDate(today),
-        queryFn: () => repos.reservations.getByCheckOutDate(today),
-      },
-    ],
+  const { data, isPending } = useQuery({
+    queryKey: dashboardKeys.summary(today),
+    queryFn: () => repos.dashboard.getSummary(today, 30),
   });
 
-  const loading = results.some((result) => result.isPending);
-
-  const properties = (results[0].data ?? []) as Property[];
-  const rooms = (results[1].data ?? []) as Room[];
-  const reservations = (results[2].data ?? []) as Reservation[];
-  const requests = (results[3].data ?? []) as GuestRequest[];
-  const maintenance = (results[4].data ?? []) as MaintenanceIssue[];
-  const arrivalsOnDate = (results[5].data ?? []) as Reservation[];
-  const departuresOnDate = (results[6].data ?? []) as Reservation[];
-
-  const guests = useMemo(() => reservations.map(toDashboardGuest), [reservations]);
-
-  const todayArrivalReservations = useMemo(
-    () => filterByStatuses(arrivalsOnDate, ARRIVAL_RESERVATION_STATUSES),
-    [arrivalsOnDate]
-  );
-  const todayDepartureReservations = useMemo(
-    () => filterByStatuses(departuresOnDate, DEPARTURE_RESERVATION_STATUSES),
-    [departuresOnDate]
-  );
-  const todayCheckoutReservations = useMemo(
-    () => filterByStatuses(departuresOnDate, CHECKOUT_RESERVATION_STATUSES),
-    [departuresOnDate]
-  );
-
-  const todayArrivals = useMemo(
-    () => todayArrivalReservations.map(toDashboardGuest),
-    [todayArrivalReservations]
-  );
-  const todayDepartures = useMemo(
-    () => todayDepartureReservations.map(toDashboardGuest),
-    [todayDepartureReservations]
-  );
-  const todayCheckouts = useMemo(
-    () => todayCheckoutReservations.map(toDashboardGuest),
-    [todayCheckoutReservations]
-  );
-
-  const metrics: PropertyMetrics[] = useMemo(
-    () =>
-      properties.map((property) => {
-        const propertyRooms = rooms.filter(
-          (room) => room.property_id === property.id
-        );
-        const propertyMaintenance = maintenance.filter(
-          (issue) => issue.property_id === property.id
-        );
-
-        const occupiedRooms = propertyRooms.filter((room) =>
-          ["Occupied", "Checked In", "Check-Out Pending"].includes(room.status)
-        ).length;
-        const totalRooms = propertyRooms.length || property.total_rooms || 1;
-
-        return {
-          property,
-          arrivals: todayArrivalReservations.filter(
-            (reservation) => reservation.property_id === property.id
-          ).length,
-          departures: todayDepartureReservations.filter(
-            (reservation) => reservation.property_id === property.id
-          ).length,
-          occupancyRate: Math.round((occupiedRooms / totalRooms) * 100),
-          occupiedRooms,
-          maintenanceOpen: propertyMaintenance.filter(
-            (issue) => issue.status !== "Resolved"
-          ).length,
-        };
-      }),
-    [
-      maintenance,
-      properties,
-      rooms,
-      todayArrivalReservations,
-      todayDepartureReservations,
-    ]
-  );
-
-  const totals = useMemo(() => {
-    const occupiedRooms = metrics.reduce(
-      (sum, metric) => sum + metric.occupiedRooms,
-      0
-    );
-    const totalRooms = properties.reduce((sum, property) => {
-      const propertyRooms = rooms.filter((room) => room.property_id === property.id);
-      return sum + (propertyRooms.length || property.total_rooms || 0);
-    }, 0);
-
-    return {
-      arrivals: todayArrivals.length,
-      departures: todayDepartures.length,
-      occupancyRate:
-        totalRooms > 0 ? Math.round((occupiedRooms / totalRooms) * 100) : 0,
-      maintenanceOpen: metrics.reduce(
-        (sum, metric) => sum + metric.maintenanceOpen,
-        0
-      ),
-    };
-  }, [metrics, properties, rooms, todayArrivals.length, todayDepartures.length]);
+  const properties = data?.properties ?? [];
+  const rooms = data?.rooms ?? [];
+  const reservations = data?.reservations ?? [];
+  const guests = data?.guests ?? [];
+  const requests = data?.requests ?? [];
+  const maintenance = data?.maintenance ?? [];
+  const metrics = data?.metrics ?? [];
+  const todayArrivals = data?.todayArrivals ?? [];
+  const todayDepartures = data?.todayDepartures ?? [];
+  const todayCheckouts = data?.todayCheckouts ?? [];
+  const totals = data?.totals ?? {
+    arrivals: 0,
+    departures: 0,
+    occupancyRate: 0,
+    maintenanceOpen: 0,
+  };
+  const occupancySeries = data?.occupancySeries ?? [];
 
   return {
     properties,
@@ -252,6 +124,7 @@ export function useDashboardData(today: string): DashboardData {
     todayDepartures,
     todayCheckouts,
     totals,
-    loading,
+    occupancySeries,
+    loading: isPending,
   };
 }

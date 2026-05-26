@@ -1,0 +1,15 @@
+{
+  "id": "T-2baf9c16-3269-4987-b404-008ed45f149d",
+  "subject": "Build withone Google adapters and sheets-one ingest service",
+  "description": "Create backend/src/integrations/one/google/sheets.ts, backend/src/integrations/one/google/drive.ts, and backend/src/ingest/services/sheets-one.ts using verified One action IDs and existing ingest service patterns.",
+  "status": "completed",
+  "activeForm": "Building withone adapters and sheets-one ingest service",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "teamRunId": "306fad30-86a0-4033-b65b-48e7053367d3",
+    "member": "sheets-drive-adapters"
+  },
+  "repoURL": "C:\\Users\\Fate_Conqueror\\GitHub\\Just_Management",
+  "threadID": "ses_1a098b988ffeV8JXUL4hQXtImt"
+}

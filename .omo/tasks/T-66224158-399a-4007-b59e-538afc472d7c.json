@@ -1,0 +1,10 @@
+{
+  "id": "T-66224158-399a-4007-b59e-538afc472d7c",
+  "subject": "Research Prisma/PostgreSQL/Azure performance guidance",
+  "description": "Gather official Prisma docs, Azure PostgreSQL docs, and public examples for connection pooling, DATABASE_URL parameters, Prisma pagination/select/findMany, indexing, aggregation endpoint patterns, and Express compression/caching. No code changes.",
+  "status": "completed",
+  "activeForm": "Researching official and external performance guidance",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1bb2331e8ffepbkHxie76nwNfG"
+}

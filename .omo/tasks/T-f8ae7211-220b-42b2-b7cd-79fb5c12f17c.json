@@ -1,0 +1,15 @@
+{
+  "id": "T-f8ae7211-220b-42b2-b7cd-79fb5c12f17c",
+  "subject": "Check docs consistency against current code/probes",
+  "description": "Compare performance docs claims against current code paths and latest probe outputs; flag regressions/stale claims.",
+  "status": "completed",
+  "activeForm": "Checking docs consistency against current code and probes",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "teamRunId": "f95779a1-33bb-40ac-a2a0-5a9f40b1813e",
+    "member": "qa-verifier",
+    "docsConsistency": "Addendum sections align with code; older section in backend_performance.md still contains stale claim 'No route-level code splitting' contradicted by router lazyRouteComponent usage and same-file correction notes."
+  },
+  "threadID": "ses_1b1e53ce3ffeMnTgINUTFiL9R0"
+}

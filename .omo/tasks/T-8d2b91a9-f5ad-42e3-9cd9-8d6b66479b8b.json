@@ -1,0 +1,12 @@
+{
+  "id": "T-8d2b91a9-f5ad-42e3-9cd9-8d6b66479b8b",
+  "subject": "Verify backend build",
+  "description": "Run backend build after edits; revert target files if build fails, otherwise report success without committing.",
+  "status": "in_progress",
+  "activeForm": "Verifying backend build",
+  "blocks": [],
+  "blockedBy": [
+    "T-674d1931-1efc-45b2-87b8-d5480c237e6b"
+  ],
+  "threadID": "ses_1a3434757ffe2bgDg0eCOn1T5q"
+}

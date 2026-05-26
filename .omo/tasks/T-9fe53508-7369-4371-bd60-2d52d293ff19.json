@@ -1,0 +1,13 @@
+{
+  "id": "T-9fe53508-7369-4371-bd60-2d52d293ff19",
+  "subject": "Reconcile late findings",
+  "description": "Apply late explore-agent finding that src/hooks deserves local AGENTS guidance, then verify docs.",
+  "status": "completed",
+  "activeForm": "Reconciling late findings",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "reason": "late background explorer contradicted earlier scoring"
+  },
+  "threadID": "ses_1a2f043b3ffeFNTtfSRbvyk7Pc"
+}

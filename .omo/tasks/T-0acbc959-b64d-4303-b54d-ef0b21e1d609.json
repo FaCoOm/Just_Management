@@ -1,0 +1,10 @@
+{
+  "id": "T-0acbc959-b64d-4303-b54d-ef0b21e1d609",
+  "subject": "Create global markdown command",
+  "description": "Inspect global opencode command format, create a simple global workflow command that writes markdown files to appropriate locations using gpt-5.4-mini, then verify files.",
+  "status": "completed",
+  "activeForm": "Creating global markdown command",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1a1b13416ffeT56J83Y43zD5Cl"
+}

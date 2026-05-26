@@ -1,0 +1,10 @@
+{
+  "id": "T-9068cc72-b585-4323-b0b3-d7c5934bafab",
+  "subject": "Verify backend performance changes",
+  "description": "Run diagnostics/build and safe endpoint probes where possible; report changed files and evidence.",
+  "status": "completed",
+  "activeForm": "Verifying backend performance changes",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1b1e53cebffeXv6DQPvv66JN3j"
+}

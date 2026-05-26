@@ -9,12 +9,25 @@ import {
   type PaginationState,
   type SortingState,
 } from "@tanstack/react-table";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Label } from "@/components/ui/label";
+import { NativeSelect } from "@/components/ui/native-select";
+import { Switch } from "@/components/ui/switch";
 import {
   Table,
   TableBody,
@@ -32,6 +45,8 @@ import {
 } from "@/components/ui/select";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useReservationsPageData } from "@/hooks/use-page-data";
+import { createRestRepositories } from "@/lib/repositories";
+import { dashboardKeys } from "@/lib/query-keys";
 import { formatVietnamDate } from "@/lib/vietnam-time";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -45,7 +60,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import type { CheckInStatus, Guest, Property, Room } from "@/types/database";
+import type { CheckInStatus, Guest, Property, ReservationCreateInput, Room } from "@/types/database";
 
 const statusConfig: Record<
   CheckInStatus,
@@ -282,7 +297,7 @@ export function ReservationsPage() {
   if (loading) {
     return (
       <div className="flex h-full flex-col">
-        <ReservationsHeader />
+        <ReservationsHeader properties={properties} rooms={rooms} />
         <ReservationsSkeleton />
       </div>
     );
@@ -303,7 +318,7 @@ export function ReservationsPage() {
 
   return (
     <div className="flex h-full max-h-svh flex-col">
-      <ReservationsHeader />
+      <ReservationsHeader properties={properties} rooms={rooms} />
       <div className="flex-1 overflow-y-auto">
         <div className="space-y-4 p-4">
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -528,7 +543,146 @@ export function ReservationsPage() {
   );
 }
 
-function ReservationsHeader() {
+import { type IngestSummaryResponse } from "@/hooks/use-pipeline-status";
+
+const sourceAccounts = ["airbnb-main", "airbnb-ruby", "airbnb-manuka22"];
+
+type ReservationFormState = {
+  guestName: string;
+  guestPhone: string;
+  guestEmail: string;
+  propertyId: string;
+  roomId: string;
+  checkIn: string;
+  checkOut: string;
+  adultCount: string;
+  childCount: string;
+  infantCount: string;
+  notes: string;
+};
+
+const initialReservationForm: ReservationFormState = {
+  guestName: "",
+  guestPhone: "",
+  guestEmail: "",
+  propertyId: "",
+  roomId: "",
+  checkIn: "",
+  checkOut: "",
+  adultCount: "1",
+  childCount: "0",
+  infantCount: "0",
+  notes: "",
+};
+
+function parseRepositoryError(error: unknown): { message: string; fields: Record<string, string> } {
+  if (!(error instanceof Error)) return { message: "Reservation could not be created.", fields: {} };
+  try {
+    const parsed = JSON.parse(error.message) as { error?: string; errors?: Array<{ field: string; message: string }> };
+    return {
+      message: parsed.error ?? "Reservation could not be created.",
+      fields: Object.fromEntries((parsed.errors ?? []).map((item) => [item.field, item.message])),
+    };
+  } catch {
+    return { message: error.message, fields: {} };
+  }
+}
+
+function SummaryPanel({ summary }: { summary: IngestSummaryResponse | null }) {
+  if (!summary) return null;
+  return (
+    <div className="rounded-xl border border-border bg-muted/30 p-4 text-sm mt-4">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-6">
+        <div><span className="text-muted-foreground">Processed</span><div className="font-semibold">{summary.processed}</div></div>
+        <div><span className="text-muted-foreground">Created</span><div className="font-semibold">{summary.created}</div></div>
+        <div><span className="text-muted-foreground">Updated</span><div className="font-semibold">{summary.updated}</div></div>
+        <div><span className="text-muted-foreground">Skipped</span><div className="font-semibold">{summary.skipped}</div></div>
+        <div><span className="text-muted-foreground">Dead letters</span><div className="font-semibold">{summary.deadLetters}</div></div>
+        <div><span className="text-muted-foreground">Dry run</span><div className="font-semibold">{String(summary.dryRun)}</div></div>
+      </div>
+      {summary.errors.length > 0 && (
+        <div className="mt-3 space-y-1 text-destructive">
+          {summary.errors.map((error, index) => <div key={index}>{error.code}: {error.message}</div>)}
+        </div>
+      )}
+    </div>
+  );
+}
+
+async function submitCsv(formData: FormData): Promise<IngestSummaryResponse> {
+  const response = await fetch("/api/ingest/reservations", { method: "POST", body: formData });
+  return response.json() as Promise<IngestSummaryResponse>;
+}
+
+function ReservationsHeader({ properties, rooms }: { properties: Property[], rooms: Room[] }) {
+  const queryClient = useQueryClient();
+  const repositories = useMemo(() => createRestRepositories(), []);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [reservationForm, setReservationForm] = useState<ReservationFormState>(initialReservationForm);
+  const [uploadSummary, setUploadSummary] = useState<IngestSummaryResponse | null>(null);
+  const [uploadSourceAccount, setUploadSourceAccount] = useState("airbnb-main");
+  const [uploadDryRun, setUploadDryRun] = useState(true);
+
+  const reservationMutation = useMutation({
+    mutationFn: (input: ReservationCreateInput) => repositories.reservations.create(input),
+    onSuccess: () => {
+      setReservationForm(initialReservationForm);
+      setDialogOpen(false);
+      void queryClient.invalidateQueries({ queryKey: dashboardKeys.reservations });
+      void queryClient.invalidateQueries({ queryKey: dashboardKeys.all });
+    },
+  });
+
+  const selectedRooms = reservationForm.propertyId
+    ? rooms.filter((room) => room.property_id === reservationForm.propertyId)
+    : rooms;
+  const adultCount = Number.parseInt(reservationForm.adultCount || "1", 10);
+  const childCount = Number.parseInt(reservationForm.childCount || "0", 10);
+  const infantCount = Number.parseInt(reservationForm.infantCount || "0", 10);
+  const canSubmitReservation = Boolean(
+    reservationForm.guestName.trim() &&
+      reservationForm.propertyId &&
+      reservationForm.checkIn &&
+      reservationForm.checkOut &&
+      !reservationMutation.isPending
+  );
+  const reservationError = parseRepositoryError(reservationMutation.error);
+
+  const setFormField = (key: keyof ReservationFormState, value: string) => {
+    reservationMutation.reset();
+    setReservationForm((current) => ({ ...current, [key]: value }));
+  };
+
+  const onManualCreate = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const totalGuests = adultCount + childCount + infantCount;
+    reservationMutation.mutate({
+      property_id: reservationForm.propertyId,
+      primary_room_id: reservationForm.roomId || null,
+      check_in_date: reservationForm.checkIn,
+      check_out_date: reservationForm.checkOut,
+      guest_name: reservationForm.guestName.trim(),
+      guest_phone: reservationForm.guestPhone.trim() || null,
+      guest_email: reservationForm.guestEmail.trim() || null,
+      adult_count: adultCount,
+      child_count: childCount,
+      infant_count: infantCount,
+      guest_count: Math.max(totalGuests, adultCount),
+      operational_notes: "booking_source=Manual",
+      guest_notes: reservationForm.notes.trim(),
+    });
+  };
+
+  const onUpload = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    formData.set("dryRun", String(uploadDryRun));
+    formData.set("sourceAccount", uploadSourceAccount);
+    const summary = await submitCsv(formData);
+    setUploadSummary(summary);
+  };
+
   return (
     <header className="flex h-14 items-center gap-3 border-b border-border bg-card px-4">
       <SidebarTrigger className="-ml-1" />
@@ -542,10 +696,113 @@ function ReservationsHeader() {
         </div>
       </div>
       <div className="flex items-center gap-2">
-        <Button size="sm" className="h-8 gap-1.5 text-xs bg-harbor text-harbor-foreground hover:bg-harbor-deep">
-          <Plus className="h-3.5 w-3.5" />
-          New Reservation
-        </Button>
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogTrigger asChild>
+            <Button size="sm" className="h-8 gap-1.5 text-xs bg-harbor text-harbor-foreground hover:bg-harbor-deep">
+              <Plus className="h-3.5 w-3.5" />
+              New Reservation
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[600px] border-none bg-background/80 backdrop-blur-xl shadow-2xl ring-1 ring-white/10 dark:ring-white/5">
+            <DialogHeader>
+              <DialogTitle>New Reservation</DialogTitle>
+              <DialogDescription>
+                Manually create a reservation or upload a provider CSV.
+              </DialogDescription>
+            </DialogHeader>
+            <Tabs defaultValue="manual" className="mt-4">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="manual">Manual Entry</TabsTrigger>
+                <TabsTrigger value="csv">CSV Upload</TabsTrigger>
+              </TabsList>
+              <TabsContent value="manual" className="space-y-4 pt-4">
+                <form className="space-y-4" onSubmit={onManualCreate}>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Guest Name</Label>
+                    <Input value={reservationForm.guestName} onChange={(event) => setFormField("guestName", event.target.value)} placeholder="John Doe" />
+                    {reservationError.fields.guest_name && <p className="text-xs text-destructive">{reservationError.fields.guest_name}</p>}
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Phone</Label>
+                    <Input value={reservationForm.guestPhone} onChange={(event) => setFormField("guestPhone", event.target.value)} placeholder="+1 234 567 8900" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Email</Label>
+                    <Input value={reservationForm.guestEmail} onChange={(event) => setFormField("guestEmail", event.target.value)} type="email" placeholder="john@example.com" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Property</Label>
+                    <NativeSelect value={reservationForm.propertyId} onChange={(event) => setFormField("propertyId", event.target.value)}>
+                      <option value="">Select Property</option>
+                      {properties.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                    </NativeSelect>
+                    {reservationError.fields.property_id && <p className="text-xs text-destructive">{reservationError.fields.property_id}</p>}
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Room</Label>
+                    <NativeSelect value={reservationForm.roomId} onChange={(event) => setFormField("roomId", event.target.value)}>
+                      <option value="">Select Room</option>
+                      {selectedRooms.map(r => <option key={r.id} value={r.id}>{r.room_number} - {r.room_type}</option>)}
+                    </NativeSelect>
+                    {reservationError.fields.primary_room_id && <p className="text-xs text-destructive">{reservationError.fields.primary_room_id}</p>}
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Check In</Label>
+                    <Input value={reservationForm.checkIn} onChange={(event) => setFormField("checkIn", event.target.value)} type="date" />
+                    {reservationError.fields.check_in_date && <p className="text-xs text-destructive">{reservationError.fields.check_in_date}</p>}
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Check Out</Label>
+                    <Input value={reservationForm.checkOut} onChange={(event) => setFormField("checkOut", event.target.value)} type="date" />
+                    {reservationError.fields.check_out_date && <p className="text-xs text-destructive">{reservationError.fields.check_out_date}</p>}
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Guests</Label>
+                    <div className="flex gap-2">
+                      <Input value={reservationForm.adultCount} onChange={(event) => setFormField("adultCount", event.target.value)} type="number" placeholder="Adults" className="w-full" min="1" />
+                      <Input value={reservationForm.childCount} onChange={(event) => setFormField("childCount", event.target.value)} type="number" placeholder="Child" className="w-full" min="0" />
+                      <Input value={reservationForm.infantCount} onChange={(event) => setFormField("infantCount", event.target.value)} type="number" placeholder="Infant" className="w-full" min="0" />
+                    </div>
+                  </div>
+                  <div className="col-span-2 space-y-2">
+                    <Label>Notes</Label>
+                    <Input value={reservationForm.notes} onChange={(event) => setFormField("notes", event.target.value)} placeholder="Special requests..." />
+                  </div>
+                </div>
+                {reservationMutation.isError && (
+                  <div className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
+                    {reservationError.message}
+                  </div>
+                )}
+                <Button className="w-full" disabled={!canSubmitReservation} type="submit">
+                  {reservationMutation.isPending ? "Creating..." : "Create Reservation"}
+                </Button>
+                </form>
+              </TabsContent>
+              <TabsContent value="csv" className="space-y-4 pt-4">
+                <form className="space-y-4" onSubmit={onUpload}>
+                  <div className="space-y-2">
+                    <Label>Source Account</Label>
+                    <NativeSelect value={uploadSourceAccount} onChange={(e) => setUploadSourceAccount(e.target.value)}>
+                      {sourceAccounts.map((a) => <option key={a} value={a}>{a}</option>)}
+                    </NativeSelect>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>CSV File</Label>
+                    <Input name="file" type="file" accept=".csv" required />
+                  </div>
+                  <div className="flex items-center gap-3 pt-2">
+                    <Switch checked={uploadDryRun} onCheckedChange={setUploadDryRun} />
+                    <span className="text-sm">Dry run</span>
+                  </div>
+                  <Button type="submit" className="w-full">Upload CSV</Button>
+                </form>
+                <SummaryPanel summary={uploadSummary} />
+              </TabsContent>
+            </Tabs>
+          </DialogContent>
+        </Dialog>
       </div>
     </header>
   );

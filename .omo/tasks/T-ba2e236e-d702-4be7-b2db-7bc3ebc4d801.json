@@ -1,0 +1,10 @@
+{
+  "id": "T-ba2e236e-d702-4be7-b2db-7bc3ebc4d801",
+  "subject": "Implement minimal backend performance fixes",
+  "description": "Apply surgical changes for startup Prisma warm-up, request timing, opt-in counts, and dashboard summary endpoint.",
+  "status": "completed",
+  "activeForm": "Implementing backend performance fixes",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1b1e53cebffeXv6DQPvv66JN3j"
+}

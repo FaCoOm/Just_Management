@@ -1,0 +1,19 @@
+{
+  "id": "T-59e02072-a05b-453b-8505-c376ae788688",
+  "subject": "Send source-grounded recommendations",
+  "description": "Synthesize findings with file/line evidence and send recommendations to lead, then complete team task.",
+  "status": "completed",
+  "activeForm": "Sending source-grounded recommendations",
+  "blocks": [],
+  "blockedBy": [
+    "T-1e2fe831-3ef2-4dfe-9687-25d5347633c4",
+    "T-c705115f-da46-4a98-9a63-2d60bf20e659",
+    "T-5c63b8f1-7c49-4e3f-ad15-64096f4602c9"
+  ],
+  "owner": "backend-architecture-analyst",
+  "metadata": {
+    "teamRunId": "2d9b5c66-2fa2-4e2d-8b5a-528622fd8cea",
+    "teamTaskId": "6"
+  },
+  "threadID": "ses_1b1ef4f3affexD3sWBh0i5SCmC"
+}

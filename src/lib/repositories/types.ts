@@ -3,12 +3,15 @@
  */
 
 import type {
+  Guest,
   Property,
+  PropertyMetrics,
   Room,
   GuestRequest,
   MaintenanceIssue,
   OccupancySeriesPoint,
   Reservation,
+  ReservationCreateInput,
   ReservationStatus,
 } from "@/types/database";
 
@@ -28,6 +31,7 @@ export interface RoomRepository extends Repository<Room> {
 
 // Reservation repository
 export interface ReservationRepository extends Repository<Reservation> {
+  create(input: ReservationCreateInput): Promise<Reservation>;
   getByPropertyId(propertyId: string): Promise<Reservation[]>;
   getByDateRange(startDate: string, endDate: string): Promise<Reservation[]>;
   getByStatus(statuses: ReservationStatus[]): Promise<Reservation[]>;
@@ -54,8 +58,33 @@ export interface StatsRepository {
   ): Promise<OccupancySeriesPoint[]>;
 }
 
+export interface DashboardSummary {
+  properties: Property[];
+  rooms: Room[];
+  reservations: Reservation[];
+  guests: Guest[];
+  requests: GuestRequest[];
+  maintenance: MaintenanceIssue[];
+  metrics: PropertyMetrics[];
+  todayArrivals: Guest[];
+  todayDepartures: Guest[];
+  todayCheckouts: Guest[];
+  totals: {
+    arrivals: number;
+    departures: number;
+    occupancyRate: number;
+    maintenanceOpen: number;
+  };
+  occupancySeries: OccupancySeriesPoint[];
+}
+
+export interface DashboardRepository {
+  getSummary(date: string, days?: number, propertyId?: string): Promise<DashboardSummary>;
+}
+
 // Repository factory - Track B uses the REST API backend
 export interface RepositoryFactory {
+  dashboard: DashboardRepository;
   properties: PropertyRepository;
   rooms: RoomRepository;
   reservations: ReservationRepository;

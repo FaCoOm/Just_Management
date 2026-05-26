@@ -1,0 +1,15 @@
+{
+  "id": "T-d8db90d5-91c1-490b-bb95-41ccf99e1233",
+  "subject": "Analyze Azure data sync",
+  "description": "Identify current Azure database target, inspect database_design data/schema inputs, map sync mechanism into hosted Azure PostgreSQL backend.",
+  "status": "pending",
+  "activeForm": "Analyzing Azure sync architecture",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "scope": "database_design and backend Prisma/ingest sync"
+  },
+  "repoURL": "",
+  "parentID": "",
+  "threadID": "ses_1b1efbbd9fferw6absp2qMVNmC"
+}

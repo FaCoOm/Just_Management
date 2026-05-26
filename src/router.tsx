@@ -62,12 +62,22 @@ const maintenanceRoute = createRoute({
   ),
 });
 
+const integrationsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/settings/integrations",
+  component: lazyRouteComponent(
+    () => import("@/pages/settings/integrations-page"),
+    "IntegrationsPage"
+  ),
+});
+
 const routeTree = rootRoute.addChildren([
   dashboardRoute,
   reservationsRoute,
   guestsRoute,
   roomsRoute,
   maintenanceRoute,
+  integrationsRoute,
 ]);
 
 export const router = createRouter({ routeTree });

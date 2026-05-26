@@ -1,0 +1,10 @@
+{
+  "id": "T-2d2df1c2-1f9b-4e80-b10f-29241a46b725",
+  "subject": "Research high-concurrency web performance docs",
+  "description": "Find official/proven docs for caching, route splitting, prefetch, pagination, compression, indexes, connection pooling across React, TanStack Query/Router, Vite, Express, Prisma, Azure PostgreSQL. External docs/search only; no repo edits.",
+  "status": "completed",
+  "activeForm": "Researching high-concurrency performance guidance",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1bb19e34fffeNegTfcovFpK4Gr"
+}

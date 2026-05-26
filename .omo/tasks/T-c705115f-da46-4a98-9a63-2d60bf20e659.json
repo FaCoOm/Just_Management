@@ -1,0 +1,15 @@
+{
+  "id": "T-c705115f-da46-4a98-9a63-2d60bf20e659",
+  "subject": "Map Prisma and aggregation behavior",
+  "description": "Find Prisma query patterns, counts, includes, pagination, and summary aggregation opportunities.",
+  "status": "completed",
+  "activeForm": "Mapping Prisma and aggregation behavior",
+  "blocks": [],
+  "blockedBy": [],
+  "owner": "backend-architecture-analyst",
+  "metadata": {
+    "teamRunId": "2d9b5c66-2fa2-4e2d-8b5a-528622fd8cea",
+    "teamTaskId": "6"
+  },
+  "threadID": "ses_1b1ef4f3affexD3sWBh0i5SCmC"
+}

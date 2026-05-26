@@ -1,0 +1,12 @@
+{
+  "id": "T-f5bc2bbc-eb28-40f4-a388-16759d9ea8df",
+  "subject": "Implement backend scaffolding",
+  "description": "Add pipeline scaffolding contracts, admin/source mode validation, watcher/email placeholders, without implementing actual CSV/source sync.",
+  "status": "pending",
+  "activeForm": "Implementing backend scaffolding",
+  "blocks": [],
+  "blockedBy": [
+    "T-d090982c-dc95-4a67-8518-9f2ee25d81aa"
+  ],
+  "threadID": "ses_1a2b624daffeM7HLtxvCDBXBLM"
+}

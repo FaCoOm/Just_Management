@@ -1,0 +1,10 @@
+{
+  "id": "T-d9a890ef-3c67-4ff8-8185-ccd50e92a8df",
+  "subject": "Update schema.prisma with owner column and subset tables",
+  "description": "",
+  "status": "completed",
+  "activeForm": "Updating Prisma schema with owner + subset tables",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_19e0357e6ffeCwZ5uhcpH4Og9q"
+}

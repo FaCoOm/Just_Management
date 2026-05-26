@@ -1,0 +1,10 @@
+{
+  "id": "T-64af6c27-329f-4229-81b4-4c038af8b119",
+  "subject": "Research official stack performance docs",
+  "description": "Find official/external best practices for TanStack Query caching/prefetch/staleTime, TanStack Router splitting/loaders, Vite manual chunks, React table virtualization, and dashboard API aggregation patterns.",
+  "status": "completed",
+  "activeForm": "Researching official stack performance docs",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1bb2332ffffe9D7aihajWIfp5t"
+}

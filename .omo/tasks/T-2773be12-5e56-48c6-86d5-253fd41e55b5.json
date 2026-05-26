@@ -1,0 +1,13 @@
+{
+  "id": "T-2773be12-5e56-48c6-86d5-253fd41e55b5",
+  "subject": "Score AGENTS locations",
+  "description": "Score directories by complexity and decide where hierarchical AGENTS.md files belong.",
+  "status": "completed",
+  "activeForm": "Scoring AGENTS locations",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "phase": "scoring"
+  },
+  "threadID": "ses_1a2f043b3ffeFNTtfSRbvyk7Pc"
+}

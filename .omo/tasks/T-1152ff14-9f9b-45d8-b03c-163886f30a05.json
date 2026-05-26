@@ -1,0 +1,12 @@
+{
+  "id": "T-1152ff14-9f9b-45d8-b03c-163886f30a05",
+  "subject": "Design runtime ingestion architecture",
+  "description": "Synthesize CSV upload, watched folder, email/Google-driven ingestion architecture: components, flow, contracts, error handling, ops, security, phased rollout. No code edits.",
+  "status": "pending",
+  "activeForm": "designing runtime ingestion architecture",
+  "blocks": [],
+  "blockedBy": [
+    "T-4afe4a66-cdb5-4537-ae23-ef1e811ebe39"
+  ],
+  "threadID": "ses_1a2b459e5ffezmBK2aQJi0C4Pz"
+}

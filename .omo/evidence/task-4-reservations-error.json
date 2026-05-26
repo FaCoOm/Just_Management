@@ -1,0 +1,16 @@
+{
+  "duplicate_allocation": {
+    "blocked": true,
+    "reservation_id": "00703037-7f76-43c4-91f9-286c6b333243",
+    "room_id": "df3c986e-0822-4209-b519-fe02b96256f7"
+  },
+  "unmapped_external_ref": {
+    "reservation_id": "cb7009be-9ac1-4c33-adba-2ad704f9ae4e",
+    "property_slug": "latte-lounge",
+    "status": "pending",
+    "confirmation_code": "TASK4-UNMAPPED-LISTING",
+    "external_account_present": true,
+    "channel_listing_id": null,
+    "allocation_count": 0
+  }
+}

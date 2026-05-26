@@ -58,6 +58,23 @@ export interface Reservation {
   updated_at: string;
 }
 
+export interface ReservationCreateInput {
+  property_id: string;
+  primary_room_id?: string | null;
+  status?: ReservationStatus;
+  check_in_date: string;
+  check_out_date: string;
+  guest_name: string;
+  guest_phone?: string | null;
+  guest_email?: string | null;
+  adult_count: number;
+  child_count: number;
+  infant_count: number;
+  guest_count: number;
+  operational_notes?: string;
+  guest_notes?: string;
+}
+
 export type ReservationAllocationRole =
   | "stay"
   | "primary"

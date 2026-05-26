@@ -1,0 +1,13 @@
+{
+  "id": "T-58aa17d7-d0e5-49c1-b745-67621dc0d57f",
+  "subject": "Draft detailed report",
+  "description": "Summarize current state, modified files, team config explanation, verification results, and remaining tasks.",
+  "status": "completed",
+  "activeForm": "Drafting detailed report",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "scope": "backend-performance-report"
+  },
+  "threadID": "ses_1b1efbbd9fferw6absp2qMVNmC"
+}

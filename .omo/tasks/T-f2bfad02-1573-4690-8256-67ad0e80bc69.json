@@ -1,0 +1,15 @@
+{
+  "id": "T-f2bfad02-1573-4690-8256-67ad0e80bc69",
+  "subject": "Analyze target session",
+  "description": "Read ses_19d04f30cffe8K0ELlPh6yOdgk and produce complete scenario breakdown with evidence and better-approach notes.",
+  "status": "in_progress",
+  "activeForm": "Analyzing target session",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "session_id": "ses_19d04f30cffe8K0ELlPh6yOdgk",
+    "mode": "analysis-only",
+    "phase": "session-content-extraction"
+  },
+  "threadID": "ses_19bef9fdcffeH97WxohAKRR6gg"
+}

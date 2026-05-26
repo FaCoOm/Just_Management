@@ -1,0 +1,14 @@
+{
+  "id": "T-4d8db4a7-0b63-4889-9a55-eb75b5c79a07",
+  "subject": "Wire withone routes and environment examples",
+  "description": "Register one routes in backend entrypoint and document required env variables in examples.",
+  "status": "pending",
+  "activeForm": "Wiring withone routes and environment examples",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "team": "pipeline-wave-1",
+    "member": "withone-foundations"
+  },
+  "threadID": "ses_1a09b04f6ffesSQ4EO2MC0Icas"
+}

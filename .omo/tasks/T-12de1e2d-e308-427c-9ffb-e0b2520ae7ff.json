@@ -1,0 +1,10 @@
+{
+  "id": "T-12de1e2d-e308-427c-9ffb-e0b2520ae7ff",
+  "subject": "Create cleanup migration",
+  "description": "",
+  "status": "completed",
+  "activeForm": "Creating migration to remove subset tables and enforce provider uniqueness",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_19e0357e6ffeCwZ5uhcpH4Og9q"
+}

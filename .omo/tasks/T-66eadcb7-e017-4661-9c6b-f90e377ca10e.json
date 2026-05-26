@@ -1,0 +1,15 @@
+{
+  "id": "T-66eadcb7-e017-4661-9c6b-f90e377ca10e",
+  "subject": "Save performance plan",
+  "description": "Persist synthesized Track B Azure PostgreSQL performance plan and acceptance criteria before code changes. QA: plan file exists and references Track B only.",
+  "status": "completed",
+  "activeForm": "Saving performance plan",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "qa": "Read saved plan and confirm Track B-only scope"
+  },
+  "repoURL": "",
+  "parentID": "",
+  "threadID": "ses_1bb2a3e20ffeQqV9PT5IdiLy5I"
+}

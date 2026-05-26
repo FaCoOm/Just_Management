@@ -1,0 +1,13 @@
+{
+  "id": "T-3a167f86-e3e1-41d1-985a-2df964f37bfc",
+  "subject": "Collect baseline evidence",
+  "description": "Read key source files and run safe verification/profile commands to validate current backend/frontend load bottlenecks.",
+  "status": "completed",
+  "activeForm": "Collecting baseline evidence",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "teamRunId": "2d9b5c66-2fa2-4e2d-8b5a-528622fd8cea"
+  },
+  "threadID": "ses_1b1efbbd9fferw6absp2qMVNmC"
+}

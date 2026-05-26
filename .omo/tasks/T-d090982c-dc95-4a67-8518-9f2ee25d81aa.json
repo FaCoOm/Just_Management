@@ -1,0 +1,10 @@
+{
+  "id": "T-d090982c-dc95-4a67-8518-9f2ee25d81aa",
+  "subject": "Plan pipeline scaffolding",
+  "description": "Create markdown spec/plan for pipeline and identify code changes excluding CSV/source sync implementation.",
+  "status": "in_progress",
+  "activeForm": "Planning pipeline scaffolding",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1a2b624daffeM7HLtxvCDBXBLM"
+}

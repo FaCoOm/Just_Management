@@ -1,0 +1,10 @@
+{
+  "id": "T-21070765-1ba0-4b3d-937d-5b8fc0f3f2ef",
+  "subject": "Extend seed-builtin.ts for owner column and subset tables",
+  "description": "",
+  "status": "completed",
+  "activeForm": "Updating seed-builtin to populate owner and subset tables",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_19e0357e6ffeCwZ5uhcpH4Og9q"
+}

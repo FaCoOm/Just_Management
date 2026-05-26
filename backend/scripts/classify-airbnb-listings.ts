@@ -53,7 +53,7 @@ type ClassificationOutput = {
 const accountHierarchy: AccountName[] = ["Mujo", "Ruby", "Manuka"];
 const backwardTraceOrder: AccountName[] = ["Manuka", "Ruby", "Mujo"];
 const sourceFiles: Record<AccountName, string> = {
-  Mujo: "Mujo.csv",
+  Mujo: "listings.csv",
   Ruby: "Ruby.csv",
   Manuka: "Manuka.csv",
 };
