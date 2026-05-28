@@ -422,9 +422,11 @@ model watched_files {
   last_sync_run_id  String?   @db.Uuid
   status            String    @default("seen")
   failure_reason    String?
+  target_kind       String    @default("unknown")
 
   @@unique([watch_dir, relative_path, content_sha256])
   @@index([status])
+  @@index([watch_dir, target_kind, status, last_seen_at])
 }
 
 model email_import_messages {
