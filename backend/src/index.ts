@@ -8,12 +8,13 @@ import "dotenv/config";
 import express, { type NextFunction, type Request, type RequestHandler, type Response } from "express";
 import cors from "cors";
 import compression from "compression";
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { registerIngestRoutes } from "./ingest/routes";
+import { startFolderWatcher } from "./ingest/watchers/folder";
+import { prisma } from "./lib/prisma";
 import { registerOneRoutes } from "./routes/one";
 
 const app = express();
-const prisma = new PrismaClient();
 const SLOW_REQUEST_THRESHOLD_MS = Number.parseInt(
   process.env.SLOW_REQUEST_THRESHOLD_MS ?? "500",
   10
@@ -1056,6 +1057,7 @@ async function startServer() {
 
   app.listen(PORT, () => {
     console.log(`Track B server running on port ${PORT}`);
+    startFolderWatcher();
   });
 }
 
