@@ -1,8 +1,8 @@
-import { PrismaClient, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { extractReservations, parseSourceFile } from "../normalizer";
 import { createEmptyIngestSummary, type IngestSummaryResponse } from "../contracts";
 
-const prisma = new PrismaClient();
+import { prisma } from "../../lib/prisma";
 
 function toValidDate(value: string | null): Date | null {
   if (!value) {
@@ -21,7 +21,8 @@ export async function processReservationSync(
   buffer: Buffer,
   mimeType: string,
   sourceAccount: string,
-  isDryRun: boolean
+  isDryRun: boolean,
+  sourceFile = "upload"
 ): Promise<IngestSummaryResponse> {
   let summary = createEmptyIngestSummary("reservations", isDryRun);
   let rows: Record<string, unknown>[];
@@ -91,6 +92,39 @@ export async function processReservationSync(
           let resolvedPropertyId: string | null = null;
           let resolvedRoomId: string | null = null;
           let listingResolutionError: { code: string; reason: string } | null = null;
+          const checkIn = toValidDate(reservation.checkInDate);
+          const checkOut = toValidDate(reservation.checkOutDate);
+          const bookedAt = toValidDate(reservation.bookedAt);
+          const importRow = await tx.provider_reservation_import_rows.create({
+            data: {
+              channel_id: channelId,
+              external_account_id: externalAccountId,
+              source_file: sourceFile,
+              source_row_number: reservation.sourceRowNumber,
+              provider_reservation_id: reservation.providerReservationId,
+              confirmation_code: reservation.confirmationCode,
+              raw_status: reservation.rawStatus,
+              guest_name: reservation.guestName || "Unknown",
+              guest_contact: reservation.guestPhone,
+              adult_count: reservation.adultCount,
+              child_count: reservation.childCount,
+              infant_count: reservation.infantCount,
+              guest_count: reservation.adultCount + reservation.childCount + reservation.infantCount,
+              check_in_date: checkIn ?? new Date(0),
+              check_out_date: checkOut ?? new Date(0),
+              booked_at: bookedAt,
+              listing_alias_value: reservation.listingTitle,
+              raw_payload: reservation.rawPayload as Prisma.InputJsonValue,
+              resolution_status: "pending",
+            },
+          });
+
+          async function markImportUnresolved(reason: string): Promise<void> {
+            await tx.provider_reservation_import_rows.update({
+              where: { id: importRow.id },
+              data: { resolution_status: "unresolved", resolution_notes: reason },
+            });
+          }
 
           if (reservation.listingTitle) {
             const aliases = await tx.channel_listing_aliases.findMany({
@@ -141,44 +175,46 @@ export async function processReservationSync(
           }
 
           if (!resolvedListingId || !resolvedPropertyId || !resolvedRoomId) {
+            const reason = listingResolutionError?.reason ?? `Could not resolve listing title: ${reservation.listingTitle}`;
             deadLetters.push({
               sync_run_id: syncRunId,
               source_row_number: reservation.sourceRowNumber,
               failure_code: listingResolutionError?.code ?? "UNRESOLVED_LISTING",
-              failure_reason: listingResolutionError?.reason ?? `Could not resolve listing title: ${reservation.listingTitle}`,
+              failure_reason: reason,
               normalized_payload: reservation.rawPayload as Prisma.InputJsonValue,
             });
+            await markImportUnresolved(reason);
             summary.deadLetters++;
             return;
           }
 
           if (!reservation.confirmationCode) {
+            const reason = "Reservation missing confirmation code.";
             deadLetters.push({
               sync_run_id: syncRunId,
               source_row_number: reservation.sourceRowNumber,
               failure_code: "MISSING_CONFIRMATION_CODE",
-              failure_reason: "Reservation missing confirmation code.",
+              failure_reason: reason,
               normalized_payload: reservation.rawPayload as Prisma.InputJsonValue,
             });
+            await markImportUnresolved(reason);
             summary.deadLetters++;
             return;
           }
 
-          const checkIn = toValidDate(reservation.checkInDate);
-          const checkOut = toValidDate(reservation.checkOutDate);
           if (!checkIn || !checkOut) {
+            const reason = "Reservation has invalid or missing check-in/check-out dates.";
             deadLetters.push({
               sync_run_id: syncRunId,
               source_row_number: reservation.sourceRowNumber,
               failure_code: "MALFORMED_FILE",
-              failure_reason: "Reservation has invalid or missing check-in/check-out dates.",
+              failure_reason: reason,
               normalized_payload: reservation.rawPayload as Prisma.InputJsonValue,
             });
+            await markImportUnresolved(reason);
             summary.deadLetters++;
             return;
           }
-
-          const bookedAt = toValidDate(reservation.bookedAt);
 
           const existingRef = await tx.reservation_external_refs.findFirst({
             where: {
@@ -298,6 +334,15 @@ export async function processReservationSync(
 
              summary.created++;
           }
+          await tx.provider_reservation_import_rows.update({
+            where: { id: importRow.id },
+            data: {
+              resolution_status: "resolved",
+              resolution_method: "listing-title",
+              resolved_channel_listing_id: resolvedListingId,
+              reservation_id: resId,
+            },
+          });
         });
       } catch (err) {
         summary.errors.push({
