@@ -12,6 +12,7 @@
 - `services/listings.ts` syncs listing rows.
 - `services/reservations.ts` syncs reservation rows.
 - `services/sheets.ts` fetches Google Sheets data.
+- `watchers/folder.ts` watches `M_MANAGEMENT_IMPORT_ROOT/listings/inbox` and `M_MANAGEMENT_IMPORT_ROOT/reservations/inbox`; processed files move to `processed/` and failures move to `quarantine/` during `folder-watch` pipeline runs.
 
 ## Rules
 - `dryRun` is mandatory for ingest endpoints; reject missing or non-boolean values.
@@ -20,6 +21,9 @@
 - Use `provider_reservation_import_rows` for import traceability.
 - Preserve `legacy_guest_reservation_backfills` compatibility when bridging guest-labeled surfaces.
 - Keep `routes.ts` thin: request validation, upload parsing, service dispatch, response status.
+- Use `watched_files.target_kind` for folder-watch routing. Do not infer target kind from filename prefixes.
+- `M_MANAGEMENT_WATCH_DIR` is a deprecated alias; prefer `M_MANAGEMENT_IMPORT_ROOT`.
+- Listing imports must not create inventory unless `M_MANAGEMENT_LISTINGS_CREATE_INVENTORY=true` is explicitly set for trusted seed flows.
 
 ## Anti-Patterns
 - Bypassing `normalizer.ts` and writing raw spreadsheet cells directly to core tables.
