@@ -10,6 +10,7 @@ import {
   getJobHistory,
   getJobById,
   getOrCreateSettings,
+  type TaxExportItemPreview,
 } from "./service";
 
 function asyncHandler(handler: (req: Request, res: Response) => Promise<void>) {
@@ -85,7 +86,7 @@ export function registerTaxExportRoutes(app: Express, prisma: PrismaClient) {
       const jobId = typeof req.query.job_id === "string" ? req.query.job_id : undefined;
       const checkoutDate = typeof req.query.date === "string" ? req.query.date : undefined;
 
-      let items;
+      let items: TaxExportItemPreview[];
       if (jobId) {
         if (!UUID_PATTERN.test(jobId)) {
           res.status(404).json({ error: "Job not found" });
@@ -96,7 +97,27 @@ export function registerTaxExportRoutes(app: Express, prisma: PrismaClient) {
           res.status(404).json({ error: "Job not found" });
           return;
         }
-        items = job.items.map((item) => ({
+        items = job.items.map((item: {
+          invoice_number: string;
+          invoice_date: string;
+          buyer_label: string;
+          payment_method: string;
+          service_description: string;
+          unit: string;
+          quantity: number;
+          unit_price: number;
+          total_amount: number;
+          vat_rate: number;
+          vat_amount: number;
+          guest_name: string;
+          property_name: string;
+          check_in_date: string;
+          check_out_date: string;
+          reservation_id: string;
+          confirmation_code: string | null;
+          status: string;
+          needs_review_reason: string | null;
+        }) => ({
           invoice_number: item.invoice_number,
           invoice_date: item.invoice_date,
           buyer_label: item.buyer_label,

@@ -215,7 +215,7 @@ function parseOptionalMultipart(req: Request, res: Response, next: () => void): 
     return;
   }
 
-  upload.single("file")(req, res, (error) => {
+  upload.single("file")(req as any, res as any, (error) => {
     if (error) {
       sendMalformedMultipartError(res, error);
       return;
