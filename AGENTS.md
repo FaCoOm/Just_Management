@@ -1,6 +1,11 @@
 <!-- intent-skills:start -->
 ## Skill Loading
 
+Default OpenCode behavior:
+- Load and apply local `opencode-karpathy-guidelines` by default for all coding-focused or repository-impacting interactions.
+- Comply with `opencode-karpathy-guidelines` before planning, implementation, review, refactoring, or completion claims.
+- Treat those guidelines as baseline behavior for all agents and sessions; skip only for casual non-technical chat with no repo or implementation impact.
+
 Before substantial work:
 - Run `npx @tanstack/intent@latest list`, or use skills already listed in context.
 - If one local skill clearly matches, run `npx @tanstack/intent@latest load <package>#<skill>` and follow returned `SKILL.md`.
