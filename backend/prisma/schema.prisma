@@ -242,6 +242,7 @@ model reservations {
   provider_reservation_import_rows provider_reservation_import_rows[]
   reservation_external_refs     reservation_external_refs[]
   reservation_room_allocations  reservation_room_allocations[]
+  tax_export_items              tax_export_items[]
 
   @@index([property_id, check_in_date, check_out_date])
   @@index([status])
@@ -422,9 +423,11 @@ model watched_files {
   last_sync_run_id  String?   @db.Uuid
   status            String    @default("seen")
   failure_reason    String?
+  target_kind       String    @default("unknown")
 
   @@unique([watch_dir, relative_path, content_sha256])
   @@index([status])
+  @@index([watch_dir, target_kind, status, last_seen_at])
 }
 
 model email_import_messages {
@@ -460,4 +463,76 @@ model seed_batches {
   notes           String?
 
   @@index([source_dir, status])
+}
+
+
+// =============================================================================
+// Tax Export Models
+// =============================================================================
+
+model tax_export_settings {
+  id                    String   @id @default(uuid()) @db.Uuid
+  default_buyer_label   String   @default("Khách lẻ không lấy hóa đơn")
+  default_payment_method String  @default("Chuyển khoản")
+  default_unit          String   @default("Đêm")
+  default_vat_rate      Int      @default(8)
+  service_name_template String   @default("Dịch vụ thuê phòng ({check_in} - {check_out})")
+  schedule_enabled      Boolean  @default(false)
+  schedule_time         String   @default("18:00")
+  schedule_timezone     String   @default("Asia/Ho_Chi_Minh")
+  created_at            DateTime @default(now()) @db.Timestamptz(6)
+  updated_at            DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+}
+
+model tax_export_jobs {
+  id              String    @id @default(uuid()) @db.Uuid
+  checkout_date   DateTime  @db.Date
+  status          String    @default("pending")
+  total_items     Int       @default(0)
+  exported_count  Int       @default(0)
+  failed_count    Int       @default(0)
+  skipped_count   Int       @default(0)
+  review_count    Int       @default(0)
+  triggered_by    String    @default("manual")
+  started_at      DateTime  @default(now()) @db.Timestamptz(6)
+  completed_at    DateTime? @db.Timestamptz(6)
+  error_message   String?
+  created_at      DateTime  @default(now()) @db.Timestamptz(6)
+
+  items tax_export_items[]
+
+  @@index([checkout_date])
+  @@index([status])
+}
+
+model tax_export_items {
+  id                  String    @id @default(uuid()) @db.Uuid
+  job_id              String    @db.Uuid
+  reservation_id      String    @db.Uuid
+  invoice_number      String
+  invoice_date        String
+  buyer_label         String    @default("Khách lẻ không lấy hóa đơn")
+  payment_method      String    @default("Chuyển khoản")
+  service_description String
+  unit                String    @default("Đêm")
+  quantity            Int
+  unit_price          Float
+  total_amount        Float
+  vat_rate            Int       @default(8)
+  vat_amount          Float
+  status              String    @default("pending")
+  needs_review_reason String?
+  guest_name          String
+  property_name       String
+  check_in_date       String
+  check_out_date      String
+  confirmation_code   String?
+  created_at          DateTime  @default(now()) @db.Timestamptz(6)
+
+  job         tax_export_jobs @relation(fields: [job_id], references: [id], onDelete: Cascade)
+  reservation reservations    @relation(fields: [reservation_id], references: [id], onDelete: Restrict)
+
+  @@index([job_id])
+  @@index([reservation_id])
+  @@index([status])
 }

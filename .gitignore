@@ -29,3 +29,8 @@ credentials.json
 *.njsproj
 *.sln
 *.sw?
+.env.*
+*.env
+*.pem
+*.key
+.credentials

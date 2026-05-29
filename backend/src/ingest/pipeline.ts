@@ -32,6 +32,12 @@ export interface PipelineStatus {
   googleCredentials: GoogleCredentialStatus;
 }
 
+export function getConfiguredImportRoot(): string | undefined {
+  return resolveOptionalPath(
+    process.env.M_MANAGEMENT_IMPORT_ROOT ?? process.env.M_MANAGEMENT_WATCH_DIR
+  );
+}
+
 interface ServiceAccountMetadata {
   client_email?: unknown;
   project_id?: unknown;
@@ -96,7 +102,7 @@ export function getGoogleCredentialStatus(): GoogleCredentialStatus {
 
 export function getPipelineStatus(): PipelineStatus {
   const enabled = envFlag("INGEST_PIPELINE_ENABLED", true);
-  const watchDirectory = resolveOptionalPath(process.env.M_MANAGEMENT_WATCH_DIR);
+  const importRoot = getConfiguredImportRoot();
   const builtInDirectory = resolveOptionalPath(process.env.M_MANAGEMENT_BUILTIN_SOURCE_DIR ?? "../database_design");
   const emailEnabled = envFlag("M_MANAGEMENT_EMAIL_IMPORT_ENABLED", false);
   const emailProvider = process.env.M_MANAGEMENT_EMAIL_IMPORT_PROVIDER ?? "not configured";
@@ -114,10 +120,10 @@ export function getPipelineStatus(): PipelineStatus {
       },
       {
         mode: "folder-watch",
-        enabled: enabled && Boolean(watchDirectory),
-        state: watchDirectory ? (directoryExists(watchDirectory) ? "ready" : "missing_path") : "not_configured",
-        detail: "Folder watcher records file changes; pipeline/run executes selected files through the ingest services.",
-        path: watchDirectory,
+        enabled: enabled && Boolean(importRoot),
+        state: importRoot ? (directoryExists(importRoot) ? "ready" : "missing_path") : "not_configured",
+        detail: "Folder watcher records listings/inbox and reservations/inbox changes under M_MANAGEMENT_IMPORT_ROOT; pipeline/run executes selected files through ingest services.",
+        path: importRoot,
       },
       {
         mode: "email",

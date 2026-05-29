@@ -14,6 +14,8 @@ import {
   ShieldCheck,
   ChevronDown,
   Coffee,
+  Settings,
+  Receipt,
 } from "lucide-react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
@@ -57,7 +59,7 @@ export function AppSidebar() {
           </div>
           <div className="flex flex-col">
             <span className="text-sm font-semibold leading-tight">
-              Latte Lounge
+              Just Management
             </span>
             <span className="text-xs text-muted-foreground">
               Hospitality Suite
@@ -72,7 +74,7 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/"}>
+                <SidebarMenuButton asChild isActive={pathname === "/"} data-testid="nav-dashboard">
                   <Link to="/">
                     <LayoutDashboard />
                     <span>Dashboard</span>
@@ -80,7 +82,7 @@ export function AppSidebar() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/reservations"}>
+                <SidebarMenuButton asChild isActive={pathname === "/reservations"} data-testid="nav-reservations">
                   <Link to="/reservations">
                     <CalendarCheck />
                     <span>Reservations</span>
@@ -88,15 +90,17 @@ export function AppSidebar() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton>
-                  <ClipboardList />
-                  <span>Check-in / Check-out</span>
+                <SidebarMenuButton asChild isActive={pathname === "/check-in-out"} data-testid="nav-check-in-out">
+                  <Link to="/check-in-out">
+                    <ClipboardList />
+                    <span>Check-in / Check-out</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-              <Collapsible className="group/collapsible">
+              <Collapsible defaultOpen={pathname.startsWith("/guests")} className="group/collapsible">
                 <SidebarMenuItem>
                   <CollapsibleTrigger asChild>
-                    <SidebarMenuButton isActive={pathname === "/guests"}>
+                    <SidebarMenuButton isActive={pathname.startsWith("/guests")} data-testid="nav-guests-group">
                       <Users />
                       <span>Guest Profiles</span>
                       <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
@@ -105,12 +109,14 @@ export function AppSidebar() {
                   <CollapsibleContent>
                     <SidebarMenuSub>
                       <SidebarMenuSubItem>
-                        <SidebarMenuSubButton asChild>
+                        <SidebarMenuSubButton asChild isActive={pathname === "/guests"} data-testid="nav-all-guests">
                           <Link to="/guests">All Guests</Link>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
                       <SidebarMenuSubItem>
-                        <SidebarMenuSubButton>VIP Guests</SidebarMenuSubButton>
+                        <SidebarMenuSubButton asChild isActive={pathname === "/guests/vip"} data-testid="nav-vip-guests">
+                          <Link to="/guests/vip">VIP Guests</Link>
+                        </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
                     </SidebarMenuSub>
                   </CollapsibleContent>
@@ -124,10 +130,10 @@ export function AppSidebar() {
           <SidebarGroupLabel>Property</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              <Collapsible defaultOpen className="group/collapsible">
+              <Collapsible defaultOpen={pathname.startsWith("/rooms")} className="group/collapsible">
                 <SidebarMenuItem>
                   <CollapsibleTrigger asChild>
-                    <SidebarMenuButton isActive={pathname === "/rooms"}>
+                    <SidebarMenuButton isActive={pathname.startsWith("/rooms")} data-testid="nav-rooms-group">
                       <BedDouble />
                       <span>Rooms & Suites</span>
                       <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
@@ -136,30 +142,38 @@ export function AppSidebar() {
                   <CollapsibleContent>
                     <SidebarMenuSub>
                       <SidebarMenuSubItem>
-                        <SidebarMenuSubButton asChild>
+                        <SidebarMenuSubButton asChild isActive={pathname === "/rooms"} data-testid="nav-floor-plan">
                           <Link to="/rooms">Floor Plan</Link>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
                       <SidebarMenuSubItem>
-                        <SidebarMenuSubButton>Room Types</SidebarMenuSubButton>
+                        <SidebarMenuSubButton asChild isActive={pathname === "/rooms/types"} data-testid="nav-room-types">
+                          <Link to="/rooms/types">Room Types</Link>
+                        </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
                       <SidebarMenuSubItem>
-                        <SidebarMenuSubButton>Availability</SidebarMenuSubButton>
+                        <SidebarMenuSubButton asChild isActive={pathname === "/rooms/availability"} data-testid="nav-availability">
+                          <Link to="/rooms/availability">Availability</Link>
+                        </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
                     </SidebarMenuSub>
                   </CollapsibleContent>
                 </SidebarMenuItem>
               </Collapsible>
               <SidebarMenuItem>
-                <SidebarMenuButton>
-                  <Sparkles />
-                  <span>Housekeeping</span>
+                <SidebarMenuButton asChild isActive={pathname === "/housekeeping"} data-testid="nav-housekeeping">
+                  <Link to="/housekeeping">
+                    <Sparkles />
+                    <span>Housekeeping</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton>
-                  <UtensilsCrossed />
-                  <span>Dining & Events</span>
+                <SidebarMenuButton asChild isActive={pathname === "/dining-events"} data-testid="nav-dining-events">
+                  <Link to="/dining-events">
+                    <UtensilsCrossed />
+                    <span>Dining & Events</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -170,18 +184,38 @@ export function AppSidebar() {
           <SidebarGroupLabel>Revenue</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {[
-                { title: "Rate Manager", icon: DollarSign },
-                { title: "Billing & Invoices", icon: FileText },
-                { title: "Channel Distribution", icon: Globe },
-              ].map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton>
-                    <item.icon />
-                    <span>{item.title}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={pathname === "/rate-manager"} data-testid="nav-rate-manager">
+                  <Link to="/rate-manager">
+                    <DollarSign />
+                    <span>Rate Manager</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={pathname === "/billing"} data-testid="nav-billing">
+                  <Link to="/billing">
+                    <FileText />
+                    <span>Billing & Invoices</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={pathname === "/channels"} data-testid="nav-channels">
+                  <Link to="/channels">
+                    <Globe />
+                    <span>Channel Distribution</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={pathname === "/tax-export"} data-testid="nav-tax-export">
+                  <Link to="/tax-export">
+                    <Receipt />
+                    <span>Tax & Compliance</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -191,13 +225,15 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton>
-                  <UserCog />
-                  <span>Staff & Roles</span>
+                <SidebarMenuButton asChild isActive={pathname === "/staff"} data-testid="nav-staff">
+                  <Link to="/staff">
+                    <UserCog />
+                    <span>Staff & Roles</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/maintenance"}>
+                <SidebarMenuButton asChild isActive={pathname === "/maintenance"} data-testid="nav-maintenance">
                   <Link to="/maintenance">
                     <Wrench />
                     <span>Maintenance Logs</span>
@@ -205,9 +241,19 @@ export function AppSidebar() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton>
-                  <ShieldCheck />
-                  <span>Security & Access</span>
+                <SidebarMenuButton asChild isActive={pathname === "/security"} data-testid="nav-security">
+                  <Link to="/security">
+                    <ShieldCheck />
+                    <span>Security & Access</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={pathname === "/settings/integrations"} data-testid="nav-integrations">
+                  <Link to="/settings/integrations">
+                    <Settings />
+                    <span>Integrations</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -220,7 +266,7 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <SidebarMenuButton size="lg">
+                <SidebarMenuButton size="lg" data-testid="user-menu-trigger">
                   <Avatar className="h-8 w-8">
                     <AvatarFallback className="bg-harbor text-harbor-foreground text-xs">
                       RA
@@ -229,7 +275,7 @@ export function AppSidebar() {
                   <div className="flex flex-col text-left">
                     <span className="text-sm font-medium">Robert Austin</span>
                     <span className="text-xs text-muted-foreground">
-                      robert@lattelounge.co
+                      robert@justmanagement.co
                     </span>
                   </div>
                   <ChevronDown className="ml-auto h-4 w-4" />

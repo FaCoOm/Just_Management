@@ -97,6 +97,7 @@ async function main() {
     env: {
       ...process.env,
       PORT: String(PORT),
+      M_MANAGEMENT_LISTINGS_CREATE_INVENTORY: "true",
     },
   });
 
@@ -191,6 +192,10 @@ async function main() {
     }
     if (!Array.isArray(pipelineStatusJson.connectors) || pipelineStatusJson.phase !== "scaffolded") {
       throw new Error(`Pipeline status shape unexpected: ${JSON.stringify(pipelineStatusJson)}`);
+    }
+    const folderWatchConnector = pipelineStatusJson.connectors.find((connector: { mode?: string }) => connector.mode === "folder-watch");
+    if (!folderWatchConnector?.detail?.includes("listings/inbox") || !folderWatchConnector.detail.includes("reservations/inbox")) {
+      throw new Error(`Folder-watch connector should document subfolder layout: ${JSON.stringify(folderWatchConnector)}`);
     }
     if (JSON.stringify(pipelineStatusJson).includes("private_key")) {
       throw new Error("Pipeline status leaked private credential material.");

@@ -1,18 +1,20 @@
-import { PrismaClient, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { extractListings, parseSourceFile } from "../normalizer";
 import { parseInternalName } from "../parser";
 import { createEmptyIngestSummary, type IngestSummaryResponse, type IngestValidationError } from "../contracts";
 
-const prisma = new PrismaClient();
+import { prisma } from "../../lib/prisma";
 
 export async function processListingSync(
   buffer: Buffer,
   mimeType: string,
   sourceAccount: string,
-  isDryRun: boolean
+  isDryRun: boolean,
+  sourceFile?: string
 ): Promise<IngestSummaryResponse> {
   let summary = createEmptyIngestSummary("listings", isDryRun);
   let rows: Record<string, unknown>[];
+  const createMissingInventory = process.env.M_MANAGEMENT_LISTINGS_CREATE_INVENTORY === "true";
 
   try {
     rows = parseSourceFile(buffer, mimeType);
@@ -95,22 +97,38 @@ export async function processListingSync(
       try {
         // Run in transaction for idempotency
         await prisma.$transaction(async (tx) => {
-          // Upsert Property
-          const property = await tx.properties.upsert({
+          let property = await tx.properties.findUnique({
             where: { slug: parserResult.parsed!.propertySlug },
-            update: {},
-            create: {
-              slug: parserResult.parsed!.propertySlug,
-              name: parserResult.parsed!.propertySlug.toUpperCase(),
-            },
           });
+
+          if (!property && createMissingInventory) {
+            property = await tx.properties.create({
+              data: {
+                slug: parserResult.parsed!.propertySlug,
+                name: parserResult.parsed!.propertySlug.toUpperCase(),
+              },
+            });
+          }
+
+          if (!property) {
+            deadLetters.push({
+              sync_run_id: syncRunId,
+              source_file: sourceFile,
+              source_row_number: listing.sourceRowNumber,
+              failure_code: "UNRESOLVED_LISTING",
+              failure_reason: `Property ${parserResult.parsed!.propertySlug} does not exist; set M_MANAGEMENT_LISTINGS_CREATE_INVENTORY=true to create inventory from listings.`,
+              normalized_payload: listing.rawPayload as Prisma.InputJsonValue,
+            });
+            summary.deadLetters++;
+            return;
+          }
 
           const roomNumber = parserResult.parsed!.roomNumber;
           let room = await tx.rooms.findFirst({
             where: { property_id: property.id, room_number: roomNumber },
           });
 
-          if (!room) {
+          if (!room && createMissingInventory) {
             room = await tx.rooms.create({
               data: {
                 property_id: property.id,
@@ -118,6 +136,19 @@ export async function processListingSync(
                 room_name: roomNumber,
               },
             });
+          }
+
+          if (!room) {
+            deadLetters.push({
+              sync_run_id: syncRunId,
+              source_file: sourceFile,
+              source_row_number: listing.sourceRowNumber,
+              failure_code: "UNRESOLVED_LISTING",
+              failure_reason: `Room ${roomNumber} does not exist for property ${parserResult.parsed!.propertySlug}; set M_MANAGEMENT_LISTINGS_CREATE_INVENTORY=true to create inventory from listings.`,
+              normalized_payload: listing.rawPayload as Prisma.InputJsonValue,
+            });
+            summary.deadLetters++;
+            return;
           }
 
           let listingId = "";

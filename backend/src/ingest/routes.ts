@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../lib/prisma";
 import type { Express, Request, Response } from "express";
 import multer from "multer";
 import {
@@ -12,13 +12,14 @@ import {
   type IngestValidationError,
 } from "./contracts";
 import {
+  getConfiguredImportRoot,
   getPipelineStatus,
   isPipelineMode,
   isPipelineTargetKind,
 } from "./pipeline";
 
 type RequestBody = Record<string, unknown>;
-const prisma = new PrismaClient();
+
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -266,26 +267,23 @@ export function registerIngestRoutes(app: Express): void {
       }
 
       if (mode === "folder-watch") {
-        const watchDir = process.env.M_MANAGEMENT_WATCH_DIR;
-        if (!watchDir) {
+        const importRoot = getConfiguredImportRoot();
+        if (!importRoot) {
           res.status(400).json(createEmptyIngestSummary(targetKind, dryRun, [
-            { code: "UNSUPPORTED_SOURCE", field: "M_MANAGEMENT_WATCH_DIR", message: "M_MANAGEMENT_WATCH_DIR is not configured." },
+            { code: "UNSUPPORTED_SOURCE", field: "M_MANAGEMENT_IMPORT_ROOT", message: "M_MANAGEMENT_IMPORT_ROOT is not configured." },
           ]));
           return;
         }
-        const resolvedWatchDir = path.isAbsolute(watchDir) ? watchDir : path.resolve(process.cwd(), watchDir);
-        const targetPrefix = targetKind === "listings" ? /^listings?[._-]/i : /^reservations?[._-]/i;
-        const pending = await prisma.watched_files.findMany({ where: { watch_dir: resolvedWatchDir, status: "seen" }, orderBy: { last_seen_at: "asc" } });
-        const candidates = pending.filter((file) => targetPrefix.test(path.basename(file.relative_path)));
+        const pending = await prisma.watched_files.findMany({ where: { watch_dir: importRoot, target_kind: targetKind, status: "seen" }, orderBy: { last_seen_at: "asc" } });
         const summary = createEmptyIngestSummary(targetKind, dryRun);
         const processor = targetKind === "listings"
           ? (await import("./services/listings.js")).processListingSync
           : (await import("./services/reservations.js")).processReservationSync;
 
-        for (const file of candidates) {
-          const absolutePath = path.join(resolvedWatchDir, file.relative_path);
+        for (const file of pending) {
+          const absolutePath = path.join(importRoot, file.relative_path);
           const buffer = await fs.readFile(absolutePath);
-          const child = await processor(buffer, "text/csv", sourceAccount, dryRun);
+          const child = await processor(buffer, "text/csv", sourceAccount, dryRun, file.relative_path);
           summary.processed += child.processed;
           summary.created += child.created;
           summary.updated += child.updated;
@@ -293,6 +291,12 @@ export function registerIngestRoutes(app: Express): void {
           summary.deadLetters += child.deadLetters;
           summary.errors.push(...child.errors);
           if (!dryRun) {
+            const destinationState = child.errors.length > 0 ? "quarantine" : "processed";
+            const destinationPath = path.join(importRoot, targetKind, destinationState, path.basename(file.relative_path));
+            await fs.mkdir(path.dirname(destinationPath), { recursive: true });
+            await fs.rename(absolutePath, destinationPath).catch((err: NodeJS.ErrnoException) => {
+              if (err.code !== "ENOENT") throw err;
+            });
             await prisma.watched_files.update({
               where: { id: file.id },
               data: {

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Implementation Notes — Reservations Sync Architecture</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body { font-family: ui-sans-serif, system-ui, sans-serif; max-width: 960px; margin: 2rem auto; padding: 0 1.25rem; line-height: 1.55; }
+    h1 { border-bottom: 2px solid currentColor; padding-bottom: .35rem; }
+    h2 { margin-top: 2.25rem; padding-bottom: .25rem; border-bottom: 1px solid #8884; }
+    .meta-block { background: #8881; padding: 1rem 1.25rem; border-radius: 8px; margin: 1rem 0 2rem; }
+    .meta-block dt { font-weight: 600; }
+    .meta-block dd { margin: 0 0 .5rem 0; font-family: ui-monospace, monospace; }
+    .entry { border-left: 4px solid #4a8; background: #4a81; padding: .85rem 1rem; margin: 1rem 0; border-radius: 0 6px 6px 0; }
+    .entry.deviation { border-left-color: #c63; background: #c631; }
+    .entry.tradeoff { border-left-color: #58c; background: #58c1; }
+    .entry.question { border-left-color: #c39; background: #c391; }
+    .entry.event { border-left-color: #888; background: #8881; }
+    .timestamp { font-family: ui-monospace, monospace; font-size: .85rem; opacity: .75; }
+    code { background: #8882; padding: .1rem .35rem; border-radius: 3px; font-size: .92em; }
+  </style>
+</head>
+<body>
+  <h1>Implementation Notes — Reservations Sync Architecture</h1>
+  <dl class="meta-block">
+    <dt>Spec reference</dt><dd>docs/superpowers/specs/2026-05-28-reservations-sync-architecture-design.md</dd>
+    <dt>Started</dt><dd>2026-05-28T03:35:42Z</dd>
+    <dt>Branch</dt><dd>feature/reservations-sync-architecture</dd>
+    <dt>Worktree</dt><dd>C:/Users/Fate_Conqueror/.config/superpowers/worktrees/Just_Management/feature-reservations-sync-architecture</dd>
+    <dt>Base commit</dt><dd>22a2467</dd>
+  </dl>
+
+  <nav><p><a href="#decisions">Design Decisions</a> &middot; <a href="#deviations">Deviations</a> &middot; <a href="#tradeoffs">Tradeoffs</a> &middot; <a href="#questions">Open Questions</a> &middot; <a href="#events">Worktree &amp; Branch Events</a></p></nav>
+
+  <h2 id="decisions">Design Decisions</h2>
+  <article class="entry">
+    <h3>Target kind comes from inbox subfolder</h3>
+    <div><span class="timestamp">2026-05-28T03:55:00Z</span> &middot; files: <code>backend/src/ingest/watchers/folder.ts, backend/src/ingest/routes.ts</code></div>
+    <p><strong>Ambiguity:</strong> Design did not specify whether filename prefixes should remain as fallback routing.</p>
+    <p><strong>Choice:</strong> Removed filename-prefix routing from watcher and route execution. Files under <code>listings/inbox</code> become listings; files under <code>reservations/inbox</code> become reservations.</p>
+    <p><strong>Why:</strong> User chose one root with target subfolders. Keeping filename routing would preserve old ambiguity.</p>
+  </article>
+  <article class="entry">
+    <h3>Shared Prisma singleton</h3>
+    <div><span class="timestamp">2026-05-28T03:50:00Z</span> &middot; files: <code>backend/src/lib/prisma.ts</code></div>
+    <p><strong>Ambiguity:</strong> Existing <code>index.ts</code> exported a Prisma instance, but lower-level ingest modules should not import Express bootstrap.</p>
+    <p><strong>Choice:</strong> Created <code>backend/src/lib/prisma.ts</code> and imported it from routes, services, watcher, and server startup.</p>
+    <p><strong>Why:</strong> Avoids multiple connection pools and lifecycle coupling.</p>
+  </article>
+
+  <h2 id="deviations">Deviations</h2>
+  <article class="entry deviation">
+    <h3>Implementation notes created after edits began</h3>
+    <div><span class="timestamp">2026-05-28T04:05:00Z</span> &middot; files: <code>implementation-notes.html</code></div>
+    <p><strong>Spec says:</strong> Create notes before code edits.</p>
+    <p><strong>Implementation does:</strong> Notes were created after the user invoked <code>/implement-with-notes</code> during continuation.</p>
+    <p><strong>Reason:</strong> The slash-command instruction arrived after approval and after work had started.</p>
+    <p><strong>Reversibility:</strong> Historical order is not reversible; the file now captures decisions, tradeoffs, verification, and open questions.</p>
+  </article>
+  <article class="entry deviation">
+    <h3>Invalid reservation dates use epoch in trace rows</h3>
+    <div><span class="timestamp">2026-05-28T04:00:00Z</span> &middot; files: <code>backend/src/ingest/services/reservations.ts</code></div>
+    <p><strong>Spec says:</strong> Write one <code>provider_reservation_import_rows</code> row per source row before attempting resolution.</p>
+    <p><strong>Implementation does:</strong> Because trace table date columns are non-null, malformed date rows use <code>new Date(0)</code> in trace rows and then mark <code>resolution_status=unresolved</code>.</p>
+    <p><strong>Reason:</strong> Preserves traceability without changing schema nullability in this slice.</p>
+    <p><strong>Reversibility:</strong> Moderate; can make date fields nullable later and remove epoch fallback.</p>
+  </article>
+
+  <h2 id="tradeoffs">Tradeoffs</h2>
+  <article class="entry tradeoff">
+    <h3>Move files during pipeline run, not watcher event</h3>
+    <div><span class="timestamp">2026-05-28T03:58:00Z</span> &middot; files: <code>backend/src/ingest/routes.ts, backend/src/ingest/watchers/folder.ts</code></div>
+    <ul>
+      <li><strong>A (chosen):</strong> watcher only fingerprints files; pipeline run moves to processed/quarantine after processing.</li>
+      <li><strong>B:</strong> watcher moves files immediately; simpler inbox cleanup but risks hiding unprocessed files.</li>
+    </ul>
+    <p><strong>Decision driver:</strong> Existing ingest rules say watcher must not mutate business tables and pipeline/run is explicit execution boundary.</p>
+  </article>
+
+  <h2 id="questions">Open Questions</h2>
+  <article class="entry question">
+    <h3>Trace rows for malformed reservation dates</h3>
+    <div><span class="timestamp">2026-05-28T04:00:00Z</span> &middot; status: <strong>OPEN</strong></div>
+    <p><strong>Question:</strong> Should <code>provider_reservation_import_rows.check_in_date</code> and <code>check_out_date</code> become nullable so malformed rows can be traced without epoch placeholders?</p>
+    <p><strong>Current assumption:</strong> Keep schema additive and use <code>1970-01-01</code> only for unresolved malformed rows.</p>
+    <p><strong>Impact if wrong:</strong> Add migration to make those date fields nullable and update trace insert logic.</p>
+  </article>
+
+  <h2 id="events">Worktree &amp; Branch Events</h2>
+  <article class="entry event">
+    <h3>Implementation started</h3>
+    <div><span class="timestamp">2026-05-28T03:35:42Z</span> &middot; branch: <code>feature/reservations-sync-architecture</code> &middot; commit: <code>22a2467</code></div>
+    <p>Built reservations sync finalisation in isolated global worktree after user approved one-root/subfolder architecture.</p>
+  </article>
+  <article class="entry event">
+    <h3>Verification complete</h3>
+    <div><span class="timestamp">2026-05-28T04:05:00Z</span> &middot; branch: <code>feature/reservations-sync-architecture</code></div>
+    <p>Verified with backend <code>db:generate</code>, <code>db:validate</code> using dummy DATABASE_URL, backend build, root typecheck, and root production build.</p>
+  </article>
+  <article class="entry event">
+    <h3>Ingestion harness blocked by local DB configuration</h3>
+    <div><span class="timestamp">2026-05-28T04:08:00Z</span> &middot; branch: <code>feature/reservations-sync-architecture</code></div>
+    <p><code>npm run verify-ingestion</code> was attempted and failed before executing scenarios because <code>DATABASE_URL</code> is not configured in the shell/worktree. This is an environment blocker, not a TypeScript or schema-validation failure.</p>
+  </article>
+</body>
+</html>

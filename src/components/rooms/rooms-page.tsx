@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
@@ -343,9 +344,11 @@ function RoomsHeader() {
         </div>
       </div>
       <div className="flex items-center gap-2">
-        <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs">
-          <Settings2 className="h-3.5 w-3.5" />
-          Manage Room Types
+        <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs" asChild data-testid="manage-room-types-btn">
+          <Link to="/rooms/types">
+            <Settings2 className="h-3.5 w-3.5" />
+            Manage Room Types
+          </Link>
         </Button>
       </div>
     </header>

@@ -45,18 +45,31 @@ Invoke-RestMethod -Method Post -Uri "http://localhost:3001/api/ingest/pipeline/r
 
 ## 2. Agreed watcher folder
 
-**There is no hardcoded folder.** The watcher path is whatever you set in `M_MANAGEMENT_WATCH_DIR` (env var). `backend/src/ingest/watchers/folder.ts:53-62` reads it on backend startup; if unset, the watcher silently does not start. Same env var gates the `folder-watch` pipeline mode in `backend/src/ingest/routes.ts:269-275`.
+**There is no hardcoded folder.** The watcher root is whatever you set in `M_MANAGEMENT_IMPORT_ROOT` (env var). `M_MANAGEMENT_WATCH_DIR` remains a deprecated fallback alias for one release. `backend/src/ingest/watchers/folder.ts` reads the configured root on backend startup; if unset, the watcher silently does not start. Same root gates the `folder-watch` pipeline mode in `backend/src/ingest/routes.ts`.
 
 Behavior:
 
 - The watcher only **records fingerprints** into `watched_files`. It never writes to business tables on its own.
-- Filenames must start with `listings_`, `listings.`, `listings-`, `reservation_`, etc. (regex in `backend/src/ingest/watchers/folder.ts:11-15`). Other names get marked `skipped`.
+- Target kind is inferred from subfolder, not filename. Drop listing files into `listings/inbox/` and reservation files into `reservations/inbox/`.
+- `folder-watch` moves successful files to `processed/` and failed files to `quarantine/` for the same target kind.
 - To actually ingest, you still POST `/api/ingest/pipeline/run` with `mode=folder-watch`, which then reads pending `watched_files` rows and pushes them through the listing/reservation processors.
 
 Set it in `backend/.env`, e.g.
 
 ```bash
-M_MANAGEMENT_WATCH_DIR=C:\Users\Fate_Conqueror\GitHub\Just_Management\database_design
+M_MANAGEMENT_IMPORT_ROOT=C:\Users\Fate_Conqueror\GitHub\Just_Management\imports
+```
+
+Expected layout:
+
+```text
+imports/
+  listings/inbox/
+  listings/processed/
+  listings/quarantine/
+  reservations/inbox/
+  reservations/processed/
+  reservations/quarantine/
 ```
 
 The defaults in `backend/src/ingest/pipeline.ts:100` set `M_MANAGEMENT_BUILTIN_SOURCE_DIR` to `../database_design` (resolved relative to `backend/`), but **that's the built-in seed source, not the watcher**. The watcher has no default; you choose.
