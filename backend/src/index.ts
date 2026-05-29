@@ -55,7 +55,7 @@ app.use(
     },
   })
 );
-app.use(compression());
+app.use(compression() as unknown as express.RequestHandler);
 app.use(express.json({ limit: "1mb" }));
 app.use((req, res, next) => {
   const startedAt = process.hrtime.bigint();
