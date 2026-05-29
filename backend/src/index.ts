@@ -13,6 +13,7 @@ import { registerIngestRoutes } from "./ingest/routes";
 import { startFolderWatcher } from "./ingest/watchers/folder";
 import { prisma } from "./lib/prisma";
 import { registerOneRoutes } from "./routes/one";
+import { registerTaxExportRoutes } from "./tax-export/routes";
 
 const app = express();
 const SLOW_REQUEST_THRESHOLD_MS = Number.parseInt(
@@ -83,6 +84,7 @@ app.use((req, res, next) => {
 
 registerIngestRoutes(app);
 registerOneRoutes(app, prisma);
+registerTaxExportRoutes(app, prisma);
 
 function getVietnamToday() {
   const parts = new Intl.DateTimeFormat("en-CA", {

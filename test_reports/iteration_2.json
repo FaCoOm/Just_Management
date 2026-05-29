@@ -1,0 +1,81 @@
+{
+  "summary": "Tax Export feature (Wave 5-6) testing completed. All tax export APIs working correctly. Frontend Tax & Compliance page renders with KPI cards, date picker, preview/history tabs, Vietnamese defaults. 14/16 backend tests passed, 2 minor failures due to invalid UUID handling (returns 500 instead of 404). All 11 previously implemented pages pass regression.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "GET /api/tax-export/jobs/:id",
+        "issue": "Returns 500 instead of 404 for invalid UUID format (e.g., 'nonexistent-id-12345'). Should validate UUID format before querying.",
+        "priority": "LOW"
+      },
+      {
+        "endpoint": "GET /api/tax-export/download?job_id=invalid",
+        "issue": "Returns 500 instead of 404 for invalid UUID format. Should validate UUID format before querying.",
+        "priority": "LOW"
+      },
+      {
+        "endpoint": "POST /api/tax-export/run",
+        "issue": "Unique constraint on (checkout_date, status) prevents creating duplicate jobs for same date. This may be intentional but could cause confusion - consider upsert or better error message.",
+        "priority": "LOW"
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_tax_export.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "Consider adding UUID format validation in tax export routes to return 404 instead of 500 for invalid IDs",
+    "Consider improving error handling for duplicate job creation (unique constraint violation)"
+  ],
+  "critical_code_review_comments": [
+    "Tax export service correctly implements Vietnamese tax invoice template format",
+    "All data-testid attributes properly added for testing",
+    "Vietnamese defaults correctly configured (Khách lẻ không lấy hóa đơn, Chuyển khoản, Đêm, 8%)",
+    "Excel generation uses xlsx library correctly with template support"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_tax_export.py"
+  ],
+  "success_rate": {
+    "backend": "87.5% (14/16 tests passed)",
+    "frontend": "100%"
+  },
+  "test_credentials": "N/A - no authentication required",
+  "seed_data_creation": "N/A - uses existing Azure PostgreSQL data",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Tax Export feature fully tested. APIs: GET /api/tax-export/settings, GET /api/tax-export/preview?date=, POST /api/tax-export/run, GET /api/tax-export/download?job_id=, GET /api/tax-export/jobs. Frontend page at /tax-export with KPI cards, date picker, preview/history tabs, Vietnamese defaults section. Ajil Mathew reservation has checkout date 2026-05-31 for testing. Job ID b59f551f-0f9d-482b-85c0-bc7af51ca4e0 exists for download testing.",
+  "tax_export_tests": {
+    "settings_api": "PASS - Returns Vietnamese defaults",
+    "preview_api": "PASS - Returns items for checkout date",
+    "jobs_api": "PASS - Returns job history",
+    "download_api": "PASS - Returns xlsx file",
+    "run_api": "PASS - Creates job (fails with unique constraint if job exists)",
+    "frontend_page": "PASS - All UI elements render correctly",
+    "date_picker": "PASS - Changes preview data",
+    "preview_table": "PASS - Shows guest name, property, service, nights, amounts, status",
+    "history_tab": "PASS - Shows past jobs with download buttons",
+    "vietnamese_defaults": "PASS - Khách lẻ, Chuyển khoản, Đêm, 8%",
+    "sidebar_nav": "PASS - Tax & Compliance link under Revenue section"
+  },
+  "regression_tests": {
+    "dashboard": "PASS",
+    "check_in_out": "PASS",
+    "room_types": "PASS",
+    "availability": "PASS",
+    "housekeeping": "PASS",
+    "dining_events": "PASS",
+    "rate_manager": "PASS",
+    "billing_invoices": "PASS",
+    "channel_distribution": "PASS",
+    "staff_roles": "PASS",
+    "security_access": "PASS",
+    "vip_guests": "PASS"
+  }
+}

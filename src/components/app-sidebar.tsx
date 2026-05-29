@@ -15,6 +15,7 @@ import {
   ChevronDown,
   Coffee,
   Settings,
+  Receipt,
 } from "lucide-react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
@@ -204,6 +205,14 @@ export function AppSidebar() {
                   <Link to="/channels">
                     <Globe />
                     <span>Channel Distribution</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={pathname === "/tax-export"} data-testid="nav-tax-export">
+                  <Link to="/tax-export">
+                    <Receipt />
+                    <span>Tax & Compliance</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

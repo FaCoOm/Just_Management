@@ -161,6 +161,15 @@ const securityAccessRoute = createRoute({
   ),
 });
 
+const taxComplianceRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/tax-export",
+  component: lazyRouteComponent(
+    () => import("@/components/tax-export/tax-export-page"),
+    "TaxExportPage"
+  ),
+});
+
 const integrationsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/settings/integrations",
@@ -187,6 +196,7 @@ const routeTree = rootRoute.addChildren([
   staffRolesRoute,
   maintenanceRoute,
   securityAccessRoute,
+  taxComplianceRoute,
   integrationsRoute,
 ]);
 
