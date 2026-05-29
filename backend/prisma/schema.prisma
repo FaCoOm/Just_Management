@@ -501,7 +501,6 @@ model tax_export_jobs {
 
   items tax_export_items[]
 
-  @@unique([checkout_date, status])
   @@index([checkout_date])
   @@index([status])
 }

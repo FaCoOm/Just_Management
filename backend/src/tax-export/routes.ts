@@ -18,6 +18,8 @@ function asyncHandler(handler: (req: Request, res: Response) => Promise<void>) {
   };
 }
 
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export function registerTaxExportRoutes(app: Express, prisma: PrismaClient) {
   // Get or create settings
   app.get(
@@ -85,6 +87,10 @@ export function registerTaxExportRoutes(app: Express, prisma: PrismaClient) {
 
       let items;
       if (jobId) {
+        if (!UUID_PATTERN.test(jobId)) {
+          res.status(404).json({ error: "Job not found" });
+          return;
+        }
         const job = await getJobById(prisma, jobId);
         if (!job) {
           res.status(404).json({ error: "Job not found" });
@@ -138,6 +144,10 @@ export function registerTaxExportRoutes(app: Express, prisma: PrismaClient) {
   app.get(
     "/api/tax-export/jobs/:id",
     asyncHandler(async (req, res) => {
+      if (!UUID_PATTERN.test(req.params.id)) {
+        res.status(404).json({ error: "Job not found" });
+        return;
+      }
       const job = await getJobById(prisma, req.params.id);
       if (!job) {
         res.status(404).json({ error: "Job not found" });
