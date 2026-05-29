@@ -1,63 +1,147 @@
-Goal
-- Resolve migration issues in track-b so it can deploy to Azure PostgreSQL correctly, then enable the complete Track B (Azure/Express/Prisma) webapp to run end-to-end without Supabase dependency by adding missing REST repository frontend and backend endpoints.
-Constraints & Preferences
-- Track B uses Azure PostgreSQL Flexible Server (not Supabase)
-- supabase/migrations/ files are schema-intent reference only; do NOT deploy to Azure
+# Project Status — Just Management Hospitality Dashboard
+
+**Last Updated**: 2026-05-29
+**Branch**: `feature/dashboard-completion-tax-export`
+**Base**: Track B (Azure PostgreSQL / Express / Prisma)
+
+---
+
+## Goal
+
+Complete every sidebar-promised dashboard page, add same-day checkout Tax-Export with Vietnamese invoice template support, and prepare WithOne integration boundary for Gmail/Sheets enrichment — all without building a full PMS/accounting platform.
+
+## Constraints & Preferences
+
+- Track B uses Azure PostgreSQL Flexible Server (`webdbmujo.postgres.database.azure.com`)
+- `supabase/migrations/` files are schema-intent reference only; do NOT deploy to Azure
 - Prisma migrations are the canonical Azure deployment path
 - No Supabase RLS (anon, authenticated roles) in Azure migration SQL
 - Frontend must support env-based switching between Track A (Supabase) and Track B (REST API)
-Progress
-Done
-- Prisma schema validated and fixed (duplicate index map: names: provider_import_provider_res_idx, provider_import_confirmation_idx → renamed to refs_* in reservation_external_refs)
-- Initial Prisma migration generated (backend/prisma/migrations/20260502000000_init_track_b/migration.sql, 510 lines, 15 tables)
-- Migration patched with CREATE EXTENSION IF NOT EXISTS pgcrypto, set_updated_at_timestamp() trigger function, BEFORE UPDATE triggers for all 9 tables with updated_at
-- Azure migration guard script created (backend/scripts/verify-azure-migration.mjs) - detects banned patterns (RLS, Supabase roles) and required patterns (pgcrypto, trigger)
-- package.json updated with db:validate, db:deploy, db:diff:init, db:verify:migration scripts
-- backend/.env.example updated with Azure PostgreSQL connection string template (sslmode=require)
-- supabase/migrations/AGENTS.md rewritten to clarify reference-only status
-- SPRINT1_STATUS.md updated for current state
-- /api/guest-requests endpoint added to backend
-- /api/guests (legacy compatibility) endpoint added to backend
-- src/lib/repositories/rest-repositories.ts created - full REST API repository factory calling Express backend via fetch
-- src/lib/repositories/index.ts updated to export both Supabase and REST factories
-- src/hooks/use-dashboard-data.ts updated with env-based factory switching (VITE_TRACK env var)
-- src/env.d.ts created with TypeScript declarations for VITE_TRACK, VITE_TRACK_B_API_URL, VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY
-- vite.config.ts updated with proxy for /api → http://localhost:3001
-- Root .env.example created with VITE_TRACK=B preset
-- Root .env created (copy of .env.example)
-- tsconfig.json and tsconfig.app.json fixed with ignoreDeprecations: "6.0"
-- All 3 background explore/librarian agents completed their audits
-- README.md completely rewritten with full Track B architecture, setup, API endpoints, env var docs, deploy flow
-- Git commit b2ff32f committed migration work (8 files changed)
-In Progress
-- Frontend Vite build failing with 200+ type errors (JSX intrinsic elements, Recharts type issues) - these are pre-existing in the repo, not caused by Track B work, but block npm run build
-Blocked
-- (none)
-Key Decisions
-- Prisma is the canonical schema source for Azure; supabase/migrations/ are reference-only
-- VITE_TRACK=B env var controls factory selection in the frontend repository layer
-- Vite dev proxy handles /api → Express backend, avoiding CORS issues in development
-- Auth (Clerk/Auth0) deferred to Sprint 2
-- Import/backfill SQL routines from Track A's migration 7 deferred to Sprint 2
-Next Steps
-1. Fix pre-existing frontend build errors (JSX types issue from removing types: ["vite/client"] in tsconfig.app.json, plus pre-existing Recharts/Chart type errors in shadcn/ui components)
-2. Run npm run build successfully for frontend
-3. Seed data into Azure PostgreSQL (either via seed SQL or API)
-4. Test end-to-end: start backend (npm run dev in backend), start frontend (npm run dev in root), verify dashboard loads data from Express
-5. Commit all remaining changes
-Critical Context
-- Frontend build errors are pre-existing (chart.tsx JSX issues from shadcn/ui + Recharts, also present in main repo)
-- Removing "types": ["vite/client"] from tsconfig.app.json broke JSX.IntrinsicElements - need to restore it or keep it and handle conflict with env.d.ts
-- The verbatimModuleSyntax: true flag means TypeScript requires explicit type keyword on type-only imports (can cause cascading errors)
-- Migration guard test passes clean: no Supabase RLS, pgcrypto present, 15 CREATE TABLE statements, all triggers
-Relevant Files
-- C:\Users\Fate_Conqueror\Documents\GitHub\M_Management-track-b\backend\prisma\migrations\20260502000000_init_track_b\migration.sql - Azure-ready DDL (510 lines, no RLS)
-- C:\Users\Fate_Conqueror\Documents\GitHub\M_Management-track-b\backend\src\index.ts - Express server with 10+ API endpoints
-- C:\Users\Fate_Conqueror\Documents\GitHub\M_Management-track-b\src\lib\repositories\rest-repositories.ts - NEW: Track B REST API repository factory
-- C:\Users\Fate_Conqueror\Documents\GitHub\M_Management-track-b\src\lib\repositories\index.ts - Factory exports for both tracks
-- C:\Users\Fate_Conqueror\Documents\GitHub\M_Management-track-b\src\hooks\use-dashboard-data.ts - Env-based repository selection
-- C:\Users\Fate_Conqueror\Documents\GitHub\M_Management-track-b\src\env.d.ts - TypeScript env declarations
-- C:\Users\Fate_Conqueror\Documents\GitHub\M_Management-track-b\vite.config.ts - Added API proxy
-- C:\Users\Fate_Conqueror\Documents\GitHub\M_Management-track-b\.env.example - Track B env vars
-- C:\Users\Fate_Conqueror\Documents\GitHub\M_Management-track-b\backend\scripts\verify-azure-migration.mjs - Migration guard
-- C:\Users\Fate_Conqueror\Documents\GitHub\M_Management-track-b\README.md - Complete rewrite
+- DESIGN.md is the primary design system (Harbor-blue + brass hospitality theme)
+- Tax-Export outputs `.xlsx` files following user-provided Vietnamese tax invoice template
+- Pages first, tests afterward (per user decision)
+
+---
+
+## Progress
+
+### Done
+
+**Infrastructure (2026-05-29)**
+- Azure PostgreSQL connected and operational (`DATABASE_URL` with `sslmode=require`)
+- Prisma schema pushed with 3 new tax-export models (`tax_export_settings`, `tax_export_jobs`, `tax_export_items`)
+- Backend build pipeline fixed: `"build": "prisma generate && tsc"` — 0 TS errors
+- Pre-existing `@types/compression` Express type conflicts resolved
+- Supervisor bridge: Python reverse proxy (uvicorn port 8001 → Express port 3001)
+- Frontend bridge: Vite dev server on port 3000 via `frontend/package.json`
+- Database seeded with 8 properties, 77 rooms, 61 reservations (local), Azure DB has production data
+
+**Dashboard Pages — 11/11 complete (2026-05-29)**
+1. Check-in / Check-out (`/check-in-out`) — arrivals/departures board, Check In/Out buttons, property filter
+2. Room Types (`/rooms/types`) — room type cards with occupancy bars, property filter
+3. Availability (`/rooms/availability`) — 14-day date grid, arriving/occupied/departing/vacant, week navigation
+4. Housekeeping (`/housekeeping`) — cleanliness board (dirty/cleaning/inspected/ready), checkout-today badges
+5. Dining & Events (`/dining-events`) — event schedule cards, type badges, venue info (mock data)
+6. Rate Manager (`/rate-manager`) — rate calendar by room type/date, weekend surcharge
+7. Billing & Invoices (`/billing`) — TanStack Table with search, status/property filters, pagination
+8. Channel Distribution (`/channels`) — channel cards with external account status (real API data)
+9. Staff & Roles (`/staff`) — staff directory with role badges, search, role filter (mock data)
+10. Security & Access (`/security`) — audit log with severity filtering (mock data)
+11. VIP Guests (`/guests/vip`) — VIP-filtered guest table with pagination
+
+**Sidebar & Routing (2026-05-29)**
+- All 18 routes wired in `src/router.tsx` with lazy loading
+- Sidebar fully rewritten with collapsible groups (Front Office, Property, Revenue, Administration)
+- Brand updated from "Latte Lounge" to "Just Management"
+- "Manage Room Types" button on Rooms page → navigates to `/rooms/types`
+- Guests Export button present (not yet wired to CSV)
+- Maintenance Log Issue button present (not yet wired to dialog)
+
+**Tax-Export — Wave 5-6 partial (2026-05-29)**
+- Tax & Compliance page (`/tax-export`) with date picker, preview table, history tab, download
+- Backend service: `backend/src/tax-export/service.ts` (309 lines) — preview, run, Excel generation
+- Backend routes: `backend/src/tax-export/routes.ts` (207 lines) — 7 REST endpoints
+- Excel output follows Vietnamese template exactly:
+  - Columns F/J/L/P = defaults (buyer label, payment method, unit, VAT 8%)
+  - Columns C/D/E/G/H/I = empty per user spec
+  - Dynamic: A=Invoice#, B=Date, K=Service desc, M=Nights, N=Price, O=Total, Q=VAT
+- Settings API: configurable defaults (buyer label, payment method, unit, VAT rate, service template)
+- `needs_review` status for items missing unit price
+- Job history with per-job download
+
+**Testing (2026-05-29)**
+- Testing Agent Iteration 1: 11/11 frontend pages PASS, sidebar 11/11 navigation PASS
+- Testing Agent Iteration 2: Tax-export backend 14/16 PASS (UUID validation fixed → 16/16), frontend 100% PASS, regression 11/11 PASS
+
+### In Progress
+
+- WithOne Gmail integration for confirmation code search (credentials provided: `sk_live_EXbAp...`)
+- OTA email parser registry (Airbnb, Booking.com, Agoda)
+- Google Sheets upsert writer
+- Connecting mock-data pages to backend CRUD
+
+### Not Started
+
+- Test infrastructure (Vitest frontend, Node test runner backend)
+- Per-reservation Tax-Export row action
+- Scheduled Tax-Export automation
+- Sheet settings and column mapping UI
+- Needs-review correction workflow UI
+- Integration dashboard hardening
+- Accessibility and responsive QA pass
+- Performance and pagination pass
+- Full-system verification docs
+
+---
+
+## Key Decisions
+
+- Prisma is the canonical schema source for Azure; `supabase/migrations/` are reference-only
+- `VITE_TRACK=B` env var controls factory selection in the frontend repository layer
+- Vite dev proxy handles `/api` → Express backend
+- Tax-Export outputs `.xlsx` (user-uploaded template) rather than Google Sheets write (for now)
+- Auth (Clerk/Auth0) deferred
+- Pages built with real API data where available; frontend mock data where backend CRUD not yet built
+- Tests deferred per user request — testing agent used for integration verification
+
+## Next Steps
+
+1. Wire Guests Export → CSV download
+2. Wire Maintenance Log Issue → create dialog with API call
+3. Add backend CRUD for Dining & Events, Staff & Roles, Security audit log
+4. Integrate WithOne Gmail search for OTA confirmation codes
+5. Build OTA email parsers (Airbnb, Booking.com, Agoda)
+6. Add per-reservation Tax-Export row action on Reservations page
+7. Set up Vitest + Node test runner infrastructure
+
+## Relevant Files
+
+### Frontend
+- `src/router.tsx` — 18 lazy routes
+- `src/components/app-sidebar.tsx` — Full sidebar navigation
+- `src/components/check-in-out/check-in-out-page.tsx`
+- `src/components/rooms/room-types-page.tsx`
+- `src/components/rooms/availability-page.tsx`
+- `src/components/housekeeping/housekeeping-page.tsx`
+- `src/components/dining-events/dining-events-page.tsx`
+- `src/components/revenue/rate-manager-page.tsx`
+- `src/components/revenue/billing-invoices-page.tsx`
+- `src/components/revenue/channel-distribution-page.tsx`
+- `src/components/admin/staff-roles-page.tsx`
+- `src/components/admin/security-access-page.tsx`
+- `src/components/guests/vip-guests-page.tsx`
+- `src/components/tax-export/tax-export-page.tsx`
+
+### Backend
+- `backend/src/index.ts` — Express server (tax-export routes registered)
+- `backend/src/tax-export/service.ts` — Tax-export core service
+- `backend/src/tax-export/routes.ts` — Tax-export REST API (7 endpoints)
+- `backend/prisma/schema.prisma` — 3 new tax-export models
+- `backend/fixtures/Tax_export_template.xlsx` — Vietnamese invoice template
+- `backend/scripts/seed.ts` — Database seed script
+- `backend/server.py` — Python reverse proxy bridge (uvicorn → Express)
+
+### Config
+- `backend/.env` — Azure PostgreSQL URL + WithOne API key
+- `backend/package.json` — Build: `prisma generate && tsc`
+- `frontend/package.json` — Vite dev bridge on port 3000
