@@ -1,0 +1,20 @@
+{
+  "id": "T-cd9395f9-fe82-480e-8083-18a29d3d7022",
+  "subject": "Search OpenCode/OMO context docs",
+  "description": "Find local references for context inheritance across sessions, compaction, hooks, AGENTS.md, /handoff, session tools, and distinguish built-in vs project/user skill. Return concise bullets with exact paths/lines or commands.",
+  "status": "completed",
+  "activeForm": "searched local docs and config",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "scope": "local-docs",
+    "topic": [
+      "handoff",
+      "session tools",
+      "compaction",
+      "AGENTS.md",
+      "hooks"
+    ]
+  },
+  "threadID": "ses_197c9a868ffeXMBr33jXHRoNEq"
+}

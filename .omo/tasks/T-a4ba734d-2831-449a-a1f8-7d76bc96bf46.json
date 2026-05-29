@@ -1,0 +1,10 @@
+{
+  "id": "T-a4ba734d-2831-449a-a1f8-7d76bc96bf46",
+  "subject": "Run reservation refresh",
+  "description": "Clear existing reservations and import docs/database_design/reservations.csv using repo-supported path.",
+  "status": "in_progress",
+  "activeForm": "Running reservation refresh",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_193992810ffeR8xPgtqUCEFo5y"
+}

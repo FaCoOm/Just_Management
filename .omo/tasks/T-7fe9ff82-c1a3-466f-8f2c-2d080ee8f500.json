@@ -1,0 +1,17 @@
+{
+  "id": "T-7fe9ff82-c1a3-466f-8f2c-2d080ee8f500",
+  "subject": "Inspect Prisma watched_files context",
+  "description": "Read backend/prisma/schema.prisma watched_files model and backend/prisma/migrations directory listing to confirm exact edit location and naming convention.",
+  "status": "completed",
+  "activeForm": "Inspecting Prisma watched_files context",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "area": "backend/prisma",
+    "files": [
+      "backend/prisma/schema.prisma",
+      "backend/prisma/migrations/"
+    ]
+  },
+  "threadID": "ses_1935238c7ffeRDVv5AMvQVa9AF"
+}

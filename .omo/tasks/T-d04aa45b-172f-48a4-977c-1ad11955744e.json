@@ -1,0 +1,14 @@
+{
+  "id": "T-d04aa45b-172f-48a4-977c-1ad11955744e",
+  "subject": "Create reservations sync worktree",
+  "description": "Create isolated git worktree on a new branch for reservations sync architecture work without touching current dirty workspace.",
+  "status": "completed",
+  "activeForm": "Creating isolated reservations sync worktree",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "area": "git-worktree",
+    "requestedBy": "user"
+  },
+  "threadID": "ses_1936ec0aeffeF6ZOfDy4x22H9y"
+}

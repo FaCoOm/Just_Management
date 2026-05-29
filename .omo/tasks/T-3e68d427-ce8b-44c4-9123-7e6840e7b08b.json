@@ -1,0 +1,20 @@
+{
+  "id": "T-3e68d427-ce8b-44c4-9123-7e6840e7b08b",
+  "subject": "Inspect ingest Prisma usage",
+  "description": "Read listed backend ingest files and confirm current PrismaClient imports and singleton exposure.",
+  "status": "completed",
+  "activeForm": "inspecting ingest Prisma usage",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "scope": "backend ingest",
+    "files": [
+      "backend/src/ingest/services/listings.ts",
+      "backend/src/ingest/services/reservations.ts",
+      "backend/src/ingest/watchers/folder.ts",
+      "backend/src/ingest/routes.ts",
+      "backend/src/index.ts"
+    ]
+  },
+  "threadID": "ses_1935262fdffeT9G6OX4EpqBVV7"
+}

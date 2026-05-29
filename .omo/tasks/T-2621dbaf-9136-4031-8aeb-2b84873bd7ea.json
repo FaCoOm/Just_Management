@@ -1,0 +1,10 @@
+{
+  "id": "T-2621dbaf-9136-4031-8aeb-2b84873bd7ea",
+  "subject": "Find reservation refresh path",
+  "description": "Locate existing scripts/routes/services for clearing and importing reservations from CSV.",
+  "status": "completed",
+  "activeForm": "Finding reservation refresh path",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_193992810ffeR8xPgtqUCEFo5y"
+}

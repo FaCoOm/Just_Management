@@ -1,0 +1,14 @@
+{
+  "id": "T-6219cec9-3b00-47e7-b75a-faebce9f0454",
+  "subject": "Verify backend build",
+  "description": "Run backend build and confirm it exits 0 after prisma consolidation.",
+  "status": "completed",
+  "activeForm": "verifying backend build",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "scope": "backend build",
+    "command": "cd backend && npm run build"
+  },
+  "threadID": "ses_1935262fdffeT9G6OX4EpqBVV7"
+}

@@ -1,0 +1,18 @@
+{
+  "id": "T-cbb5994f-d318-4d73-9221-d9b842e809b9",
+  "subject": "Plan sync architecture changes",
+  "description": "Produce concrete implementation plan for reservations sync architecture and watched-folder revisions.",
+  "status": "completed",
+  "activeForm": "Awaiting reservations sync design approval",
+  "blocks": [],
+  "blockedBy": [
+    "T-c5056cd1-e4cd-433c-b59c-254c09a7c020"
+  ],
+  "metadata": {
+    "area": "architecture-plan",
+    "blockedReason": "Brainstorming hard gate: implementation requires approved design first",
+    "recommendedWatcherBoundary": "one root with listings/ and reservations/ subfolders",
+    "verification": "backend db:generate/db:validate/build passed with dummy DATABASE_URL; root typecheck/build passed; verify-ingestion blocked by missing DATABASE_URL"
+  },
+  "threadID": "ses_1936ec0aeffeF6ZOfDy4x22H9y"
+}

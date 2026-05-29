@@ -1,0 +1,14 @@
+{
+  "id": "T-77b6286b-7ce1-476d-b3e3-047b900cb104",
+  "subject": "Find OMO/OpenCode workflow rules",
+  "description": "Search local repo and command docs for rules on commits, docs, handoff, modes, tasks, review, and hooks. Summarize whether auto-commit is forbidden, opt-in, or manual with exact paths and command names.",
+  "status": "pending",
+  "activeForm": "searching project rules and command docs",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "scope": "local-repo-docs",
+    "no-code-changes": true
+  },
+  "threadID": "ses_196d04dcfffeaq4E7teez5dEF7"
+}

@@ -1,0 +1,10 @@
+{
+  "id": "T-f2f914a5-a160-4ba9-9948-7a79e8d35c5c",
+  "subject": "Run verification build and diagnostics",
+  "description": "Run backend build and ensure diagnostics clean on changed files.",
+  "status": "pending",
+  "activeForm": "Running build and diagnostics verification",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1933f7ad6ffegq72X5ev5GW4OE"
+}

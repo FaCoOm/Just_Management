@@ -1,0 +1,14 @@
+{
+  "id": "T-c1f03065-8284-46ac-9134-4f648f37a36d",
+  "subject": "Edit schema and add migration",
+  "description": "Add target_kind field and composite index to watched_files in schema.prisma, then create matching migration.sql under backend/prisma/migrations/20260528000000_watched_files_target_kind/.",
+  "status": "completed",
+  "activeForm": "Editing schema and adding migration",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "area": "backend/prisma",
+    "migration": "20260528000000_watched_files_target_kind"
+  },
+  "threadID": "ses_1935238c7ffeRDVv5AMvQVa9AF"
+}

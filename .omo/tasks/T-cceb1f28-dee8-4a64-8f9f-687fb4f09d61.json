@@ -1,0 +1,10 @@
+{
+  "id": "T-cceb1f28-dee8-4a64-8f9f-687fb4f09d61",
+  "subject": "Verify destructive DB target",
+  "description": "Confirm which configured database would be modified before clearing reservation data.",
+  "status": "completed",
+  "activeForm": "Verifying destructive DB target",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_193992810ffeR8xPgtqUCEFo5y"
+}

@@ -1,0 +1,20 @@
+{
+  "id": "T-cdb4f5da-96b5-41fb-a4e9-3791e9a91b79",
+  "subject": "Create shared Prisma singleton",
+  "description": "Add backend/src/lib/prisma.ts and update ingest services to import shared prisma instance.",
+  "status": "completed",
+  "activeForm": "creating shared Prisma singleton",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "scope": "backend ingest",
+    "files": [
+      "backend/src/lib/prisma.ts",
+      "backend/src/ingest/services/listings.ts",
+      "backend/src/ingest/services/reservations.ts",
+      "backend/src/ingest/watchers/folder.ts",
+      "backend/src/ingest/routes.ts"
+    ]
+  },
+  "threadID": "ses_1935262fdffeT9G6OX4EpqBVV7"
+}

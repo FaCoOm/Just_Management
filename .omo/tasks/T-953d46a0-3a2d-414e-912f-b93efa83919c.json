@@ -1,0 +1,29 @@
+{
+  "id": "T-953d46a0-3a2d-414e-912f-b93efa83919c",
+  "subject": "Identify session branch",
+  "description": "Find branch or commits associated with session ses_1936ec0aeffeF6ZOfDy4x22H9y before publishing anything.",
+  "status": "completed",
+  "activeForm": "Session branch identified",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "session_id": "ses_1936ec0aeffeF6ZOfDy4x22H9y",
+    "operation": "git publish analysis",
+    "likely_branch": "feature/reservations-sync-architecture",
+    "base_warning": "branch includes local main commits not on origin/main",
+    "remote": "origin https://github.com/FaCoOm/Just_Management.git",
+    "upstream": "none",
+    "commits_to_publish": [
+      "afc92a8 docs: document sync architecture",
+      "688dd64 feat: trace reservation imports",
+      "183b4da feat: use import root watcher folders",
+      "522b47d feat: add watched file target kind",
+      "22a2467 chore: save api reconfiguration report in docs/resources",
+      "2c93884 docs: add user-created OMO guide to analysis"
+    ],
+    "needs_confirmation": true
+  },
+  "repoURL": "",
+  "parentID": "",
+  "threadID": "ses_1932a49cdffelPMkUXCtqai1bh"
+}

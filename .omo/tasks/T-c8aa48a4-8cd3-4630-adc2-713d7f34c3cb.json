@@ -1,0 +1,10 @@
+{
+  "id": "T-c8aa48a4-8cd3-4630-adc2-713d7f34c3cb",
+  "subject": "Implement import-root config in pipeline and env docs",
+  "description": "Add M_MANAGEMENT_IMPORT_ROOT with deprecated M_MANAGEMENT_WATCH_DIR alias handling and status text updates.",
+  "status": "in_progress",
+  "activeForm": "Implementing import-root config and env docs",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1933f7ad6ffegq72X5ev5GW4OE"
+}

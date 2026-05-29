@@ -34,3 +34,7 @@ credentials.json
 *.pem
 *.key
 .credentials
+
+# Scratch directories
+.scratch/
+

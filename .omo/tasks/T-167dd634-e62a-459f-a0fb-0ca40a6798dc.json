@@ -1,0 +1,15 @@
+{
+  "id": "T-167dd634-e62a-459f-a0fb-0ca40a6798dc",
+  "subject": "Update watched_files Prisma schema",
+  "description": "Add watched_files.target_kind default field and composite index in backend/prisma/schema.prisma.",
+  "status": "completed",
+  "activeForm": "Updating watched_files Prisma schema",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "files": [
+      "backend/prisma/schema.prisma"
+    ]
+  },
+  "threadID": "ses_1934ed5b4ffeulwbggzOCy26ov"
+}

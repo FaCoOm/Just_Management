@@ -1,0 +1,13 @@
+{
+  "id": "T-7112adb2-a03a-4553-9df9-b26dfcf8f888",
+  "subject": "Map OMO/OpenCode orchestration commands",
+  "description": "Inspect local docs/config and skill inventory to build a practical matrix for analyze-mode, work-with-pr, implement-with-notes, md, review-work, handoff, hyperplan, pre-publish-review, git-master, and compaction/handoff, including caveats and missing command files.",
+  "status": "in_progress",
+  "activeForm": "mapping orchestration commands and skills",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "scope": "docs-and-config-audit"
+  },
+  "threadID": "ses_196d04c48ffeGd6XcnqLoidAPu"
+}

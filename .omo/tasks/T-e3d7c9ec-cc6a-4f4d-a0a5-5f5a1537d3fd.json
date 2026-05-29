@@ -1,0 +1,10 @@
+{
+  "id": "T-e3d7c9ec-cc6a-4f4d-a0a5-5f5a1537d3fd",
+  "subject": "Read required ingest and notepad files",
+  "description": "Read folder watcher, pipeline, env example, and reservations-sync notepads before editing.",
+  "status": "completed",
+  "activeForm": "Reading required files and context",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1933f7ad6ffegq72X5ev5GW4OE"
+}

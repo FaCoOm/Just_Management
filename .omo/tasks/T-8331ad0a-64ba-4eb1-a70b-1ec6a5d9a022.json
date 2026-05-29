@@ -1,0 +1,10 @@
+{
+  "id": "T-8331ad0a-64ba-4eb1-a70b-1ec6a5d9a022",
+  "subject": "Redesign folder watcher for subfolder targets",
+  "description": "Watch listings/reservations inboxes under import root, remove filename inference, pass explicit target kind, and ensure watched_files writes target_kind.",
+  "status": "pending",
+  "activeForm": "Redesigning folder watcher and target handling",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1933f7ad6ffegq72X5ev5GW4OE"
+}

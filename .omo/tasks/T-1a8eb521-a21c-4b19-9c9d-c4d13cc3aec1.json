@@ -1,0 +1,18 @@
+{
+  "id": "T-1a8eb521-a21c-4b19-9c9d-c4d13cc3aec1",
+  "subject": "Run backend verification",
+  "description": "Run cd backend && npm run db:generate, npm run db:validate, and npm run build after schema and migration edits. Capture results and fix only if necessary.",
+  "status": "completed",
+  "activeForm": "Running backend verification",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "area": "backend",
+    "commands": [
+      "npm run db:generate",
+      "npm run db:validate",
+      "npm run build"
+    ]
+  },
+  "threadID": "ses_1935238c7ffeRDVv5AMvQVa9AF"
+}

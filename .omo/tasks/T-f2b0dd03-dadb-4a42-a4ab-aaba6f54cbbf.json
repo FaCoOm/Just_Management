@@ -1,0 +1,14 @@
+{
+  "id": "T-f2b0dd03-dadb-4a42-a4ab-aaba6f54cbbf",
+  "subject": "Search session handoff mechanisms",
+  "description": "Find repo-local evidence for session handoff, compaction, hooks, memory files, and built-in commands/skills in Just_Management/OMO config/docs.",
+  "status": "in_progress",
+  "activeForm": "searching codebase and docs for handoff-related mechanisms",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "scope": "repo-local evidence",
+    "workspace": "Just_Management"
+  },
+  "threadID": "ses_197c9a91dffe0fcqDfurMpucvt"
+}

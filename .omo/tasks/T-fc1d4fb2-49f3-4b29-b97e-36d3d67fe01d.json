@@ -1,0 +1,13 @@
+{
+  "id": "T-fc1d4fb2-49f3-4b29-b97e-36d3d67fe01d",
+  "subject": "Store OMO context guide",
+  "description": "Create a markdown file containing the previously constructed explanation of context tax, selective retrieval, and OMO architecture.",
+  "status": "completed",
+  "activeForm": "Writing OMO context guide",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "target": "docs/analysis/omo-context-architecture-guide.md"
+  },
+  "threadID": "ses_19b6760c2ffeOG2x5xPsGCHlkk"
+}

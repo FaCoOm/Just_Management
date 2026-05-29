@@ -1,0 +1,15 @@
+{
+  "id": "T-99b2f3ec-9e89-462c-b14c-f1a8e4698164",
+  "subject": "Create shared Prisma singleton and update ingest imports",
+  "description": "Add backend/src/lib/prisma.ts and update ingest services/routes to import shared PrismaClient singleton instead of instantiating their own.",
+  "status": "completed",
+  "activeForm": "done",
+  "blocks": [
+    "T-VERIFY"
+  ],
+  "blockedBy": [],
+  "metadata": {
+    "worktree": "C:\\Users\\Fate_Conqueror\\.config\\superpowers\\worktrees\\Just_Management\\feature-reservations-sync-architecture"
+  },
+  "threadID": "ses_1934effa5ffemazsGvpTHTJ0Gn"
+}

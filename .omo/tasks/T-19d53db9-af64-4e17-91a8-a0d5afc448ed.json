@@ -1,0 +1,15 @@
+{
+  "id": "T-19d53db9-af64-4e17-91a8-a0d5afc448ed",
+  "subject": "Verify backend build after Prisma refactor",
+  "description": "Run backend build after shared Prisma singleton refactor and confirm exit 0.",
+  "status": "completed",
+  "activeForm": "done",
+  "blocks": [],
+  "blockedBy": [
+    "T-EDIT"
+  ],
+  "metadata": {
+    "worktree": "C:\\Users\\Fate_Conqueror\\.config\\superpowers\\worktrees\\Just_Management\\feature-reservations-sync-architecture"
+  },
+  "threadID": "ses_1934effa5ffemazsGvpTHTJ0Gn"
+}

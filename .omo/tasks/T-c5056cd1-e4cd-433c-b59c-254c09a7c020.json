@@ -1,0 +1,15 @@
+{
+  "id": "T-c5056cd1-e4cd-433c-b59c-254c09a7c020",
+  "subject": "Inspect sync architecture context",
+  "description": "Review current reservation/listing watched-folder and sync architecture in fresh worktree before planning changes.",
+  "status": "completed",
+  "activeForm": "Inspecting sync architecture context",
+  "blocks": [],
+  "blockedBy": [
+    "T-d04aa45b-172f-48a4-977c-1ad11955744e"
+  ],
+  "metadata": {
+    "area": "backend-ingest-sync"
+  },
+  "threadID": "ses_1936ec0aeffeF6ZOfDy4x22H9y"
+}

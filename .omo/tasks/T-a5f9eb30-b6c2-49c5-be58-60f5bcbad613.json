@@ -1,0 +1,15 @@
+{
+  "id": "T-a5f9eb30-b6c2-49c5-be58-60f5bcbad613",
+  "subject": "Create watched_files migration SQL",
+  "description": "Add migration SQL for watched_files.target_kind column and composite index.",
+  "status": "completed",
+  "activeForm": "Creating watched_files migration SQL",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "files": [
+      "backend/prisma/migrations/20260528000000_watched_files_target_kind/migration.sql"
+    ]
+  },
+  "threadID": "ses_1934ed5b4ffeulwbggzOCy26ov"
+}
