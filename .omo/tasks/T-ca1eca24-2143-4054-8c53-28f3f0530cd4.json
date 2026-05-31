@@ -1,0 +1,12 @@
+{
+  "id": "T-ca1eca24-2143-4054-8c53-28f3f0530cd4",
+  "subject": "Register integrations status route",
+  "description": "Update backend/src/index.ts with GET /api/integrations/status using ONE_CONNECTION_KEY and WithOneProviderConnector.",
+  "status": "pending",
+  "activeForm": "Registering integrations status route",
+  "blocks": [],
+  "blockedBy": [
+    "T-f661f6a1-4dfe-4af4-9d56-fda21d348772"
+  ],
+  "threadID": "ses_1832340daffeIQ12cT330C91oO"
+}

@@ -1,0 +1,12 @@
+{
+  "id": "T-8831e171-ec8c-45ea-9531-ac211fa680db",
+  "subject": "Append findings to required notepads",
+  "description": "Append-only update to .omo/notepads/dashboard-completion-and-integration/*.md with Task 43 findings and exact routes/pages changed.",
+  "status": "pending",
+  "activeForm": "Appending findings to required notepads",
+  "blocks": [],
+  "blockedBy": [
+    "T-86e37583-1629-4c9f-b431-83145b7d1395"
+  ],
+  "threadID": "ses_181cdaef3ffegOEIQrwIt1hkHj"
+}

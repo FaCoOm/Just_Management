@@ -1,0 +1,10 @@
+{
+  "id": "T-aee34de5-dd3e-4a64-b0f8-d6202ef7109f",
+  "subject": "Implement scheduler and retry safety",
+  "description": "Add lean additive backend guardrails for scheduled-run duplicate prevention and explicit retry/idempotency behavior in tax-export path.",
+  "status": "pending",
+  "activeForm": "Implementing scheduler and retry safety",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_182a3ac7bffezRfF6bopvSQGzX"
+}

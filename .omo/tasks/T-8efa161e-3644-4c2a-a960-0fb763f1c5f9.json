@@ -1,0 +1,19 @@
+{
+  "id": "T-8efa161e-3644-4c2a-a960-0fb763f1c5f9",
+  "subject": "Task 11 sourceAccount generalization - edit",
+  "description": "Inspect and edit backend ingest contracts/routes so sourceAccount accepts any non-empty string, preserving API shape and behavior otherwise.",
+  "status": "completed",
+  "activeForm": "edited ingest contracts/routes",
+  "blocks": [],
+  "blockedBy": [],
+  "owner": "assistant",
+  "metadata": {
+    "task": "11",
+    "scope": "backend ingest",
+    "files": [
+      "backend/src/ingest/contracts.ts",
+      "backend/src/ingest/routes.ts"
+    ]
+  },
+  "threadID": "ses_182dde26dffeqmoEuCZ1W0zoVL"
+}

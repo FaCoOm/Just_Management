@@ -1,0 +1,10 @@
+{
+  "id": "T-ff4f3750-7238-4d59-8ffa-a2e91f460a5c",
+  "subject": "Inspect WithOne integration surfaces",
+  "description": "Read required backend integration files: one/client.ts, one/connections.ts, one/google/*, index.ts and backend AGENTS overrides.",
+  "status": "in_progress",
+  "activeForm": "Inspecting integration files for connector design",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1832a25d9ffeuJF5cVY9Qi1Jo6"
+}

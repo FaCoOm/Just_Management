@@ -1,0 +1,12 @@
+{
+  "id": "T-af51c780-5ff0-463c-b49d-a7b6e3729d4b",
+  "subject": "Implement reservation_id plumbing backend/frontend",
+  "description": "Add optional reservationId support in service and route parsing; send reservation_id from reservations row action payload.",
+  "status": "completed",
+  "activeForm": "Implementing reservation_id plumbing backend/frontend",
+  "blocks": [],
+  "blockedBy": [
+    "T-c16400a8-14c8-47dd-b891-6717808e8bce"
+  ],
+  "threadID": "ses_18306d10fffeo8BJE63gPuWvRL"
+}

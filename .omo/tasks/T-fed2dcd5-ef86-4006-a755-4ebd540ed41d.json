@@ -1,0 +1,10 @@
+{
+  "id": "T-fed2dcd5-ef86-4006-a755-4ebd540ed41d",
+  "subject": "Inspect tax-export backend current state",
+  "description": "Read required backend tax-export files and schema; identify minimal scheduler/retry safety gaps.",
+  "status": "in_progress",
+  "activeForm": "Inspecting tax-export backend current state",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_182a3ac7bffezRfF6bopvSQGzX"
+}

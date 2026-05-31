@@ -1,0 +1,13 @@
+{
+  "id": "T-9a4cbf28-9c2d-4631-ad14-6f6e6104d244",
+  "subject": "Verify diagnostics and build",
+  "description": "Run lsp diagnostics for changed files and npm run build.",
+  "status": "pending",
+  "activeForm": "Verifying diagnostics and build",
+  "blocks": [],
+  "blockedBy": [
+    "T-2519932c-16d7-491b-9350-8cf68fd18015",
+    "T-42569d4d-dea2-4e7b-aeff-734937bb3dc2"
+  ],
+  "threadID": "ses_1832a97c9ffeJLaaT5XnHYHgNf"
+}

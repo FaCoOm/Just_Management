@@ -1,0 +1,12 @@
+{
+  "id": "T-6f0d7026-160e-46cb-81d3-e3872c209dba",
+  "subject": "Implement provider connector seam",
+  "description": "Create provider-connector.ts with required types, interface, and WithOneProviderConnector implementation.",
+  "status": "completed",
+  "activeForm": "Implementing provider connector seam",
+  "blocks": [],
+  "blockedBy": [
+    "T-6e29de50-cd4e-449f-8acb-97ff65e69bae"
+  ],
+  "threadID": "ses_18306cf14ffeet4Vf6qbLjvZ6c"
+}

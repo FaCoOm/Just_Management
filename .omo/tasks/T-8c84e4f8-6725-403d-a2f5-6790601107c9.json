@@ -1,0 +1,9 @@
+{
+  "id": "T-8c84e4f8-6725-403d-a2f5-6790601107c9",
+  "subject": "Inspect tax-export backend and required docs",
+  "description": "Read required backend files, AGENTS guidance, and notepads to design minimal retry-safety implementation.",
+  "status": "in_progress",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_181ec2ac2ffeEBDT9VsBkegV8L"
+}

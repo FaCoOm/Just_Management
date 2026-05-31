@@ -1,0 +1,10 @@
+{
+  "id": "T-c16400a8-14c8-47dd-b891-6717808e8bce",
+  "subject": "Inspect tax-export and reservations code paths",
+  "description": "Read required backend and frontend files to confirm current run payload and service signatures for reservation-scoped export.",
+  "status": "completed",
+  "activeForm": "Inspecting tax-export and reservations code paths",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_18306d10fffeo8BJE63gPuWvRL"
+}

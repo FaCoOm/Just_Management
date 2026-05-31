@@ -1,0 +1,15 @@
+{
+  "id": "T-5735e86e-1259-41ee-9bcd-bccc3f32861e",
+  "subject": "Fix reservations-page syntax errors",
+  "description": "Repair syntax errors in src/components/reservations/reservations-page.tsx after tax export button edits; keep per-row tax export action and build clean.",
+  "status": "completed",
+  "activeForm": "fixing syntax errors in reservations page",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "files": [
+      "src/components/reservations/reservations-page.tsx"
+    ]
+  },
+  "threadID": "ses_1830f3699ffetv3hkk9FJ0RHn7"
+}

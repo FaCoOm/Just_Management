@@ -1,0 +1,23 @@
+{
+  "id": "T-c06a057f-e5b1-4a31-9f73-db21444ee4c7",
+  "subject": "Fix unused import build errors",
+  "description": "Remove only listed unused imports from 7 frontend files and verify Vite build passes with zero TS6133/TS6196/TS6192 errors.",
+  "status": "in_progress",
+  "activeForm": "removing unused imports",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "scope": "frontend",
+    "files": [
+      "src/components/guests/vip-guests-page.tsx",
+      "src/components/housekeeping/housekeeping-page.tsx",
+      "src/components/revenue/billing-invoices-page.tsx",
+      "src/components/revenue/channel-distribution-page.tsx",
+      "src/components/revenue/rate-manager-page.tsx",
+      "src/components/rooms/availability-page.tsx",
+      "src/components/rooms/room-types-page.tsx",
+      "src/components/tax-export/tax-export-page.tsx"
+    ]
+  },
+  "threadID": "ses_1832afb50ffeEAEx30kyUl4uFA"
+}

@@ -1,0 +1,10 @@
+{
+  "id": "T-843de4bb-aa8b-470c-9946-4b110f037f22",
+  "subject": "Run diagnostics and builds",
+  "description": "Run lsp diagnostics on changed files and both frontend/backend builds",
+  "status": "pending",
+  "activeForm": "Running diagnostics and builds",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_18323c208ffe2fc4DeGTg25BbK"
+}

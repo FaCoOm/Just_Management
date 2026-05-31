@@ -1,0 +1,12 @@
+{
+  "id": "T-4ac69d23-06b9-4e0e-a873-dd8ebe71ea4e",
+  "subject": "Add integrations status endpoint",
+  "description": "Update backend/src/index.ts to expose GET /api/integrations/status using WithOneProviderConnector.",
+  "status": "completed",
+  "activeForm": "Adding integrations status endpoint",
+  "blocks": [],
+  "blockedBy": [
+    "T-6f0d7026-160e-46cb-81d3-e3872c209dba"
+  ],
+  "threadID": "ses_18306cf14ffeet4Vf6qbLjvZ6c"
+}

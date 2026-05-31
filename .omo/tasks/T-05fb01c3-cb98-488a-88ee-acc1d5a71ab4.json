@@ -1,0 +1,12 @@
+{
+  "id": "T-05fb01c3-cb98-488a-88ee-acc1d5a71ab4",
+  "subject": "Verify diagnostics and builds",
+  "description": "Run lsp diagnostics for changed files and required root/backend builds.",
+  "status": "completed",
+  "activeForm": "Verifying diagnostics and builds",
+  "blocks": [],
+  "blockedBy": [
+    "T-af51c780-5ff0-463c-b49d-a7b6e3729d4b"
+  ],
+  "threadID": "ses_18306d10fffeo8BJE63gPuWvRL"
+}

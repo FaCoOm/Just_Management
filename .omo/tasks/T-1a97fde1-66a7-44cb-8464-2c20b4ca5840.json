@@ -1,0 +1,10 @@
+{
+  "id": "T-1a97fde1-66a7-44cb-8464-2c20b4ca5840",
+  "subject": "Add backend POST /api/maintenance route",
+  "description": "Implement create issue endpoint in backend/src/index.ts using Prisma pattern",
+  "status": "pending",
+  "activeForm": "Adding backend POST /api/maintenance route",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_18323c208ffe2fc4DeGTg25BbK"
+}

@@ -1,0 +1,12 @@
+{
+  "id": "T-a87acf27-509f-460d-861b-6c3b9b0ab578",
+  "subject": "Verify build and diagnostics",
+  "description": "Run backend build and LSP diagnostics on changed files; complete when clean.",
+  "status": "pending",
+  "activeForm": "Verifying build and diagnostics",
+  "blocks": [],
+  "blockedBy": [
+    "T-ca1eca24-2143-4054-8c53-28f3f0530cd4"
+  ],
+  "threadID": "ses_1832340daffeIQ12cT330C91oO"
+}

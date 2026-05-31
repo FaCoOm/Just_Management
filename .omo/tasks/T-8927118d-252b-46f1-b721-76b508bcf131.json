@@ -1,0 +1,10 @@
+{
+  "id": "T-8927118d-252b-46f1-b721-76b508bcf131",
+  "subject": "Run backend verification commands",
+  "description": "Run backend build and Prisma verification if schema changed; capture results.",
+  "status": "pending",
+  "activeForm": "Running backend verification commands",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_182a3ac7bffezRfF6bopvSQGzX"
+}

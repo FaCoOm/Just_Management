@@ -1,0 +1,12 @@
+{
+  "id": "T-42569d4d-dea2-4e7b-aeff-734937bb3dc2",
+  "subject": "Add backend POST /api/maintenance if missing",
+  "description": "Ensure backend exposes POST /api/maintenance accepting requested payload and creating open issue.",
+  "status": "in_progress",
+  "activeForm": "Adding backend maintenance create endpoint if needed",
+  "blocks": [],
+  "blockedBy": [
+    "T-4a83a47f-6457-4ac8-9eb8-d95f87200296"
+  ],
+  "threadID": "ses_1832a97c9ffeJLaaT5XnHYHgNf"
+}

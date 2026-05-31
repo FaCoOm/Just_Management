@@ -1,0 +1,9 @@
+{
+  "id": "T-4429c56d-7b02-478d-b22c-feafecfb55a6",
+  "subject": "Verify backend build and diagnostics",
+  "description": "Run required verification commands and ensure changed files are diagnostics-clean.",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_181ec2ac2ffeEBDT9VsBkegV8L"
+}

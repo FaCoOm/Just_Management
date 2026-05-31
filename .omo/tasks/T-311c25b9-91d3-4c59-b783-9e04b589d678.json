@@ -1,0 +1,15 @@
+{
+  "id": "T-311c25b9-91d3-4c59-b783-9e04b589d678",
+  "subject": "Wire Guests export CSV",
+  "description": "Connect GuestsHeader Export button to client-side CSV download for filtered guests, using existing rooms/properties data in guests-page.tsx only.",
+  "status": "in_progress",
+  "activeForm": "wiring Guests export CSV download",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "files": [
+      "src/components/guests/guests-page.tsx"
+    ]
+  },
+  "threadID": "ses_1832ac8ecffe2ZKVX86cghwMZe"
+}

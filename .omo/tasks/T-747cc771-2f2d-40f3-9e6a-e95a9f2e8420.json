@@ -1,0 +1,10 @@
+{
+  "id": "T-747cc771-2f2d-40f3-9e6a-e95a9f2e8420",
+  "subject": "Wire maintenance Log Issue dialog",
+  "description": "Implement controlled dialog form + submit in src/components/maintenance/maintenance-page.tsx",
+  "status": "pending",
+  "activeForm": "Wiring maintenance Log Issue dialog",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_18323c208ffe2fc4DeGTg25BbK"
+}

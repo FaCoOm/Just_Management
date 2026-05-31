@@ -1,0 +1,15 @@
+{
+  "id": "T-d07c1b0a-5bf2-44ac-bbad-51a8df7479ce",
+  "subject": "Repair maintenance page JSX syntax",
+  "description": "Fix duplicate/stray JSX props in MaintenanceHeader button wiring in src/components/maintenance/maintenance-page.tsx, preserve Log Issue dialog feature, and verify build.",
+  "status": "completed",
+  "activeForm": "fixed JSX syntax in maintenance page",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "files": [
+      "src/components/maintenance/maintenance-page.tsx"
+    ]
+  },
+  "threadID": "ses_1830f3840ffe94OvQVrfA3X7VX"
+}

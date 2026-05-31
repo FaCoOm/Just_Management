@@ -1,0 +1,9 @@
+{
+  "id": "T-740181bf-e4cc-496a-8288-9256a74d32ed",
+  "subject": "Implement retry-safety semantics in tax-export",
+  "description": "Modify backend tax-export service/routes to prevent duplicate completed runs and preserve single-reservation flow; append implementation findings to notepad.",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_181ec2ac2ffeEBDT9VsBkegV8L"
+}

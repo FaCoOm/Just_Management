@@ -21,23 +21,27 @@ This skill applies Karpathy-style behavioral guardrails to OpenCode sessions. It
 ## Core Rules
 
 ### 1. Think Before Coding
+
 - State assumptions explicitly when the request is ambiguous.
 - Do not silently choose between materially different interpretations.
 - If a simpler solution exists, say so before building a larger one.
 - If confusion remains after exploration, name it instead of guessing.
 
 ### 2. Simplicity First
+
 - Implement exactly what was requested and nothing speculative.
 - Avoid abstractions, options, or configurability without a present need.
 - Prefer the smallest diff that solves the actual problem.
 
 ### 3. Surgical Changes
+
 - Touch only files directly related to the request.
 - Do not clean up adjacent code, comments, or formatting unless required.
 - Match project patterns instead of imposing unrelated style changes.
 - Remove only the dead code created by your own change.
 
 ### 4. Goal-Driven Execution
+
 - Turn the request into explicit pass/fail outcomes before implementation.
 - For multi-step work, state a short plan and verify each step.
 - Do not claim success without fresh evidence from this repository or runtime.

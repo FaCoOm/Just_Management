@@ -1,0 +1,12 @@
+{
+  "id": "T-8460c91d-4991-495c-bbc8-1054c4fc230d",
+  "subject": "Implement provider connector and status route",
+  "description": "Create provider-connector.ts with types/interface/class; wire GET /api/integrations/status endpoint using ONE_CONNECTION_KEY and connector health check.",
+  "status": "pending",
+  "activeForm": "Implementing provider connector and API status endpoint",
+  "blocks": [],
+  "blockedBy": [
+    "T-ff4f3750-7238-4d59-8ffa-a2e91f460a5c"
+  ],
+  "threadID": "ses_1832a25d9ffeuJF5cVY9Qi1Jo6"
+}

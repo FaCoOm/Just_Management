@@ -1,0 +1,12 @@
+{
+  "id": "T-f661f6a1-4dfe-4af4-9d56-fda21d348772",
+  "subject": "Implement provider-connector adapter file",
+  "description": "Create backend/src/integrations/provider-connector.ts with required types, interface, and WithOneProviderConnector class using passthrough probe and deferred stubs.",
+  "status": "in_progress",
+  "activeForm": "Implementing provider connector adapter",
+  "blocks": [],
+  "blockedBy": [
+    "T-b7e2f7f1-b68d-48eb-96f4-5a6f37ac1a5f"
+  ],
+  "threadID": "ses_1832340daffeIQ12cT330C91oO"
+}

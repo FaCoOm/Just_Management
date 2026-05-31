@@ -1,0 +1,19 @@
+{
+  "id": "T-ed80063f-93e1-4ebf-a0b0-481b36b95e3b",
+  "subject": "Task 11 sourceAccount generalization - build verify",
+  "description": "Run backend build after ingest sourceAccount generalization and report pass/fail.",
+  "status": "completed",
+  "activeForm": "build passed",
+  "blocks": [],
+  "blockedBy": [
+    "T-unknown"
+  ],
+  "owner": "assistant",
+  "metadata": {
+    "task": "11",
+    "scope": "backend build",
+    "result": "passed",
+    "note": "lsp_diagnostics unavailable because typescript-language-server not installed in workspace"
+  },
+  "threadID": "ses_182dde26dffeqmoEuCZ1W0zoVL"
+}

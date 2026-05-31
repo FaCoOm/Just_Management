@@ -1,0 +1,12 @@
+{
+  "id": "T-86e37583-1629-4c9f-b431-83145b7d1395",
+  "subject": "Implement lean pagination on selected hotspots",
+  "description": "Add additive limit/offset support on highest-value unbounded backend endpoints and minimal frontend usage where needed, preserving backward compatibility and existing filters/semantics.",
+  "status": "pending",
+  "activeForm": "Implementing lean pagination on selected hotspots",
+  "blocks": [],
+  "blockedBy": [
+    "T-78f08fa4-d884-48c6-9cc3-eb9a71c32b73"
+  ],
+  "threadID": "ses_181cdaef3ffegOEIQrwIt1hkHj"
+}

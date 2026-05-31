@@ -1,0 +1,10 @@
+{
+  "id": "T-b7e2f7f1-b68d-48eb-96f4-5a6f37ac1a5f",
+  "subject": "Read integration context files",
+  "description": "Read connections.ts, one/google directory files, and backend/src/index.ts to match existing patterns before coding.",
+  "status": "completed",
+  "activeForm": "Reading integration context files",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1832340daffeIQ12cT330C91oO"
+}

@@ -1,0 +1,12 @@
+{
+  "id": "T-2519932c-16d7-491b-9350-8cf68fd18015",
+  "subject": "Implement create-issue dialog and frontend POST wiring",
+  "description": "Update maintenance page with Log Issue dialog form, submit handler, error handling, reset-on-close, and list refresh.",
+  "status": "pending",
+  "activeForm": "Implementing maintenance create-issue dialog and submit flow",
+  "blocks": [],
+  "blockedBy": [
+    "T-4a83a47f-6457-4ac8-9eb8-d95f87200296"
+  ],
+  "threadID": "ses_1832a97c9ffeJLaaT5XnHYHgNf"
+}

@@ -1,0 +1,10 @@
+{
+  "id": "T-4a83a47f-6457-4ac8-9eb8-d95f87200296",
+  "subject": "Inspect maintenance/frontend/backend files",
+  "description": "Read maintenance page, maintenance data hook, and backend index to confirm current wiring and POST endpoint presence.",
+  "status": "completed",
+  "activeForm": "Inspecting target files for implementation context",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1832a97c9ffeJLaaT5XnHYHgNf"
+}

@@ -1,0 +1,15 @@
+{
+  "id": "T-61a9d4ae-5680-4ca1-8ce7-e562453e089b",
+  "subject": "Fix maintenance page duplicate state and prop wiring",
+  "description": "Remove duplicated filter state declarations in src/components/maintenance/maintenance-page.tsx and pass onLogIssue to MaintenanceHeader in loading and normal render paths.",
+  "status": "completed",
+  "activeForm": "fixed duplicate state and header prop wiring",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "files": [
+      "src/components/maintenance/maintenance-page.tsx"
+    ]
+  },
+  "threadID": "ses_1830f3840ffe94OvQVrfA3X7VX"
+}

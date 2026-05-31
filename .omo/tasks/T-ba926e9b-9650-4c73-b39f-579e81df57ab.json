@@ -1,0 +1,15 @@
+{
+  "id": "T-ba926e9b-9650-4c73-b39f-579e81df57ab",
+  "subject": "Verify build and diagnostics",
+  "description": "Run LSP diagnostics on changed files and backend build.",
+  "status": "pending",
+  "activeForm": "Verifying build and diagnostics",
+  "blocks": [],
+  "blockedBy": [
+    "T-4ac69d23-06b9-4e0e-a873-dd8ebe71ea4e"
+  ],
+  "metadata": {
+    "blockedReason": "Verification blocked: typescript-language-server unavailable for lsp_diagnostics; backend build failed twice with Prisma EPERM rename lock in node_modules/.prisma/client/query_engine-windows.dll.node"
+  },
+  "threadID": "ses_18306cf14ffeet4Vf6qbLjvZ6c"
+}

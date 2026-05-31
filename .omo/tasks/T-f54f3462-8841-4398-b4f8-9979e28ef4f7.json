@@ -1,0 +1,12 @@
+{
+  "id": "T-f54f3462-8841-4398-b4f8-9979e28ef4f7",
+  "subject": "Run required verification and report results",
+  "description": "Run npm run typecheck, npm run build, cd backend && npm run build; run diagnostics on changed files; report exact endpoints/pages changed and outcomes.",
+  "status": "pending",
+  "activeForm": "Running required verification and reporting results",
+  "blocks": [],
+  "blockedBy": [
+    "T-8831e171-ec8c-45ea-9531-ac211fa680db"
+  ],
+  "threadID": "ses_181cdaef3ffegOEIQrwIt1hkHj"
+}

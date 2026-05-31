@@ -1,0 +1,10 @@
+{
+  "id": "T-78f08fa4-d884-48c6-9cc3-eb9a71c32b73",
+  "subject": "Audit heavy list routes/pages for pagination pass",
+  "description": "Inspect backend/src/index.ts, target page files, repository contracts, and required notepads to identify highest-value unbounded list hotspots and existing pagination helpers.",
+  "status": "in_progress",
+  "activeForm": "Auditing heavy list routes/pages for pagination pass",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_181cdaef3ffegOEIQrwIt1hkHj"
+}
