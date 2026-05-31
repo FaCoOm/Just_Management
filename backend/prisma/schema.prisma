@@ -480,6 +480,9 @@ model tax_export_settings {
   schedule_enabled      Boolean  @default(false)
   schedule_time         String   @default("18:00")
   schedule_timezone     String   @default("Asia/Ho_Chi_Minh")
+  sheet_id              String   @default("")
+  sheet_tab             String   @default("")
+  template_columns      Json     @default("{}")
   created_at            DateTime @default(now()) @db.Timestamptz(6)
   updated_at            DateTime @default(now()) @updatedAt @db.Timestamptz(6)
 }
