@@ -47,8 +47,8 @@
 |------|--------|-------|
 | 8. Lean Prisma foundation migration | [x] | Added `tax_export_settings`, `tax_export_jobs`, `tax_export_items` to Prisma schema. Pushed to Azure PostgreSQL via `prisma db push`. |
 | 9. Repository and REST contract expansion | [~] | Tax-export endpoints added (7 routes). Dashboard pages reuse existing REST repositories. No new repository types added for mock-data pages. |
-| 10. WithOne ProviderConnector interface | [ ] | Not started. WithOne client already exists at `backend/src/integrations/one/`. |
-| 11. Source account generalization | [ ] | Not started. Existing channel/account models used as-is for Channel Distribution page. |
+| 10. WithOne ProviderConnector interface | [x] | Added `backend/src/integrations/provider-connector.ts` with `ProviderConnector`/`WithOneProviderConnector` plus `GET /api/integrations/status` in backend. Build verified; runtime returns disconnected when `ONE_CONNECTION_KEY` is unset. |
+| 11. Source account generalization | [x] | Ingest contracts/validation now accept any non-empty `sourceAccount` string instead of three hardcoded literals. Backend build verified. |
 | 12. Page data hooks for 11 new pages | [x] | Pages consume `useReservationsPageData`, `useRoomsPageData`, `useGuestsPageData` (existing hooks). Channel Distribution fetches directly from `/api/channels`. |
 | 13. Router wiring for 11 new pages | [x] | All 18 routes wired in `src/router.tsx` with lazy loading. Sidebar fully linked in `src/components/app-sidebar.tsx`. Verified 11/11 navigation via testing agent. |
 
@@ -61,7 +61,7 @@
 | 17. Availability page | [x] | `/rooms/availability` — 14-day date grid with arriving/occupied/departing/vacant states, week navigation, property filter. 275 lines. |
 | 18. Housekeeping page | [x] | `/housekeeping` — Room cleanliness board (dirty/cleaning/inspected/ready), priority sorting, checkout-today badges, state + property filters. 224 lines. |
 | 19. Dining & Events page | [x] | `/dining-events` — Event schedule cards with type/status badges, venue info, guest count, property filter. **Uses frontend-generated mock data.** 235 lines. |
-| 20. Maintenance Log Issue action | [~] | Button present and visible on Maintenance page. **Not yet wired to a create dialog/API call.** |
+| 20. Maintenance Log Issue action | [x] | Maintenance page now opens a create dialog and POSTs to `POST /api/maintenance`. Root + backend builds pass. Live end-to-end QA blocked locally because backend runtime lacks `DATABASE_URL`. |
 
 ### Wave 4 (Revenue + Admin Pages): Tasks 21-27
 | Task | Status | Notes |
@@ -71,7 +71,7 @@
 | 23. Channel Distribution page | [x] | `/channels` — Channel cards with external account rows, connection status badges. **Fetches real data from `/api/channels`.** 173 lines. |
 | 24. Staff & Roles page | [x] | `/staff` — Staff directory with role badges (admin/manager/accountant/staff), search, role filter. **Uses frontend-generated mock data.** 197 lines. |
 | 25. Security & Access page | [x] | `/security` — Audit log with severity filtering, actor/resource/timestamp info. **Uses frontend-generated mock data.** 186 lines. |
-| 26. Guests Export button | [~] | Export button present and visible on Guests page. **Not yet wired to CSV download.** |
+| 26. Guests Export button | [x] | Guests page Export button now downloads client-side CSV for current filtered rows. Frontend build verified; browser shell verified. |
 | 27. Page integration polish pass | [~] | All pages share consistent header/KPI/content layout, property filters, loading states, empty states. Sidebar uses collapsible groups. Brand updated to "Just Management". No responsive QA pass done. |
 
 ### Wave 5 (Tax-Export Backend): Tasks 28-34
@@ -89,17 +89,17 @@
 | Task | Status | Notes |
 |------|--------|-------|
 | 35. Tax & Compliance page | [x] | `/tax-export` — Date picker, KPI cards, preview table, export history tab, download buttons, settings summary. 542 lines. |
-| 36. Per-reservation Tax-Export row action | [ ] | Not started. |
-| 37. Scheduled Tax-Export UI | [ ] | Not started. Schedule fields exist in `tax_export_settings` schema but no UI or backend trigger. |
+| 36. Per-reservation Tax-Export row action | [x] | Reservations rows now send `{ reservation_id, date }`; backend tax-export service/routes accept `reservation_id` and scope export job/items to single reservation. Builds verified. |
+| 37. Scheduled Tax-Export UI | [x] | Tax page now exposes scheduled export settings (`schedule_enabled`, `schedule_time`, `schedule_timezone`) with save flow through `PUT /api/tax-export/settings`. Frontend + backend builds verified; API persistence and browser save flow manually verified. |
 | 38. Sheet settings and column mapping UI | [ ] | Not started. Excel template used directly instead. |
-| 39. Needs-review correction workflow | [~] | PATCH `/api/tax-export/items/:id` supports status and unit_price updates. No dedicated UI for review queue. |
+| 39. Needs-review correction workflow | [x] | Tax page history tab now loads needs-review jobs, shows review queue rows, supports unit-price edits, and PATCHes item status/unit price from dedicated UI. Frontend + backend builds verified. |
 | 40. Tax-Export end-to-end UI polish | [~] | Core flow works (preview → run → download). Empty/loading states covered. No toast notifications or disconnected-state handling. |
 
 ### Wave 7 (Scheduler, Observability, Hardening): Tasks 41-45
 | Task | Status | Notes |
 |------|--------|-------|
-| 41. Integration dashboard hardening | [ ] | Not started. |
-| 42. Scheduler and retry safety | [ ] | Not started. |
+| 41. Integration dashboard hardening | [x] | Integrations page now shows actionable provider-health guidance, stronger saved-connection empty state, disconnect pending/error feedback, and mode-aware connection-key guidance. Frontend typecheck/build verified; browser QA confirmed disconnected and mode-switch helper states. |
+| 42. Scheduler and retry safety | [x] | Tax-export manual runs now compute deterministic scope keys, reuse existing completed jobs for same checkout/property/reservation scope, and return explicit `runStatus` / `createdNewJob` metadata. Backend build verified; duplicate-run API QA confirmed 201 create then 200 reuse. |
 | 43. Performance and pagination pass | [ ] | Not started. |
 | 44. Accessibility and responsive QA | [ ] | Not started. |
 | 45. Verification docs and evidence index | [ ] | Not started. |

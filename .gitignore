@@ -38,3 +38,6 @@ credentials.json
 # Scratch directories
 .scratch/
 
+# Agent & Tooling Caches
+.playwright-mcp/
+.omo/run-continuation/

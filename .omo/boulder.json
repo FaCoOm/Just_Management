@@ -1,10 +1,49 @@
 {
-  "active_plan": "C:/Users/Fate_Conqueror/.config/superpowers/worktrees/Just_Management/feature-reservations-sync-architecture/.omo/plans/reservations-sync-architecture.md",
-  "started_at": "2026-05-28T03:41:54.678Z",
+  "active_plan": "C:/Users/Olly Troyfan/Documents/GitHub/Just_Management/.omo/plans/dashboard-completion-and-integration.md",
+  "started_at": "2026-05-31T06:58:21.303Z",
   "session_ids": [
-    "ses_1936ec0aeffeF6ZOfDy4x22H9y"
+    "ses_1832ea8dfffeJmkQPX76aPNdeD",
+    "ses_18300154effe3pmp5Svh2cgGSF",
+    "ses_1830014e0ffeU5d1VlDrnWOQGA",
+    "ses_18300111dffeumaPYCg7c7th86",
+    "ses_1830010daffeacHoyo560cnRJ5"
   ],
-  "plan_name": "reservations-sync-architecture",
+  "plan_name": "dashboard-completion-and-integration",
   "agent": "atlas",
-  "worktree_path": "C:/Users/Fate_Conqueror/.config/superpowers/worktrees/Just_Management/feature-reservations-sync-architecture"
+  "session_origins": {
+    "ses_1832ea8dfffeJmkQPX76aPNdeD": "direct",
+    "ses_18300154effe3pmp5Svh2cgGSF": "appended",
+    "ses_1830014e0ffeU5d1VlDrnWOQGA": "appended",
+    "ses_18300111dffeumaPYCg7c7th86": "appended",
+    "ses_1830010daffeacHoyo560cnRJ5": "appended"
+  },
+  "task_sessions": {},
+  "schema_version": 2,
+  "works": {
+    "dashboard-completion-and-integration-legacy": {
+      "work_id": "dashboard-completion-and-integration-legacy",
+      "active_plan": "C:/Users/Olly Troyfan/Documents/GitHub/Just_Management/.omo/plans/dashboard-completion-and-integration.md",
+      "plan_name": "dashboard-completion-and-integration",
+      "started_at": "2026-05-31T06:58:21.303Z",
+      "updated_at": "2026-05-31T07:46:48.907Z",
+      "session_ids": [
+        "ses_1832ea8dfffeJmkQPX76aPNdeD",
+        "ses_18300154effe3pmp5Svh2cgGSF",
+        "ses_1830014e0ffeU5d1VlDrnWOQGA",
+        "ses_18300111dffeumaPYCg7c7th86",
+        "ses_1830010daffeacHoyo560cnRJ5"
+      ],
+      "session_origins": {
+        "ses_1832ea8dfffeJmkQPX76aPNdeD": "direct",
+        "ses_18300154effe3pmp5Svh2cgGSF": "appended",
+        "ses_1830014e0ffeU5d1VlDrnWOQGA": "appended",
+        "ses_18300111dffeumaPYCg7c7th86": "appended",
+        "ses_1830010daffeacHoyo560cnRJ5": "appended"
+      },
+      "agent": "atlas",
+      "task_sessions": {}
+    }
+  },
+  "active_work_id": "dashboard-completion-and-integration-legacy",
+  "updated_at": "2026-05-31T07:46:48.907Z"
 }
