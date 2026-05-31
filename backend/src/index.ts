@@ -1,9 +1,7 @@
-import "dotenv/config";
+import "dotenv/config";
+import { validateEnv } from "./config/env-validator";
 
-/**
- * Track B Backend - Express.js + Prisma server scaffold.
- * Mirrors Track A balanced-core schema contract.
- */
+validateEnv();
 
 import express, { type NextFunction, type Request, type RequestHandler, type Response } from "express";
 import cors from "cors";
@@ -11,6 +9,7 @@ import compression from "compression";
 import { Prisma } from "@prisma/client";
 import { registerIngestRoutes } from "./ingest/routes";
 import { startFolderWatcher } from "./ingest/watchers/folder";
+import { WithOneProviderConnector } from "./integrations/provider-connector";
 import { prisma } from "./lib/prisma";
 import { registerOneRoutes } from "./routes/one";
 import { registerTaxExportRoutes } from "./tax-export/routes";
@@ -326,6 +325,27 @@ function buildOccupancySeries(input: {
 app.get("/health", (_, res) => {
   res.json({ status: "ok", track: "B" });
 });
+
+app.get("/api/integrations/status", asyncHandler(async (_req, res) => {
+  const connectionKey = process.env.ONE_CONNECTION_KEY;
+
+  if (!connectionKey) {
+    res.json({
+      status: "disconnected",
+      provider: "withone",
+      error: "ONE_CONNECTION_KEY not configured",
+    });
+    return;
+  }
+
+  const connector = new WithOneProviderConnector(connectionKey);
+  const status = await connector.getConnectionStatus();
+  res.json({
+    status: status.connected ? "connected" : "disconnected",
+    provider: "withone",
+    ...(status.error ? { error: status.error } : {}),
+  });
+}));
 
 // =============================================================================
 // Properties
@@ -898,6 +918,30 @@ app.get("/api/maintenance", asyncHandler(async (req, res) => {
     }),
     includeCount ? prisma.maintenance_issues.count({ where }) : undefined
   );
+}));
+
+app.post("/api/maintenance", asyncHandler(async (req, res) => {
+  setNoStore(res);
+  const body = (req.body ?? {}) as Record<string, unknown>;
+  const title = bodyString(body, "title").trim();
+  const description = (typeof body.description === "string" ? body.description.trim() : "") || "";
+  const priorityRaw = bodyString(body, "priority").toLowerCase();
+  const propertyId = bodyString(body, "property_id");
+  const roomId = typeof body.room_id === "string" && body.room_id ? body.room_id : null;
+  const errors: string[] = [];
+  if (!title) errors.push("title is required");
+  if (!propertyId) errors.push("property_id is required");
+  const priorityMap: Record<string, string> = { low: "Low", medium: "Medium", high: "High", critical: "Critical" };
+  const severity = priorityMap[priorityRaw];
+  if (!severity) errors.push("priority must be low, medium, high, or critical");
+  if (errors.length > 0) { res.status(400).json({ error: "Invalid maintenance issue", errors }); return; }
+  const property = await prisma.properties.findUnique({ where: { id: propertyId }, select: { id: true } });
+  if (!property) { res.status(404).json({ error: "Property not found" }); return; }
+  const issue = await prisma.maintenance_issues.create({
+    data: { property_id: propertyId, room_id: roomId, title, description, severity: severity!, status: "Open" },
+    select: { id: true, property_id: true, room_id: true, title: true, description: true, severity: true, status: true, created_at: true },
+  });
+  res.status(201).json(issue);
 }));
 
 // =============================================================================

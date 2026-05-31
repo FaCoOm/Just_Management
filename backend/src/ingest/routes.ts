@@ -6,7 +6,6 @@ import multer from "multer";
 import {
   createEmptyIngestSummary,
   ingestFileContract,
-  sourceAccounts,
   sourceTypes,
   type IngestKind,
   type IngestValidationError,
@@ -55,12 +54,12 @@ function validateDryRun(body: RequestBody): IngestValidationError[] {
 
 function validateSourceAccount(body: RequestBody): IngestValidationError[] {
   const sourceAccount = getString(body, "sourceAccount");
-  if (!sourceAccount || !sourceAccounts.includes(sourceAccount as (typeof sourceAccounts)[number])) {
+  if (!sourceAccount || sourceAccount.trim().length === 0) {
     return [
       {
         code: "UNSUPPORTED_SOURCE",
         field: "sourceAccount",
-        message: `sourceAccount must be one of: ${sourceAccounts.join(", ")}.`,
+        message: "sourceAccount is required and must be a non-empty string.",
       },
     ];
   }

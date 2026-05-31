@@ -13,6 +13,22 @@ import {
   type TaxExportItemPreview,
 } from "./service";
 
+function normalizeTemplateColumns(value: unknown): Record<string, string> | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return {};
+  }
+
+  return Object.fromEntries(
+    Object.entries(value).filter(
+      (entry): entry is [string, string] => typeof entry[0] === "string" && typeof entry[1] === "string"
+    )
+  );
+}
+
 function asyncHandler(handler: (req: Request, res: Response) => Promise<void>) {
   return (req: Request, res: Response, next: (err?: unknown) => void) => {
     Promise.resolve(handler(req, res)).catch(next);
@@ -36,6 +52,10 @@ export function registerTaxExportRoutes(app: Express, prisma: PrismaClient) {
     "/api/tax-export/settings",
     asyncHandler(async (req, res) => {
       const body = req.body || {};
+      const templateColumns = normalizeTemplateColumns(body.template_columns);
+      const templateColumnsUpdate = templateColumns !== undefined
+        ? { template_columns: templateColumns }
+        : {};
       const existing = await prisma.tax_export_settings.findFirst();
       if (existing) {
         const updated = await prisma.tax_export_settings.update({
@@ -46,11 +66,31 @@ export function registerTaxExportRoutes(app: Express, prisma: PrismaClient) {
             default_unit: body.default_unit ?? existing.default_unit,
             default_vat_rate: body.default_vat_rate ?? existing.default_vat_rate,
             service_name_template: body.service_name_template ?? existing.service_name_template,
+            schedule_enabled: body.schedule_enabled ?? existing.schedule_enabled,
+            schedule_time: body.schedule_time ?? existing.schedule_time,
+            schedule_timezone: body.schedule_timezone ?? existing.schedule_timezone,
+            sheet_id: body.sheet_id ?? existing.sheet_id,
+            sheet_tab: body.sheet_tab ?? existing.sheet_tab,
+            ...templateColumnsUpdate,
           },
         });
         res.json(updated);
       } else {
-        const created = await prisma.tax_export_settings.create({ data: body });
+        const created = await prisma.tax_export_settings.create({
+          data: {
+            default_buyer_label: body.default_buyer_label,
+            default_payment_method: body.default_payment_method,
+            default_unit: body.default_unit,
+            default_vat_rate: body.default_vat_rate,
+            service_name_template: body.service_name_template,
+            schedule_enabled: body.schedule_enabled,
+            schedule_time: body.schedule_time,
+            schedule_timezone: body.schedule_timezone,
+            sheet_id: body.sheet_id,
+            sheet_tab: body.sheet_tab,
+            template_columns: templateColumns,
+          },
+        });
         res.json(created);
       }
     })
@@ -74,8 +114,9 @@ export function registerTaxExportRoutes(app: Express, prisma: PrismaClient) {
       const body = req.body || {};
       const checkoutDate = body.date ?? body.checkout_date;
       const propertyId = body.property_id;
-      const result = await runTaxExport(prisma, checkoutDate, propertyId);
-      res.status(201).json(result);
+      const reservationId = body.reservation_id;
+      const result = await runTaxExport(prisma, checkoutDate, propertyId, reservationId);
+      res.status(result.createdNewJob ? 201 : 200).json(result);
     })
   );
 

@@ -4,8 +4,7 @@ export type IngestKind = (typeof ingestKinds)[number];
 export const sourceTypes = ["json", "multipart", "google-sheets"] as const;
 export type IngestSourceType = (typeof sourceTypes)[number];
 
-export const sourceAccounts = ["airbnb-main", "airbnb-ruby", "airbnb-manuka22"] as const;
-export type SourceAccount = (typeof sourceAccounts)[number];
+export type SourceAccount = string;
 
 export const ingestErrorCodes = [
   "MISSING_DRY_RUN",
