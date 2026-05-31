@@ -63,7 +63,7 @@ export function HousekeepingPage() {
       .map((room) => {
         const cleanState = deriveCleanState(room);
         const checkoutToday = room.status === "Check-Out Pending";
-        const priority = cleanState === "dirty" && checkoutToday ? "high" : cleanState === "dirty" ? "normal" : "low";
+        const priority: "high" | "normal" | "low" = cleanState === "dirty" && checkoutToday ? "high" : cleanState === "dirty" ? "normal" : "low";
         const propertyName = properties.find((p) => p.id === room.property_id)?.name ?? "";
         return { room, cleanState, priority, checkoutToday, propertyName };
       })
