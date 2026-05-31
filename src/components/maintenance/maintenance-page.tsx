@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type FormEvent } from "react";
 import {
   flexRender,
   getCoreRowModel,
@@ -12,6 +12,14 @@ import {
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -31,6 +39,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useMaintenancePageData } from "@/hooks/use-page-data";
+import { useQueryClient } from "@tanstack/react-query";
 import { formatVietnamDate } from "@/lib/vietnam-time";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -43,6 +52,7 @@ import {
   ListFilter as Filter,
   ChevronLeft,
   ChevronRight,
+  Loader2,
 } from "lucide-react";
 import type {
   MaintenanceIssue,
@@ -231,12 +241,22 @@ function buildMaintenanceColumns(
   ];
 }
 
+const API_BASE = import.meta.env.VITE_TRACK_B_API_URL ?? "http://localhost:3001";
+
 export function MaintenancePage() {
   const { maintenance, properties, rooms, loading } = useMaintenancePageData();
+  const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [severityFilter, setSeverityFilter] = useState<string>("all");
   const [propertyFilter, setPropertyFilter] = useState<string>("all");
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [issueTitle, setIssueTitle] = useState("");
+  const [issueDesc, setIssueDesc] = useState("");
+  const [issuePriority, setIssuePriority] = useState("medium");
+  const [issuePropId, setIssuePropId] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [sorting, setSorting] = useState<SortingState>([
     { id: "severity", desc: false },
   ]);
@@ -281,7 +301,7 @@ export function MaintenancePage() {
   if (loading) {
     return (
       <div className="flex h-full flex-col">
-        <MaintenanceHeader />
+        <MaintenanceHeader onLogIssue={() => { setIssuePropId(properties[0]?.id ?? ""); setIsCreateOpen(true); }} />
         <MaintenanceSkeleton />
       </div>
     );
@@ -300,7 +320,66 @@ export function MaintenancePage() {
 
   return (
     <div className="flex h-full max-h-svh flex-col">
-      <MaintenanceHeader />
+      <MaintenanceHeader onLogIssue={() => { setIssuePropId(properties[0]?.id ?? ""); setIsCreateOpen(true); }} />
+      <Dialog open={isCreateOpen} onOpenChange={(open) => { setIsCreateOpen(open); if (!open) { setIssueTitle(""); setIssueDesc(""); setIssuePriority("medium"); setSubmitError(null); } }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader><DialogTitle className="text-sm">Log Maintenance Issue</DialogTitle></DialogHeader>
+          <form onSubmit={async (e: FormEvent<HTMLFormElement>) => {
+            e.preventDefault();
+            if (!issueTitle.trim()) { setSubmitError("Title is required."); return; }
+            if (!issuePropId) { setSubmitError("Property is required."); return; }
+            setSubmitting(true); setSubmitError(null);
+            try {
+              const res = await fetch(`${API_BASE}/api/maintenance`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title: issueTitle.trim(), description: issueDesc.trim(), priority: issuePriority, property_id: issuePropId, status: "open" }) });
+              if (!res.ok) { const d = await res.json().catch(() => ({})); throw new Error((d as { error?: string }).error ?? "Failed to create issue."); }
+              await queryClient.invalidateQueries();
+              setIsCreateOpen(false);
+              setIssueTitle(""); setIssueDesc(""); setIssuePriority("medium"); setSubmitError(null);
+            } catch (err) { setSubmitError(err instanceof Error ? err.message : "Failed to create issue."); }
+            finally { setSubmitting(false); }
+          }} className="space-y-3 pt-2">
+            <div className="space-y-1">
+              <label className="text-xs font-medium">Title <span className="text-destructive">*</span></label>
+              <Input value={issueTitle} onChange={(e) => setIssueTitle(e.target.value)} placeholder="e.g. AC unit not cooling" className="h-8 text-xs" />
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-medium">Description</label>
+              <Textarea value={issueDesc} onChange={(e) => setIssueDesc(e.target.value)} placeholder="Optional details..." className="text-xs min-h-16 resize-none" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label className="text-xs font-medium">Priority <span className="text-destructive">*</span></label>
+                <Select value={issuePriority} onValueChange={setIssuePriority}>
+                  <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="low" className="text-xs">Low</SelectItem>
+                    <SelectItem value="medium" className="text-xs">Medium</SelectItem>
+                    <SelectItem value="high" className="text-xs">High</SelectItem>
+                    <SelectItem value="critical" className="text-xs">Critical</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-medium">Property <span className="text-destructive">*</span></label>
+                <Select value={issuePropId} onValueChange={setIssuePropId}>
+                  <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select..." /></SelectTrigger>
+                  <SelectContent>
+                    {properties.map((p) => (<SelectItem key={p.id} value={p.id} className="text-xs">{p.name}</SelectItem>))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            {submitError && <p className="text-xs text-destructive">{submitError}</p>}
+            <DialogFooter className="pt-1">
+              <Button type="button" variant="outline" size="sm" className="h-8 text-xs" onClick={() => setIsCreateOpen(false)}>Cancel</Button>
+              <Button type="submit" size="sm" className="h-8 gap-1.5 text-xs bg-harbor text-harbor-foreground hover:bg-harbor-deep" disabled={submitting}>
+                {submitting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Plus className="h-3.5 w-3.5" />}
+                {submitting ? "Saving..." : "Log Issue"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
       <div className="flex-1 overflow-y-auto">
         <div className="space-y-4 p-4">
           {/* KPI strip */}
@@ -559,7 +638,7 @@ export function MaintenancePage() {
   );
 }
 
-function MaintenanceHeader() {
+function MaintenanceHeader({ onLogIssue }: { onLogIssue: () => void }) {
   return (
     <header className="flex h-14 items-center gap-3 border-b border-border bg-card px-4">
       <SidebarTrigger className="-ml-1" />
@@ -574,8 +653,10 @@ function MaintenanceHeader() {
       </div>
       <div className="flex items-center gap-2">
         <Button
+          type="button"
           size="sm"
           className="h-8 gap-1.5 text-xs bg-harbor text-harbor-foreground hover:bg-harbor-deep"
+          onClick={onLogIssue}
         >
           <Plus className="h-3.5 w-3.5" />
           Log Issue

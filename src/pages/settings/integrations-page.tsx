@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { NativeSelect } from "@/components/ui/native-select";
 import { Switch } from "@/components/ui/switch";
 import { ConnectIntegrationButton } from "@/components/integrations/ConnectIntegrationButton";
+import { useIntegrationStatus } from "@/hooks/use-integration-status";
 import { useConnections, useDisconnect } from "@/hooks/use-one-connections";
 import { type IngestSummaryResponse, usePipelineStatus } from "@/hooks/use-pipeline-status";
 
@@ -14,7 +15,14 @@ const sourceAccounts = ["airbnb-main", "airbnb-ruby", "airbnb-manuka22"];
 const pipelineModes = ["folder-watch", "email", "built-in", "google-sheets"];
 
 function StatusBadge({ state }: { state: string }) {
-  const variant = state === "ready" ? "default" : state === "planned" ? "secondary" : "outline";
+  const variant =
+    state === "ready"
+      ? "default"
+      : state === "planned"
+        ? "secondary"
+        : state === "missing_path"
+          ? "destructive"
+          : "outline";
   return <Badge variant={variant}>{state}</Badge>;
 }
 
@@ -53,7 +61,12 @@ async function runPipeline(payload: Record<string, unknown>): Promise<IngestSumm
   return response.json() as Promise<IngestSummaryResponse>;
 }
 
+function getDisconnectErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : "Disconnect failed. Try again.";
+}
+
 export function IntegrationsPage() {
+  const integrationStatus = useIntegrationStatus();
   const status = usePipelineStatus();
   const connections = useConnections();
   const disconnect = useDisconnect();
@@ -67,6 +80,28 @@ export function IntegrationsPage() {
   const [runSourceAccount, setRunSourceAccount] = useState("airbnb-main");
   const [runDryRun, setRunDryRun] = useState(true);
   const [connectionKey, setConnectionKey] = useState("");
+
+  const providerState = integrationStatus.isLoading
+    ? "checking"
+    : integrationStatus.error
+      ? "unavailable"
+      : (integrationStatus.data?.status ?? "unavailable");
+  const providerBadgeVariant =
+    providerState === "connected"
+      ? "default"
+      : providerState === "checking"
+        ? "outline"
+        : "destructive";
+  const providerGuidance =
+    providerState === "connected"
+      ? "withone is ready. Use connect actions to add or refresh Google services, then use saved connection keys below for operator-run flows."
+      : providerState === "disconnected"
+        ? "No active withone session detected. Use one of the connect actions below, complete OAuth in withone, then confirm the saved connection appears before running email or Google Sheets ingestion."
+        : providerState === "checking"
+          ? "Checking provider health now. Saved connections remain listed below while status refresh completes."
+          : "Provider health is unavailable. Check API reachability for /api/integrations/status, then refresh this page before troubleshooting saved connections.";
+  const modeNeedsConnectionKey = runMode === "email" || runMode === "google-sheets";
+  const disconnectingKey = disconnect.isPending ? disconnect.variables : null;
 
   const onUpload = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -136,22 +171,62 @@ export function IntegrationsPage() {
               <CardDescription>OAuth connections stored in One Vault and persisted by connection key.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              <div className="rounded-lg border bg-muted/30 p-3 text-sm">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <div className="font-medium">Provider Health</div>
+                    <div className="text-muted-foreground">withone</div>
+                  </div>
+                  <Badge variant={providerBadgeVariant}>{providerState}</Badge>
+                </div>
+                <p className="mt-2 text-xs text-muted-foreground">{providerGuidance}</p>
+                {integrationStatus.data?.error ? (
+                  <p className="mt-2 text-xs text-destructive">{integrationStatus.data.error}</p>
+                ) : null}
+              </div>
               <div className="flex flex-wrap gap-3">
                 <ConnectIntegrationButton platform="google-sheets" />
                 <ConnectIntegrationButton platform="google-drive" />
                 <ConnectIntegrationButton platform="gmail" />
               </div>
               <div className="space-y-2">
+                {disconnect.isError ? (
+                  <div className="rounded-lg border border-destructive/40 bg-destructive/5 p-3 text-sm text-destructive">
+                    {getDisconnectErrorMessage(disconnect.error)}
+                  </div>
+                ) : null}
                 {(connections.data ?? []).map((connection) => (
                   <div key={connection.id} className="flex items-center justify-between rounded-lg border p-3 text-sm">
                     <div>
                       <div className="font-medium">{connection.display_name ?? connection.platform}</div>
                       <div className="text-muted-foreground">{connection.platform} / {connection.status}</div>
+                      {connection.last_error ? <div className="mt-1 text-xs text-destructive">{connection.last_error}</div> : null}
                     </div>
-                    <Button variant="outline" size="sm" onClick={() => disconnect.mutate(connection.connection_key)}>Disconnect</Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={disconnect.isPending}
+                      onClick={() => {
+                        disconnect.reset();
+                        disconnect.mutate(connection.connection_key);
+                      }}
+                    >
+                      {disconnectingKey === connection.connection_key ? "Disconnecting..." : "Disconnect"}
+                    </Button>
                   </div>
                 ))}
-                {connections.data?.length === 0 && <p className="text-sm text-muted-foreground">No connections saved yet.</p>}
+                {connections.data?.length === 0 ? (
+                  <div className="rounded-lg border border-dashed bg-muted/20 p-4 text-sm">
+                    <div className="font-medium">No saved connections yet</div>
+                    <p className="mt-1 text-muted-foreground">
+                      Start with one of the connect actions above. After withone approval completes, return here and verify the saved connection key before running email or Google Sheets ingestion.
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-xs text-muted-foreground">
+                    Saved connection keys support operator-run email and Google Sheets ingestion without exposing provider secrets in this dashboard.
+                  </p>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -186,10 +261,21 @@ export function IntegrationsPage() {
               <Label>Mode<NativeSelect value={runMode} onChange={(e) => setRunMode(e.target.value)}>{pipelineModes.map((m) => <option key={m} value={m}>{m}</option>)}</NativeSelect></Label>
               <Label>Target<NativeSelect value={runTargetKind} onChange={(e) => setRunTargetKind(e.target.value)}><option value="listings">listings</option><option value="reservations">reservations</option></NativeSelect></Label>
               <Label>Source account<NativeSelect value={runSourceAccount} onChange={(e) => setRunSourceAccount(e.target.value)}>{sourceAccounts.map((a) => <option key={a} value={a}>{a}</option>)}</NativeSelect></Label>
-              <Label>Connection key<Input value={connectionKey} onChange={(e) => setConnectionKey(e.target.value)} placeholder="required for email/sheets" /></Label>
+              <Label>
+                Connection key
+                <Input value={connectionKey} onChange={(e) => setConnectionKey(e.target.value)} placeholder="required for email/sheets" />
+                <span className="mt-1 block text-xs text-muted-foreground">
+                  Required for <code>email</code> and <code>google-sheets</code>. Leave blank for <code>folder-watch</code> and <code>built-in</code> runs.
+                </span>
+              </Label>
               <div className="flex items-end gap-3"><Switch checked={runDryRun} onCheckedChange={setRunDryRun} /><span className="pb-2 text-sm">Dry run</span></div>
               <div className="md:col-span-5"><Button type="submit">Run Pipeline</Button></div>
             </form>
+            <p className="mt-3 text-xs text-muted-foreground">
+              {modeNeedsConnectionKey
+                ? "Current mode requires saved connection key from withone connections above."
+                : "Current mode does not use connection key; pipeline runs with local folder or built-in source configuration."}
+            </p>
             <div className="mt-4"><SummaryPanel summary={runSummary} /></div>
           </CardContent>
         </Card>

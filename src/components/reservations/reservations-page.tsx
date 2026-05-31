@@ -59,6 +59,8 @@ import {
   Clock,
   ChevronLeft,
   ChevronRight,
+  Receipt,
+  Loader2,
 } from "lucide-react";
 import type { CheckInStatus, Guest, Property, ReservationCreateInput, Room } from "@/types/database";
 
@@ -94,6 +96,8 @@ const statusConfig: Record<
 type ReservationsTableMeta = {
   rooms: Room[];
   properties: Property[];
+  taxExporting: Record<string, boolean>;
+  onTaxExport: (reservationId: string, etd: string | null) => void;
 };
 
 function ReservationsSkeleton() {
@@ -108,6 +112,8 @@ function ReservationsSkeleton() {
     </div>
   );
 }
+
+const API_BASE = import.meta.env.VITE_TRACK_B_API_URL ?? "http://localhost:3001";
 
 function buildColumns(rooms: Room[], properties: Property[]): ColumnDef<Guest>[] {
   return [
@@ -250,11 +256,54 @@ function buildColumns(rooms: Room[], properties: Property[]): ColumnDef<Guest>[]
         );
       },
     },
+    {
+      id: "taxExport",
+      header: "",
+      cell: ({ row, table }) => {
+        const meta = table.options.meta as ReservationsTableMeta;
+        const id = row.original.id;
+        const loading = meta.taxExporting[id] ?? false;
+        return (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+            title="Export Tax Invoice"
+            disabled={loading}
+            onClick={() => meta.onTaxExport(id, row.original.etd ?? null)}
+          >
+            {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Receipt className="h-3.5 w-3.5" />}
+          </Button>
+        );
+      },
+    },
   ];
 }
 
 export function ReservationsPage() {
   const { guests, rooms, properties, loading } = useReservationsPageData();
+  const [taxExporting, setTaxExporting] = useState<Record<string, boolean>>({});
+
+  async function handleTaxExport(reservationId: string, etd: string | null) {
+    const date = etd ? etd.slice(0, 10) : new Date().toISOString().slice(0, 10);
+    setTaxExporting((prev) => ({ ...prev, [reservationId]: true }));
+    try {
+      const res = await fetch(`${API_BASE}/api/tax-export/run`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reservation_id: reservationId, date }),
+      });
+      const data = await res.json() as { jobId?: string };
+      if (data.jobId) {
+        window.open(`${API_BASE}/api/tax-export/download?job_id=${data.jobId}`, "_blank");
+      }
+    } catch (e) {
+      console.error("Tax export failed:", e);
+    } finally {
+      setTaxExporting((prev) => ({ ...prev, [reservationId]: false }));
+    }
+  }
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [propertyFilter, setPropertyFilter] = useState<string>("all");
@@ -291,7 +340,7 @@ export function ReservationsPage() {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    meta: { rooms, properties } satisfies ReservationsTableMeta,
+    meta: { rooms, properties, taxExporting, onTaxExport: handleTaxExport } satisfies ReservationsTableMeta,
   });
 
   if (loading) {

@@ -64,6 +64,78 @@ type GuestsTableMeta = {
   properties: Property[];
 };
 
+type GuestsHeaderProps = {
+  onExport: () => void;
+  exportDisabled?: boolean;
+};
+
+function csvEscape(value: string) {
+  return `"${value.replace(/"/g, '""')}"`;
+}
+
+function formatDateValue(value: string | null | undefined) {
+  if (!value) return "";
+  return value.slice(0, 10);
+}
+
+function buildGuestsCsv(
+  guests: Guest[],
+  rooms: Room[],
+  properties: Property[]
+) {
+  const roomMap = new Map(rooms.map((room) => [room.id, room]));
+  const propertyMap = new Map(properties.map((property) => [property.id, property]));
+
+  const rows = [
+    [
+      "Guest Name",
+      "Property",
+      "Room",
+      "Booking Source",
+      "Status",
+      "VIP",
+      "Guest Count",
+      "Check-in Date",
+      "Check-out Date",
+    ],
+    ...guests.map((guest) => {
+      const room = roomMap.get(guest.room_id ?? "");
+      const property = propertyMap.get(guest.property_id);
+
+      return [
+        guest.guest_name,
+        property?.name ?? "",
+        room?.room_number ?? "",
+        guest.booking_source,
+        guest.check_in_status,
+        guest.is_vip ? "Yes" : "No",
+        String(guest.guest_count),
+        formatDateValue(guest.eta),
+        formatDateValue(guest.etd),
+      ];
+    }),
+  ];
+
+  return rows
+    .map((row) => row.map((value) => csvEscape(value)).join(","))
+    .join("\r\n");
+}
+
+function downloadCsv(content: string, filename: string) {
+  const blob = new Blob([content], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = filename;
+  link.style.display = "none";
+
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 0);
+}
+
 function buildGuestColumns(
   rooms: Room[],
   properties: Property[]
@@ -220,6 +292,14 @@ export function GuestsPage() {
     [rooms, properties]
   );
 
+  const handleExport = () => {
+    const csv = buildGuestsCsv(filtered, rooms, properties);
+    downloadCsv(
+      csv,
+      `guests-export-${new Date().toISOString().slice(0, 10)}.csv`
+    );
+  };
+
   const table = useReactTable({
     data: filtered,
     columns,
@@ -235,7 +315,7 @@ export function GuestsPage() {
   if (loading) {
     return (
       <div className="flex h-full flex-col">
-        <GuestsHeader />
+        <GuestsHeader onExport={handleExport} exportDisabled={loading} />
         <GuestsSkeleton />
       </div>
     );
@@ -257,7 +337,7 @@ export function GuestsPage() {
 
   return (
     <div className="flex h-full max-h-svh flex-col">
-      <GuestsHeader />
+      <GuestsHeader onExport={handleExport} exportDisabled={loading} />
       <div className="flex-1 overflow-y-auto">
         <div className="space-y-4 p-4">
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -537,7 +617,7 @@ export function GuestsPage() {
   );
 }
 
-function GuestsHeader() {
+function GuestsHeader({ onExport, exportDisabled = false }: GuestsHeaderProps) {
   return (
     <header className="flex h-14 items-center gap-3 border-b border-border bg-card px-4">
       <SidebarTrigger className="-ml-1" />
@@ -551,7 +631,13 @@ function GuestsHeader() {
         </div>
       </div>
       <div className="flex items-center gap-2">
-        <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs">
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-8 gap-1.5 text-xs"
+          onClick={onExport}
+          disabled={exportDisabled}
+        >
           <Download className="h-3.5 w-3.5" />
           Export
         </Button>

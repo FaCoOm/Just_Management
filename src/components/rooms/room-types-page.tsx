@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import {
@@ -13,8 +12,8 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRoomsPageData } from "@/hooks/use-page-data";
-import { BedDouble, Layers, Plus, Settings2 } from "lucide-react";
-import type { Property, Room } from "@/types/database";
+import { BedDouble, Layers } from "lucide-react";
+import type { Property } from "@/types/database";
 
 interface RoomTypeGroup {
   type: string;

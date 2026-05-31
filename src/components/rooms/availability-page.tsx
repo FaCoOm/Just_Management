@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useReservationsPageData } from "@/hooks/use-page-data";
 import { ChevronLeft, ChevronRight, CalendarDays, BedDouble, Layers } from "lucide-react";
-import type { Property, Room, Reservation } from "@/types/database";
+import type { Property } from "@/types/database";
 
 function AvailabilitySkeleton() {
   return (

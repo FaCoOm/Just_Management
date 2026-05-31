@@ -26,7 +26,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useGuestsPageData } from "@/hooks/use-page-data";
 import { formatVietnamDate } from "@/lib/vietnam-time";
 import { Star, Crown, Users, Search, ChevronLeft, ChevronRight, CalendarDays } from "lucide-react";
-import type { Guest, Property, Room } from "@/types/database";
+import type { Guest } from "@/types/database";
 
 function VipGuestsSkeleton() {
   return (

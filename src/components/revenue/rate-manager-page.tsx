@@ -2,9 +2,7 @@ import { useMemo, useState } from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -22,7 +20,7 @@ import {
   TrendingUp,
   BedDouble,
 } from "lucide-react";
-import type { Property, Room } from "@/types/database";
+import type { Property } from "@/types/database";
 
 function RateManagerSkeleton() {
   return (
@@ -88,7 +86,7 @@ export function RateManagerPage() {
       <div className="flex h-full flex-col">
         <RateManagerHeader
           propertyFilter={propertyFilter} setPropertyFilter={setPropertyFilter}
-          properties={[]} onPrev={() => {}} onNext={() => {}} onToday={() => {}} startDate={startDate}
+          properties={[]} onPrev={() => {}} onNext={() => {}} onToday={() => {}}
         />
         <RateManagerSkeleton />
       </div>
@@ -103,7 +101,6 @@ export function RateManagerPage() {
         onPrev={() => setStartDate(addDays(startDate, -7))}
         onNext={() => setStartDate(addDays(startDate, 7))}
         onToday={() => setStartDate(getToday())}
-        startDate={startDate}
       />
       <div className="flex-1 overflow-y-auto">
         <div className="space-y-4 p-4">
@@ -195,14 +192,13 @@ export function RateManagerPage() {
   );
 }
 
-function RateManagerHeader({ propertyFilter, setPropertyFilter, properties, onPrev, onNext, onToday, startDate }: {
+function RateManagerHeader({ propertyFilter, setPropertyFilter, properties, onPrev, onNext, onToday }: {
   propertyFilter: string;
   setPropertyFilter: (v: string) => void;
   properties: Property[];
   onPrev: () => void;
   onNext: () => void;
   onToday: () => void;
-  startDate: string;
 }) {
   return (
     <header className="flex h-14 items-center gap-3 border-b border-border bg-card px-4">

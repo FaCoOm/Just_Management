@@ -27,7 +27,7 @@ import { formatVietnamDate } from "@/lib/vietnam-time";
 import {
   FileText, DollarSign, Search, ChevronLeft, ChevronRight, CreditCard, Receipt,
 } from "lucide-react";
-import type { Property, Reservation } from "@/types/database";
+import type { Reservation } from "@/types/database";
 
 interface InvoiceRecord {
   id: string;

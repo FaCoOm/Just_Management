@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
 import { ShieldCheck, Activity, Key, AlertCircle, Search, Clock, Globe, UserCog } from "lucide-react";
 
 interface AuditEntry {
@@ -26,16 +25,6 @@ const severityConfig: Record<string, { label: string; className: string; icon: t
   critical: { label: "Critical", className: "bg-destructive/10 text-destructive border-destructive/20", icon: ShieldCheck },
 };
 
-function SecuritySkeleton() {
-  return (
-    <div className="space-y-4 p-4">
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        {Array.from({ length: 4 }).map((_, i) => (<Skeleton key={i} className="h-24 rounded-lg" />))}
-      </div>
-      <Skeleton className="h-96 rounded-lg" />
-    </div>
-  );
-}
 
 function generateAuditEntries(): AuditEntry[] {
   const actions = [
