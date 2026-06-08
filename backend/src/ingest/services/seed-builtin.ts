@@ -34,6 +34,19 @@ interface ClassificationFile {
 }
 
 function resolveSourceDir(sourceDir?: string): string {
+  const candidates = [
+    sourceDir,
+    process.env.M_MANAGEMENT_BUILTIN_SOURCE_DIR,
+    "../database_design",
+    "../docs/database_design",
+  ];
+
+  for (const candidate of candidates) {
+    if (!candidate) continue;
+    const resolved = path.isAbsolute(candidate) ? candidate : path.resolve(process.cwd(), candidate);
+    if (fs.existsSync(resolved)) return resolved;
+  }
+
   const configured = sourceDir ?? process.env.M_MANAGEMENT_BUILTIN_SOURCE_DIR ?? "../database_design";
   return path.isAbsolute(configured) ? configured : path.resolve(process.cwd(), configured);
 }

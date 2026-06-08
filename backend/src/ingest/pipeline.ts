@@ -55,6 +55,17 @@ function resolveOptionalPath(value: string | undefined): string | undefined {
   return path.isAbsolute(value) ? value : path.resolve(process.cwd(), value);
 }
 
+function resolveFirstExistingPath(...values: Array<string | undefined>): string | undefined {
+  for (const value of values) {
+    const resolved = resolveOptionalPath(value);
+    if (resolved && fs.existsSync(resolved)) {
+      return resolved;
+    }
+  }
+
+  return resolveOptionalPath(values.find((value) => value && value.trim().length > 0));
+}
+
 function fileExists(filePath: string | undefined): boolean {
   return Boolean(filePath) && fs.existsSync(filePath as string) && fs.statSync(filePath as string).isFile();
 }
@@ -103,7 +114,11 @@ export function getGoogleCredentialStatus(): GoogleCredentialStatus {
 export function getPipelineStatus(): PipelineStatus {
   const enabled = envFlag("INGEST_PIPELINE_ENABLED", true);
   const importRoot = getConfiguredImportRoot();
-  const builtInDirectory = resolveOptionalPath(process.env.M_MANAGEMENT_BUILTIN_SOURCE_DIR ?? "../database_design");
+  const builtInDirectory = resolveFirstExistingPath(
+    process.env.M_MANAGEMENT_BUILTIN_SOURCE_DIR,
+    "../database_design",
+    "../docs/database_design"
+  );
   const emailEnabled = envFlag("M_MANAGEMENT_EMAIL_IMPORT_ENABLED", false);
   const emailProvider = process.env.M_MANAGEMENT_EMAIL_IMPORT_PROVIDER ?? "not configured";
   const googleCredentials = getGoogleCredentialStatus();
