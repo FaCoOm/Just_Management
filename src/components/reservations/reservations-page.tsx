@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   flexRender,
   getCoreRowModel,
@@ -312,19 +312,29 @@ export function ReservationsPage() {
     pageIndex: 0,
     pageSize: 15,
   });
+  const normalizedSearch = search.trim().toLowerCase();
 
   const filtered = useMemo(() => {
     return guests.filter((g) => {
-      const matchSearch = g.guest_name
-        .toLowerCase()
-        .includes(search.toLowerCase());
+      const matchSearch = g.guest_name.toLowerCase().includes(normalizedSearch);
       const matchStatus =
         statusFilter === "all" || g.check_in_status === statusFilter;
       const matchProperty =
         propertyFilter === "all" || g.property_id === propertyFilter;
       return matchSearch && matchStatus && matchProperty;
     });
-  }, [guests, search, statusFilter, propertyFilter]);
+  }, [guests, normalizedSearch, statusFilter, propertyFilter]);
+
+  useEffect(() => {
+    const maxPageIndex = Math.max(
+      Math.ceil(filtered.length / pagination.pageSize) - 1,
+      0
+    );
+
+    if (pagination.pageIndex > maxPageIndex) {
+      setPagination((prev) => ({ ...prev, pageIndex: maxPageIndex }));
+    }
+  }, [filtered.length, pagination.pageIndex, pagination.pageSize]);
 
   const columns = useMemo(
     () => buildColumns(rooms, properties),
@@ -560,6 +570,18 @@ export function ReservationsPage() {
                   {table.getPageCount() || 1} · {filtered.length} row(s)
                 </p>
                 <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">Rows</span>
+                  <NativeSelect
+                    value={String(table.getState().pagination.pageSize)}
+                    onChange={(event) => {
+                      table.setPageSize(Number.parseInt(event.target.value, 10));
+                    }}
+                    className="h-8 w-20 text-xs"
+                  >
+                    <option value="15">15</option>
+                    <option value="30">30</option>
+                    <option value="50">50</option>
+                  </NativeSelect>
                   <Button
                     type="button"
                     variant="outline"

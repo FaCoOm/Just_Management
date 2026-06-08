@@ -22,8 +22,34 @@ import {
   UserCheck,
   BedDouble,
   AlertCircle,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import type { Guest, Property, Room } from "@/types/database";
+
+const BOARD_PAGE_SIZE = 10;
+
+interface PagedGuests {
+  guests: Guest[];
+  pageIndex: number;
+  pageCount: number;
+  start: number;
+  end: number;
+}
+
+function getPagedGuests(guests: Guest[], pageIndex: number): PagedGuests {
+  const pageCount = Math.max(Math.ceil(guests.length / BOARD_PAGE_SIZE), 1);
+  const currentPageIndex = Math.min(pageIndex, pageCount - 1);
+  const start = currentPageIndex * BOARD_PAGE_SIZE;
+
+  return {
+    guests: guests.slice(start, start + BOARD_PAGE_SIZE),
+    pageIndex: currentPageIndex,
+    pageCount,
+    start,
+    end: Math.min(start + BOARD_PAGE_SIZE, guests.length),
+  };
+}
 
 function CheckInOutSkeleton() {
   return (
@@ -41,14 +67,12 @@ function CheckInOutSkeleton() {
   );
 }
 
-function GuestCard({ guest, rooms, properties, type }: {
+function GuestCard({ guest, room, property, type }: {
   guest: Guest;
-  rooms: Room[];
-  properties: Property[];
+  room: Room | undefined;
+  property: Property | undefined;
   type: "arrival" | "departure";
 }) {
-  const room = rooms.find((r) => r.id === guest.room_id);
-  const property = properties.find((p) => p.id === guest.property_id);
   const initials = guest.guest_name.split(" ").map((n) => n[0]).join("").slice(0, 2);
 
   return (
@@ -119,36 +143,101 @@ function GuestCard({ guest, rooms, properties, type }: {
   );
 }
 
+function GuestListPagination({ page, total, onPageChange }: {
+  page: PagedGuests;
+  total: number;
+  onPageChange: (pageIndex: number) => void;
+}) {
+  if (total <= BOARD_PAGE_SIZE) return null;
+
+  return (
+    <div className="flex flex-col gap-2 pt-1 sm:flex-row sm:items-center sm:justify-between">
+      <p className="text-xs text-muted-foreground">
+        Showing {page.start + 1}-{page.end} of {total}
+      </p>
+      <div className="flex items-center gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-8 gap-1 text-xs"
+          disabled={page.pageIndex === 0}
+          onClick={() => onPageChange(page.pageIndex - 1)}
+        >
+          <ChevronLeft className="h-3.5 w-3.5" /> Prev
+        </Button>
+        <span className="text-xs text-muted-foreground">
+          Page {page.pageIndex + 1} of {page.pageCount}
+        </span>
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-8 gap-1 text-xs"
+          disabled={page.pageIndex >= page.pageCount - 1}
+          onClick={() => onPageChange(page.pageIndex + 1)}
+        >
+          Next <ChevronRight className="h-3.5 w-3.5" />
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 export function CheckInOutPage() {
   const { guests, rooms, properties, loading } = useReservationsPageData();
   const [propertyFilter, setPropertyFilter] = useState<string>("all");
+  const [arrivalPageIndex, setArrivalPageIndex] = useState(0);
+  const [departurePageIndex, setDeparturePageIndex] = useState(0);
 
-  const filtered = useMemo(() => {
-    if (propertyFilter === "all") return guests;
-    return guests.filter((g) => g.property_id === propertyFilter);
+  const roomById = useMemo(() => new Map(rooms.map((room) => [room.id, room] as const)), [rooms]);
+  const propertyById = useMemo(
+    () => new Map(properties.map((property) => [property.id, property] as const)),
+    [properties]
+  );
+
+  const board = useMemo(() => {
+    const next = {
+      arrivals: [] as Guest[],
+      departures: [] as Guest[],
+      inHouseCount: 0,
+      completedCount: 0,
+    };
+
+    for (const guest of guests) {
+      if (propertyFilter !== "all" && guest.property_id !== propertyFilter) continue;
+
+      if (["Pending", "Check-In Pending"].includes(guest.check_in_status)) {
+        next.arrivals.push(guest);
+      } else if (guest.check_in_status === "Check-Out Pending") {
+        next.departures.push(guest);
+      } else if (guest.check_in_status === "Checked In") {
+        next.inHouseCount += 1;
+      } else if (guest.check_in_status === "Checked Out") {
+        next.completedCount += 1;
+      }
+    }
+
+    return next;
   }, [guests, propertyFilter]);
 
-  const arrivals = useMemo(
-    () => filtered.filter((g) => ["Pending", "Check-In Pending"].includes(g.check_in_status)),
-    [filtered]
+  const arrivalPage = useMemo(
+    () => getPagedGuests(board.arrivals, arrivalPageIndex),
+    [board.arrivals, arrivalPageIndex]
   );
-  const departures = useMemo(
-    () => filtered.filter((g) => g.check_in_status === "Check-Out Pending"),
-    [filtered]
+  const departurePage = useMemo(
+    () => getPagedGuests(board.departures, departurePageIndex),
+    [board.departures, departurePageIndex]
   );
-  const inHouse = useMemo(
-    () => filtered.filter((g) => g.check_in_status === "Checked In"),
-    [filtered]
-  );
-  const completed = useMemo(
-    () => filtered.filter((g) => g.check_in_status === "Checked Out"),
-    [filtered]
-  );
+
+  const handlePropertyFilterChange = (value: string) => {
+    setPropertyFilter(value);
+    setArrivalPageIndex(0);
+    setDeparturePageIndex(0);
+  };
 
   if (loading) {
     return (
       <div className="flex h-full flex-col">
-        <CheckInOutHeader propertyFilter={propertyFilter} setPropertyFilter={setPropertyFilter} properties={[]} />
+        <CheckInOutHeader propertyFilter={propertyFilter} setPropertyFilter={handlePropertyFilterChange} properties={[]} />
         <CheckInOutSkeleton />
       </div>
     );
@@ -156,7 +245,7 @@ export function CheckInOutPage() {
 
   return (
     <div className="flex h-full max-h-svh flex-col" data-testid="check-in-out-page">
-      <CheckInOutHeader propertyFilter={propertyFilter} setPropertyFilter={setPropertyFilter} properties={properties} />
+      <CheckInOutHeader propertyFilter={propertyFilter} setPropertyFilter={handlePropertyFilterChange} properties={properties} />
       <div className="flex-1 overflow-y-auto">
         <div className="space-y-4 p-4">
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -168,7 +257,7 @@ export function CheckInOutPage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <span className="text-2xl font-bold tracking-tight" data-testid="arrivals-count">{arrivals.length}</span>
+                <span className="text-2xl font-bold tracking-tight" data-testid="arrivals-count">{board.arrivals.length}</span>
               </CardContent>
             </Card>
             <Card className="gap-3 py-4">
@@ -179,7 +268,7 @@ export function CheckInOutPage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <span className="text-2xl font-bold tracking-tight" data-testid="departures-count">{departures.length}</span>
+                <span className="text-2xl font-bold tracking-tight" data-testid="departures-count">{board.departures.length}</span>
               </CardContent>
             </Card>
             <Card className="gap-3 py-4">
@@ -190,7 +279,7 @@ export function CheckInOutPage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <span className="text-2xl font-bold tracking-tight" data-testid="in-house-count">{inHouse.length}</span>
+                <span className="text-2xl font-bold tracking-tight" data-testid="in-house-count">{board.inHouseCount}</span>
               </CardContent>
             </Card>
             <Card className="gap-3 py-4">
@@ -201,7 +290,7 @@ export function CheckInOutPage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <span className="text-2xl font-bold tracking-tight" data-testid="completed-count">{completed.length}</span>
+                <span className="text-2xl font-bold tracking-tight" data-testid="completed-count">{board.completedCount}</span>
               </CardContent>
             </Card>
           </div>
@@ -214,21 +303,22 @@ export function CheckInOutPage() {
                     <LogIn className="h-3.5 w-3.5" />
                   </div>
                   <CardTitle className="text-sm font-semibold">
-                    Arrivals ({arrivals.length})
+                    Arrivals ({board.arrivals.length})
                   </CardTitle>
                 </div>
               </CardHeader>
               <CardContent className="space-y-2">
-                {arrivals.length === 0 ? (
+                {board.arrivals.length === 0 ? (
                   <div className="py-8 text-center">
                     <LogIn className="mx-auto h-6 w-6 text-muted-foreground" />
                     <p className="mt-2 text-sm text-muted-foreground">No arrivals pending</p>
                   </div>
                 ) : (
-                  arrivals.map((guest) => (
-                    <GuestCard key={guest.id} guest={guest} rooms={rooms} properties={properties} type="arrival" />
+                  arrivalPage.guests.map((guest) => (
+                    <GuestCard key={guest.id} guest={guest} room={guest.room_id ? roomById.get(guest.room_id) : undefined} property={propertyById.get(guest.property_id)} type="arrival" />
                   ))
                 )}
+                <GuestListPagination page={arrivalPage} total={board.arrivals.length} onPageChange={setArrivalPageIndex} />
               </CardContent>
             </Card>
 
@@ -239,21 +329,22 @@ export function CheckInOutPage() {
                     <LogOut className="h-3.5 w-3.5" />
                   </div>
                   <CardTitle className="text-sm font-semibold">
-                    Departures ({departures.length})
+                    Departures ({board.departures.length})
                   </CardTitle>
                 </div>
               </CardHeader>
               <CardContent className="space-y-2">
-                {departures.length === 0 ? (
+                {board.departures.length === 0 ? (
                   <div className="py-8 text-center">
                     <LogOut className="mx-auto h-6 w-6 text-muted-foreground" />
                     <p className="mt-2 text-sm text-muted-foreground">No departures pending</p>
                   </div>
                 ) : (
-                  departures.map((guest) => (
-                    <GuestCard key={guest.id} guest={guest} rooms={rooms} properties={properties} type="departure" />
+                  departurePage.guests.map((guest) => (
+                    <GuestCard key={guest.id} guest={guest} room={guest.room_id ? roomById.get(guest.room_id) : undefined} property={propertyById.get(guest.property_id)} type="departure" />
                   ))
                 )}
+                <GuestListPagination page={departurePage} total={board.departures.length} onPageChange={setDeparturePageIndex} />
               </CardContent>
             </Card>
           </div>

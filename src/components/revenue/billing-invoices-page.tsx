@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   flexRender,
   getCoreRowModel,
@@ -22,6 +22,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { NativeSelect } from "@/components/ui/native-select";
 import { useReservationsPageData } from "@/hooks/use-page-data";
 import { formatVietnamDate } from "@/lib/vietnam-time";
 import {
@@ -85,18 +86,34 @@ export function BillingInvoicesPage() {
   const [propertyFilter, setPropertyFilter] = useState("all");
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 12 });
+  const normalizedSearch = search.trim().toLowerCase();
 
   const invoices = useMemo(() => generateInvoices(reservations), [reservations]);
+  const propertyNameById = useMemo(
+    () => new Map(properties.map((property) => [property.id, property.name] as const)),
+    [properties]
+  );
   const filtered = useMemo(() => invoices.filter((inv) => {
-    const matchSearch = inv.guestName.toLowerCase().includes(search.toLowerCase());
+    const matchSearch = inv.guestName.toLowerCase().includes(normalizedSearch);
     const matchStatus = statusFilter === "all" || inv.status === statusFilter;
     const matchProperty = propertyFilter === "all" || inv.propertyId === propertyFilter;
     return matchSearch && matchStatus && matchProperty;
-  }), [invoices, search, statusFilter, propertyFilter]);
+  }), [invoices, normalizedSearch, statusFilter, propertyFilter]);
+
+  useEffect(() => {
+    const maxPageIndex = Math.max(
+      Math.ceil(filtered.length / pagination.pageSize) - 1,
+      0
+    );
+
+    if (pagination.pageIndex > maxPageIndex) {
+      setPagination((prev) => ({ ...prev, pageIndex: maxPageIndex }));
+    }
+  }, [filtered.length, pagination.pageIndex, pagination.pageSize]);
 
   const columns = useMemo<ColumnDef<InvoiceRecord>[]>(() => [
     { id: "guest", accessorKey: "guestName", header: "Guest", cell: ({ row }) => <span className="text-xs font-medium">{row.original.guestName}</span> },
-    { id: "property", accessorFn: (row) => properties.find((p) => p.id === row.propertyId)?.name ?? "", header: "Property", cell: ({ row }) => <span className="text-xs text-muted-foreground">{properties.find((p) => p.id === row.original.propertyId)?.name ?? "—"}</span> },
+    { id: "property", accessorFn: (row) => propertyNameById.get(row.propertyId) ?? "", header: "Property", cell: ({ row }) => <span className="text-xs text-muted-foreground">{propertyNameById.get(row.original.propertyId) ?? "—"}</span> },
     { id: "dates", header: "Stay", cell: ({ row }) => <span className="text-xs text-muted-foreground">{formatVietnamDate(row.original.checkIn)} – {formatVietnamDate(row.original.checkOut)}</span> },
     { id: "source", accessorKey: "source", header: "Source", cell: ({ row }) => <span className="text-xs text-muted-foreground">{row.original.source}</span> },
     { id: "amount", accessorKey: "amount", header: "Amount", cell: ({ row }) => <span className="text-xs font-semibold text-right tabular-nums">{formatVND(row.original.amount)} VND</span> },
@@ -104,7 +121,7 @@ export function BillingInvoicesPage() {
       const config = statusConfig[row.original.status] ?? statusConfig.pending;
       return <Badge variant="outline" className={`text-[10px] ${config.className}`}>{config.label}</Badge>;
     }},
-  ], [properties]);
+  ], [propertyNameById]);
 
   const table = useReactTable({
     data: filtered, columns,
@@ -219,6 +236,18 @@ export function BillingInvoicesPage() {
               <div className="flex flex-col gap-2 px-4 sm:flex-row sm:items-center sm:justify-between">
                 <p className="text-xs text-muted-foreground">Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount() || 1} · {filtered.length} row(s)</p>
                 <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">Rows</span>
+                  <NativeSelect
+                    value={String(table.getState().pagination.pageSize)}
+                    onChange={(event) => {
+                      table.setPageSize(Number.parseInt(event.target.value, 10));
+                    }}
+                    className="h-8 w-20 text-xs"
+                  >
+                    <option value="12">12</option>
+                    <option value="24">24</option>
+                    <option value="48">48</option>
+                  </NativeSelect>
                   <Button variant="outline" size="sm" className="h-8 gap-1 text-xs" disabled={!table.getCanPreviousPage()} onClick={() => table.previousPage()}><ChevronLeft className="h-3.5 w-3.5" /> Prev</Button>
                   <Button variant="outline" size="sm" className="h-8 gap-1 text-xs" disabled={!table.getCanNextPage()} onClick={() => table.nextPage()}>Next <ChevronRight className="h-3.5 w-3.5" /></Button>
                 </div>
