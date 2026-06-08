@@ -7,6 +7,7 @@ import { PrismaClient, Prisma } from "@prisma/client";
 import XLSX from "xlsx";
 import path from "path";
 import fs from "fs";
+import { WithOneProviderConnector, findParserForEmail, type ParsedOtaData } from "../integrations/provider-connector";
 
 const TEMPLATE_PATH = path.join(__dirname, "../../fixtures/Tax_export_template.xlsx");
 const VIETNAM_TZ = "Asia/Ho_Chi_Minh";
@@ -33,6 +34,12 @@ function toDateOnly(dateKey: string) {
 
 function toDateKey(input: Date | string) {
   return new Date(input).toISOString().slice(0, 10);
+}
+
+function addDays(dateKey: string, days: number) {
+  const date = toDateOnly(dateKey);
+  date.setUTCDate(date.getUTCDate() + days);
+  return toDateKey(date);
 }
 
 function formatVietnameseDate(dateKey: string) {
@@ -340,8 +347,118 @@ export async function runTaxExport(
   const manualScopeKey = buildManualScopeKey(dateKey, propertyId, reservationId);
   const triggeredBy = buildManualTriggeredBy(manualScopeKey);
 
+  // 1. Gmail Scanning & Database Enrichment (before transaction)
+  const connectionKey = process.env.ONE_CONNECTION_KEY;
+  if (connectionKey && connectionKey !== "conn_dev_replace_me") {
+    const connector = new WithOneProviderConnector(connectionKey);
+    try {
+      // Search emails from the day before to the day after
+      const afterDate = addDays(dateKey, -1);
+      const emails = await connector.listEmails({ after: afterDate });
+
+      const parsedDataList: ParsedOtaData[] = [];
+      for (const email of emails) {
+        const parser = findParserForEmail(email.from, email.subject);
+        if (parser) {
+          try {
+            const body = await connector.getEmailBody(email.id);
+            const parsed = parser.parseEmail({ subject: email.subject, from: email.from, body });
+            if (parsed && parsed.confirmationCode) {
+              parsedDataList.push(parsed);
+            }
+          } catch (err) {
+            console.error(`Failed to fetch/parse email body for message ${email.id}:`, err);
+          }
+        }
+      }
+
+      // Find checkout reservations for the dateKey
+      const whereClause: any = {
+        check_out_date: toDateOnly(dateKey),
+        status: { notIn: ["cancelled", "no_show"] },
+      };
+      if (propertyId) whereClause.property_id = propertyId;
+      if (reservationId) whereClause.id = reservationId;
+
+      const reservations = await prisma.reservations.findMany({
+        where: whereClause,
+        include: {
+          reservation_external_refs: true,
+        },
+      });
+
+      for (const res of reservations) {
+        // Try to match with parsed OTA emails
+        const match = parsedDataList.find((p) => {
+          // Match by confirmation code if exists in external refs
+          const hasMatchingRef = res.reservation_external_refs.some(
+            (ref) => ref.confirmation_code?.toLowerCase() === p.confirmationCode?.toLowerCase()
+          );
+          if (hasMatchingRef) return true;
+
+          // Match by guest name
+          if (p.guestName && res.guest_name) {
+            const name1 = p.guestName.toLowerCase().replace(/[^a-z0-9]/g, "");
+            const name2 = res.guest_name.toLowerCase().replace(/[^a-z0-9]/g, "");
+            return name1.includes(name2) || name2.includes(name1);
+          }
+
+          return false;
+        });
+
+        if (match) {
+          // Calculate nightly rate
+          const nights = daysBetween(toDateKey(res.check_in_date), toDateKey(res.check_out_date));
+          const parsedAmount = match.amount ?? 0;
+          const unitPrice = parsedAmount > 0 ? parsedAmount / nights : 0;
+
+          // Update reservation operational notes
+          let notes = res.operational_notes;
+          if (unitPrice > 0) {
+            if (notes.includes("nightly_rate=")) {
+              notes = notes.replace(/nightly_rate=\d+(\.\d+)?/, `nightly_rate=${unitPrice}`);
+            } else {
+              notes = `${notes};nightly_rate=${unitPrice}`.replace(/^;/, "");
+            }
+          }
+
+          await prisma.reservations.update({
+            where: { id: res.id },
+            data: { operational_notes: notes },
+          });
+
+          // Upsert external ref
+          if (match.confirmationCode) {
+            const existingRef = res.reservation_external_refs.find(
+              (r) => r.confirmation_code?.toLowerCase() === match.confirmationCode?.toLowerCase()
+            );
+            if (!existingRef) {
+              // Match channel
+              const channel = await prisma.channels.findFirst({
+                where: { slug: { contains: match.provider, mode: "insensitive" } },
+              });
+              if (channel) {
+                await prisma.reservation_external_refs.create({
+                  data: {
+                    reservation_id: res.id,
+                    channel_id: channel.id,
+                    confirmation_code: match.confirmationCode,
+                  },
+                });
+              }
+            }
+          }
+        }
+      }
+    } catch (err) {
+      console.error("Failed to sync/enrich reservations from Gmail:", err);
+    }
+  }
+
+  // 2. Database Transaction
+  let result: TaxExportRunResult;
   try {
-    return await prisma.$transaction(
+    result = await prisma.$transaction(
       async (tx) => {
         const existingJob = await findReusableCompletedJob(tx, dateKey, triggeredBy);
         if (existingJob) {
@@ -408,9 +525,40 @@ export async function runTaxExport(
         return buildReusedRunResult(existingJob, dateKey, manualScopeKey);
       }
     }
-
     throw error;
   }
+
+  // 3. Google Sheets Upsert (after transaction success)
+  if (result.runStatus === "created" && result.items.length > 0) {
+    const settings = await getOrCreateSettings(prisma);
+    if (settings.sheet_id && connectionKey && connectionKey !== "conn_dev_replace_me") {
+      const connector = new WithOneProviderConnector(connectionKey);
+      try {
+        const rows = result.items.map((item) => ({
+          id: item.reservation_id,
+          invoice_number: item.invoice_number,
+          invoice_date: item.invoice_date,
+          buyer_label: item.buyer_label,
+          payment_method: item.payment_method,
+          service_description: item.service_description,
+          unit: item.unit,
+          quantity: item.quantity,
+          unit_price: item.unit_price,
+          total_amount: item.total_amount,
+          vat_rate: item.vat_rate,
+          vat_amount: item.vat_amount,
+        }));
+        await connector.appendSheetRows(settings.sheet_id, rows, {
+          sheetName: settings.sheet_tab || "Sheet1",
+          idempotencyKeyColumn: "id",
+        });
+      } catch (err) {
+        console.error("Failed to append rows to Google Sheets:", err);
+      }
+    }
+  }
+
+  return result;
 }
 
 export async function generateExcelBuffer(
