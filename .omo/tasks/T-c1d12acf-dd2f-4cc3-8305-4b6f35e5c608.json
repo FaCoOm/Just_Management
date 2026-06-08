@@ -1,0 +1,14 @@
+{
+  "id": "T-c1d12acf-dd2f-4cc3-8305-4b6f35e5c608",
+  "subject": "Search team-mode artifacts for inefficiency evidence",
+  "description": "Inspect .omo/notepads/dashboard-completion-and-integration, .omo/plans/dashboard-completion-and-integration.md, and related team state/history artifacts for evidence of team creation, degradation, recovery, costly loops, blockers, and achieved outcomes. Return concise bullet findings only; no file edits.",
+  "status": "in_progress",
+  "activeForm": "Searching project artifacts for team-mode evidence",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "scope": "project artifacts only",
+    "output": "concise bullet findings"
+  },
+  "threadID": "ses_181200a4affeGCwL1iXjzNVVPQ"
+}

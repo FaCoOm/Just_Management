@@ -1,0 +1,16 @@
+{
+  "id": "T-b6de37d9-a2de-4b62-8a54-e9932fc50cac",
+  "subject": "Implement pagination/performance improvements",
+  "description": "Apply focused code changes in backend list helpers and frontend table query/pagination behavior, avoiding tax-export-page conflicts.",
+  "status": "in_progress",
+  "activeForm": "Implementing pagination/performance improvements",
+  "blocks": [],
+  "blockedBy": [
+    "T-54538455-6985-4038-83ac-d3ca4202c178"
+  ],
+  "metadata": {
+    "teamRunId": "e557260a-a972-4933-85b4-bfce24fccefe",
+    "teamTaskId": "2"
+  },
+  "threadID": "ses_181475e5bffeCIcMFLlQgcAzFW"
+}

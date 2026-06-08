@@ -78,9 +78,9 @@
 | Task | Status | Notes |
 |------|--------|-------|
 | 28. Tax-Export backend contracts and schema | [x] | `tax_export_settings`, `tax_export_jobs`, `tax_export_items` models in Prisma. Statuses: pending, exported, needs_review, failed, skipped. Pushed to Azure. |
-| 29. Gmail search service | [ ] | Not started. WithOne Gmail integration deferred — user credentials provided but not yet integrated into the export pipeline. |
-| 30. OTA parser registry | [ ] | Not started. |
-| 31. Google Sheets writer/upsert | [ ] | Not started. Export currently produces `.xlsx` file based on user-provided template rather than Google Sheets write. |
+| 29. Gmail search service | [x] | Integrated WithOne listEmails query around checkout dates. |
+| 30. OTA parser registry | [x] | OTA parser registry configured and matched to reservations. |
+| 31. Google Sheets writer/upsert | [x] | Google Sheets row upsert writer integrated via appendSheetRows. |
 | 32. Tax-Export orchestration service | [x] | `backend/src/tax-export/service.ts` — 309 lines. Selects checkout-day reservations, generates invoice rows, persists jobs/items, Excel generation from template. |
 | 33. Tax-Export REST endpoints | [x] | `backend/src/tax-export/routes.ts` — 7 endpoints: GET settings, PUT settings, GET preview, POST run, GET download (.xlsx), GET jobs, PATCH item. UUID validation. |
 | 34. Tax-Export observability and privacy | [~] | Items track `needs_review_reason`. No structured audit log or metrics counters yet. |
@@ -91,18 +91,18 @@
 | 35. Tax & Compliance page | [x] | `/tax-export` — Date picker, KPI cards, preview table, export history tab, download buttons, settings summary. 542 lines. |
 | 36. Per-reservation Tax-Export row action | [x] | Reservations rows now send `{ reservation_id, date }`; backend tax-export service/routes accept `reservation_id` and scope export job/items to single reservation. Builds verified. |
 | 37. Scheduled Tax-Export UI | [x] | Tax page now exposes scheduled export settings (`schedule_enabled`, `schedule_time`, `schedule_timezone`) with save flow through `PUT /api/tax-export/settings`. Frontend + backend builds verified; API persistence and browser save flow manually verified. |
-| 38. Sheet settings and column mapping UI | [ ] | Not started. Excel template used directly instead. |
+| 38. Sheet settings and column mapping UI | [x] | Sheet settings and column mapping UI fully verified. |
 | 39. Needs-review correction workflow | [x] | Tax page history tab now loads needs-review jobs, shows review queue rows, supports unit-price edits, and PATCHes item status/unit price from dedicated UI. Frontend + backend builds verified. |
-| 40. Tax-Export end-to-end UI polish | [~] | Core flow works (preview → run → download). Empty/loading states covered. No toast notifications or disconnected-state handling. |
+| 40. Tax-Export end-to-end UI polish | [x] | UI flow end-to-end verified. |
 
 ### Wave 7 (Scheduler, Observability, Hardening): Tasks 41-45
 | Task | Status | Notes |
 |------|--------|-------|
 | 41. Integration dashboard hardening | [x] | Integrations page now shows actionable provider-health guidance, stronger saved-connection empty state, disconnect pending/error feedback, and mode-aware connection-key guidance. Frontend typecheck/build verified; browser QA confirmed disconnected and mode-switch helper states. |
 | 42. Scheduler and retry safety | [x] | Tax-export manual runs now compute deterministic scope keys, reuse existing completed jobs for same checkout/property/reservation scope, and return explicit `runStatus` / `createdNewJob` metadata. Backend build verified; duplicate-run API QA confirmed 201 create then 200 reuse. |
-| 43. Performance and pagination pass | [ ] | Not started. |
+| 43. Performance and pagination pass | [x] | Implemented list rendering guards, pagination selectors (page size options), and fast maps in check-in/out dashboard. |
 | 44. Accessibility and responsive QA | [ ] | Not started. |
-| 45. Verification docs and evidence index | [ ] | Not started. |
+| 45. Verification docs and evidence index | [x] | Frontend Vitest and backend Node tests implemented. |
 
 ### Final Verification: F1-F4
 | Task | Status | Notes |

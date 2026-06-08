@@ -1,0 +1,14 @@
+{
+  "id": "T-aef89996-0b38-4a13-ae07-36041ae968a6",
+  "subject": "Restore backend-analysis skill files",
+  "description": "Restore accidentally deleted .agents/skills/backend-analysis files before verification.",
+  "status": "pending",
+  "activeForm": "Restoring backend-analysis skill files",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "teamRunId": "e557260a-a972-4933-85b4-bfce24fccefe",
+    "teamTaskId": "11"
+  },
+  "threadID": "ses_181475e5bffeCIcMFLlQgcAzFW"
+}

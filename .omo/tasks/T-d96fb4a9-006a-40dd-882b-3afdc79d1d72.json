@@ -1,0 +1,14 @@
+{
+  "id": "T-d96fb4a9-006a-40dd-882b-3afdc79d1d72",
+  "subject": "Inspect backend integration seams",
+  "description": "Read current WithOne connector, Gmail/Sheets modules, tax export service, and plan context to define smallest-diff changes.",
+  "status": "completed",
+  "activeForm": "Inspecting backend integration seams",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "teamRunId": "e557260a-a972-4933-85b4-bfce24fccefe",
+    "teamTaskId": "1"
+  },
+  "threadID": "ses_181476020ffevgiTjua252NfNQ"
+}

@@ -18,3 +18,10 @@
 ## 2026-05-31 Task 38 runtime fix
 - Runtime server was pointed at Azure DB with migration drift: `_prisma_migrations` showed `20260528000000_watched_files_target_kind` unfinished, which blocked normal `db:deploy` from reaching Task 38 migration.
 - Exact backend `npm run build` still intermittently fails in this workspace from Prisma Windows DLL rename lock even after runtime fix; no-engine build path remains reliable for code verification.
+
+## 2026-06-08 Task 1 (Test infrastructure and scripts)
+- First backend `npm run build` after adding test infra exposed pre-existing production `tsconfig` inclusion of `src/test/fixtures/hospitality.ts`; fixture types failed strict build. Fixed infra boundary by excluding `src/test/**/*`, `src/**/*.test.ts`, and `src/**/*.spec.ts` from backend production build.
+
+## 2026-06-08 Task 2 (Test fixtures and factories)
+- Frontend tax-export response interfaces are page-local in `src/components/tax-export/tax-export-page.tsx`, so `src/test/fixtures/hospitality.ts` mirrors those shapes until Task 4-5 decide whether to extract shared tax-export DTO types.
+- Backend fixtures under `backend/src/test/fixtures` compile only if current backend production `tsconfig` includes test fixture code; if later harness work excludes test directories again, Tasks 4-5 should add a dedicated test tsconfig rather than moving fixtures into production feature modules.

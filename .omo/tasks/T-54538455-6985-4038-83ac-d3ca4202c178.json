@@ -1,0 +1,14 @@
+{
+  "id": "T-54538455-6985-4038-83ac-d3ca4202c178",
+  "subject": "Inspect code hotspots for pagination/perf task",
+  "description": "Review backend and frontend target files for missing pagination/perf improvements and identify minimal safe changes.",
+  "status": "completed",
+  "activeForm": "Inspecting code hotspots for pagination/perf task",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "teamRunId": "e557260a-a972-4933-85b4-bfce24fccefe",
+    "teamTaskId": "2"
+  },
+  "threadID": "ses_181475e5bffeCIcMFLlQgcAzFW"
+}

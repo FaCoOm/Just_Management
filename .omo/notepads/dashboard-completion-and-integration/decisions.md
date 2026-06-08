@@ -22,3 +22,8 @@
 ## 2026-05-31 Task 38 runtime fix
 - Kept source code unchanged for runtime repair after log inspection proved failure came from unapplied DB schema, not route/service logic.
 - Repaired Prisma migration history surgically in database instead of weakening Task 38 fields or adding fallback code for missing columns.
+
+## 2026-06-08 Task 43 (Performance and pagination pass)
+- Changed only `src/components/check-in-out/check-in-out-page.tsx` because it was the confirmed unbounded render hotspot; left already-paginated VIP and billing tables unchanged.
+- Added local 10-row pagination to arrivals and departures boards to preserve existing cards/actions while preventing large DOM renders.
+- Kept repository/backend contracts unchanged because endpoint pagination exists but switching hooks to server pagination would change current page counts, filtering, search, and export behavior beyond hardening scope.

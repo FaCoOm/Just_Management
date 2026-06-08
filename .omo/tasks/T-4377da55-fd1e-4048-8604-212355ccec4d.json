@@ -1,0 +1,16 @@
+{
+  "id": "T-4377da55-fd1e-4048-8604-212355ccec4d",
+  "subject": "Verify builds/diagnostics and update docs",
+  "description": "Run lsp diagnostics on changed files, run root typecheck/build and backend build, append learnings note.",
+  "status": "pending",
+  "activeForm": "Verifying builds/diagnostics and updating docs",
+  "blocks": [],
+  "blockedBy": [
+    "T-b6de37d9-a2de-4b62-8a54-e9932fc50cac"
+  ],
+  "metadata": {
+    "teamRunId": "e557260a-a972-4933-85b4-bfce24fccefe",
+    "teamTaskId": "2"
+  },
+  "threadID": "ses_181475e5bffeCIcMFLlQgcAzFW"
+}

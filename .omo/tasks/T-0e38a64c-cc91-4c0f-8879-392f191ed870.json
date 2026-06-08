@@ -1,0 +1,16 @@
+{
+  "id": "T-0e38a64c-cc91-4c0f-8879-392f191ed870",
+  "subject": "Implement WithOne-first fallback pipeline",
+  "description": "Code backend-only WithOne primary, direct Google fallback, disabled/no-credentials status path, parser registry and sheets upsert orchestration.",
+  "status": "in_progress",
+  "activeForm": "Implementing WithOne-first fallback pipeline",
+  "blocks": [],
+  "blockedBy": [
+    "T-d96fb4a9-006a-40dd-882b-3afdc79d1d72"
+  ],
+  "metadata": {
+    "teamRunId": "e557260a-a972-4933-85b4-bfce24fccefe",
+    "teamTaskId": "1"
+  },
+  "threadID": "ses_181476020ffevgiTjua252NfNQ"
+}

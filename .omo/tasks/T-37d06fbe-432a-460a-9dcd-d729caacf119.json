@@ -1,0 +1,20 @@
+{
+  "id": "T-37d06fbe-432a-460a-9dcd-d729caacf119",
+  "subject": "Create remediation report",
+  "description": "Write markdown remediation report documenting issues, root causes, contracts, and implementation plan.",
+  "status": "completed",
+  "activeForm": "Created remediation report",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "kind": "analysis-remediation",
+    "area": "team-mode",
+    "created": [
+      "docs/analysis/team-mode-remediation-report.md",
+      ".omo/notepads/dashboard-completion-and-integration/team-artifacts-contract.md"
+    ]
+  },
+  "repoURL": "",
+  "parentID": "",
+  "threadID": "ses_1810fad15ffeuYIIx1eOFbcgxs"
+}

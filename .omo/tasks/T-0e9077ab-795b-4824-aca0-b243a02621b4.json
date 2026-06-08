@@ -1,0 +1,25 @@
+{
+  "id": "T-0e9077ab-795b-4824-aca0-b243a02621b4",
+  "subject": "Design persistent team artifacts",
+  "description": "Define durable team ledger, artifact manifest, model preflight, closure, and verification contracts.",
+  "status": "completed",
+  "activeForm": "Designed persistent team artifacts",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "kind": "analysis-remediation",
+    "area": "team-mode",
+    "contracts": [
+      "team run manifest",
+      "task ledger",
+      "artifact manifest",
+      "model preflight",
+      "closure invariant",
+      "verification evidence",
+      "token accounting fallback"
+    ]
+  },
+  "repoURL": "",
+  "parentID": "",
+  "threadID": "ses_1810fad15ffeuYIIx1eOFbcgxs"
+}

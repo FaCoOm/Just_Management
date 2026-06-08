@@ -1,0 +1,24 @@
+{
+  "id": "T-32ffd474-1e97-48e8-bacc-858b50f25497",
+  "subject": "Verify report and artifacts",
+  "description": "Validate changed files with diagnostics/inspection and summarize outputs.",
+  "status": "completed",
+  "activeForm": "Verified report and artifacts",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "kind": "analysis-remediation",
+    "area": "team-mode",
+    "verification": [
+      "readback docs/analysis/team-mode-remediation-report.md",
+      "readback .omo/notepads/dashboard-completion-and-integration/team-artifacts-contract.md",
+      "readback team-runs artifact directory",
+      "readback closure and artifact manifest",
+      "markdown LSP unavailable: no .md server configured"
+    ],
+    "build": "not run: docs/artifact-only change"
+  },
+  "repoURL": "",
+  "parentID": "",
+  "threadID": "ses_1810fad15ffeuYIIx1eOFbcgxs"
+}
