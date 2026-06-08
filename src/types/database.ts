@@ -24,7 +24,6 @@ export interface Room {
   room_name: string;
   room_type: string;
   status: RoomStatus;
-  passcode: string;
   floor: number;
   created_at: string;
 }

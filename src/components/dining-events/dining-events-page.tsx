@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useReservationsPageData } from "@/hooks/use-page-data";
+import { useDiningEventsPageData } from "@/hooks/use-page-data";
 import {
   UtensilsCrossed,
   CalendarDays,
@@ -22,21 +22,6 @@ import {
   MapPin,
 } from "lucide-react";
 import type { Property } from "@/types/database";
-
-interface EventBooking {
-  id: string;
-  title: string;
-  type: "dinner" | "event" | "meeting" | "celebration";
-  venue: string;
-  date: string;
-  startTime: string;
-  endTime: string;
-  guestCount: number;
-  guestName: string;
-  propertyId: string;
-  status: "confirmed" | "pending" | "cancelled";
-  notes: string;
-}
 
 const eventTypeConfig: Record<string, { label: string; className: string }> = {
   dinner: { label: "Private Dining", className: "bg-chart-4/10 text-chart-4 border-chart-4/20" },
@@ -56,49 +41,18 @@ function DiningEventsSkeleton() {
   );
 }
 
-function generateMockEvents(properties: Property[]): EventBooking[] {
-  const today = new Date().toISOString().slice(0, 10);
-  const events: EventBooking[] = [];
-  const venues = ["Rooftop Terrace", "Garden Pavilion", "Private Dining Room", "Pool Deck", "Conference Room A"];
-  const types: EventBooking["type"][] = ["dinner", "event", "meeting", "celebration"];
-  const names = ["Nguyen Wedding Party", "Corporate Retreat Dinner", "Birthday Celebration", "Wine Tasting Event", "Team Building Lunch", "Anniversary Dinner"];
-
-  let idx = 0;
-  for (const prop of properties.slice(0, 4)) {
-    for (let i = 0; i < 3; i++) {
-      events.push({
-        id: `evt-${idx}`,
-        title: names[idx % names.length],
-        type: types[idx % types.length],
-        venue: venues[idx % venues.length],
-        date: today,
-        startTime: `${17 + i}:00`,
-        endTime: `${19 + i}:00`,
-        guestCount: 6 + (idx * 4),
-        guestName: names[idx % names.length].split(" ")[0],
-        propertyId: prop.id,
-        status: i === 2 ? "pending" : "confirmed",
-        notes: i === 0 ? "Vegetarian options required" : "",
-      });
-      idx++;
-    }
-  }
-  return events;
-}
-
 export function DiningEventsPage() {
-  const { properties, loading } = useReservationsPageData();
+  const { properties, events, loading } = useDiningEventsPageData();
   const [propertyFilter, setPropertyFilter] = useState<string>("all");
 
-  const events = useMemo(() => generateMockEvents(properties), [properties]);
   const filtered = useMemo(() => {
     if (propertyFilter === "all") return events;
-    return events.filter((e) => e.propertyId === propertyFilter);
+    return events.filter((e) => e.property_id === propertyFilter);
   }, [events, propertyFilter]);
 
   const confirmedCount = filtered.filter((e) => e.status === "confirmed").length;
   const pendingCount = filtered.filter((e) => e.status === "pending").length;
-  const totalGuests = filtered.reduce((sum, e) => sum + e.guestCount, 0);
+  const totalGuests = filtered.reduce((sum, e) => sum + e.guest_count, 0);
 
   if (loading) {
     return (
@@ -148,7 +102,7 @@ export function DiningEventsPage() {
           <div className="space-y-3">
             {filtered.map((event) => {
               const typeConfig = eventTypeConfig[event.type] ?? eventTypeConfig.event;
-              const property = properties.find((p) => p.id === event.propertyId);
+              const property = properties.find((p) => p.id === event.property_id);
               return (
                 <Card key={event.id} className="transition-shadow hover:shadow-sm" data-testid={`event-card-${event.id}`}>
                   <CardContent className="p-4">
@@ -162,9 +116,9 @@ export function DiningEventsPage() {
                           </Badge>
                         </div>
                         <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                          <span className="flex items-center gap-1"><Clock className="h-3 w-3" />{event.startTime} – {event.endTime}</span>
+                          <span className="flex items-center gap-1"><Clock className="h-3 w-3" />{event.start_time} – {event.end_time}</span>
                           <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{event.venue}</span>
-                          <span className="flex items-center gap-1"><Users className="h-3 w-3" />{event.guestCount} guests</span>
+                          <span className="flex items-center gap-1"><Users className="h-3 w-3" />{event.guest_count} guests</span>
                           {property && <span>{property.name}</span>}
                         </div>
                         {event.notes && <p className="text-xs text-muted-foreground italic">{event.notes}</p>}

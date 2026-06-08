@@ -9,8 +9,16 @@ import type {
   ReservationRepository,
   GuestRequestRepository,
   MaintenanceRepository,
+  ChannelRepository,
+  DiningEventRepository,
+  IngestRepository,
+  IntegrationRepository,
+  RateRepository,
   RepositoryFactory,
+  SecurityAuditRepository,
   StatsRepository,
+  StaffRepository,
+  TaxExportRepository,
 } from "./types";
 import type { ReservationCreateInput } from "@/types/database";
 
@@ -55,6 +63,41 @@ async function postJson<T>(path: string, body: unknown): Promise<T> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(JSON.stringify(data));
+  }
+  return data;
+}
+
+async function putJson<T>(path: string, body: unknown): Promise<T> {
+  const res = await apiFetch(apiUrl(path), {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(JSON.stringify(data));
+  }
+  return data;
+}
+
+async function patchJson<T>(path: string, body: unknown): Promise<T> {
+  const res = await apiFetch(apiUrl(path), {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(JSON.stringify(data));
+  }
+  return data;
+}
+
+async function postForm<T>(path: string, body: FormData): Promise<T> {
+  const res = await apiFetch(apiUrl(path), { method: "POST", body });
   const data = await res.json();
   if (!res.ok) {
     throw new Error(JSON.stringify(data));
@@ -146,6 +189,9 @@ const guestRequestRepo: GuestRequestRepository = {
 
 // Maintenance repository implementation
 const maintenanceRepo: MaintenanceRepository = {
+  async create(input) {
+    return postJson("/api/maintenance", input);
+  },
   async getAll() {
     return getJson("/api/maintenance");
   },
@@ -158,6 +204,127 @@ const maintenanceRepo: MaintenanceRepository = {
   },
   async getOpenIssues() {
     return getJson("/api/maintenance?status=Open");
+  },
+};
+
+const channelRepo: ChannelRepository = {
+  async getAll() {
+    return getJson("/api/channels");
+  },
+};
+
+const diningEventRepo: DiningEventRepository = {
+  async getAll() {
+    return getJson("/api/dining-events");
+  },
+  async getByPropertyId(propertyId) {
+    return getJson(withQuery("/api/dining-events", { property_id: propertyId }));
+  },
+};
+
+const staffRepo: StaffRepository = {
+  async getAll() {
+    return getJson("/api/staff");
+  },
+};
+
+const securityAuditRepo: SecurityAuditRepository = {
+  async getAll() {
+    return getJson("/api/security/audit");
+  },
+};
+
+const rateRepo: RateRepository = {
+  async getByDateRange(startDate, endDate, propertyId) {
+    return getJson(withQuery("/api/rates", {
+      start_date: startDate,
+      end_date: endDate,
+      property_id: propertyId,
+    }));
+  },
+};
+
+const taxExportRepo: TaxExportRepository = {
+  async getPreview(date) {
+    return getJson(withQuery("/api/tax-export/preview", { date }));
+  },
+  async getJobs() {
+    return getJson("/api/tax-export/jobs");
+  },
+  async getSettings() {
+    return getJson("/api/tax-export/settings");
+  },
+  async getJob(jobId) {
+    return getJson(`/api/tax-export/jobs/${jobId}`);
+  },
+  async patchItem(id, body) {
+    return patchJson(`/api/tax-export/items/${id}`, body);
+  },
+  async run(body) {
+    return postJson("/api/tax-export/run", body);
+  },
+  async updateSettings(settings) {
+    return putJson("/api/tax-export/settings", settings);
+  },
+  getDownloadUrl(params) {
+    if (params.jobId) {
+      return apiUrl(withQuery("/api/tax-export/download", { job_id: params.jobId }));
+    }
+
+    return apiUrl(withQuery("/api/tax-export/download", { date: params.date }));
+  },
+};
+
+const DEV_USER_ID = "dev-admin-1";
+
+const integrationHeaders = { "x-user-id": DEV_USER_ID };
+
+const integrationRepo: IntegrationRepository = {
+  async getStatus() {
+    return getJson("/api/integrations/status");
+  },
+  async getConnections() {
+    const res = await apiFetch(apiUrl("/api/one/connections"), { headers: integrationHeaders });
+    const data = await res.json() as { connections: Awaited<ReturnType<IntegrationRepository["getConnections"]>> };
+    if (!res.ok) throw new Error(`Connections failed: ${res.status}`);
+    return data.connections;
+  },
+  async persistConnection(payload) {
+    const res = await apiFetch(apiUrl("/api/one/connections"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...integrationHeaders },
+      body: JSON.stringify({ userId: DEV_USER_ID, identityType: "user", ...payload }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(`Persist connection failed: ${res.status}`);
+    return data;
+  },
+  async disconnect(connectionKey) {
+    const res = await apiFetch(apiUrl(`/api/one/connections/${encodeURIComponent(connectionKey)}`), {
+      method: "DELETE",
+      headers: integrationHeaders,
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(`Disconnect failed: ${res.status}`);
+    return data;
+  },
+};
+
+const ingestRepo: IngestRepository = {
+  async getPipelineStatus() {
+    return getJson("/api/ingest/pipeline/status");
+  },
+
+  async runBuiltInListingsSync() {
+    return postJson("/api/ingest/pipeline/run", {
+      mode: "built-in",
+      targetKind: "listings",
+      dryRun: false,
+    });
+  },
+
+  async uploadReservations(formData) {
+    return postForm("/api/ingest/reservations", formData);
   },
 };
 
@@ -182,4 +349,12 @@ export const createRestRepositories = (): RepositoryFactory => ({
   guestRequests: guestRequestRepo,
   maintenance: maintenanceRepo,
   stats: statsRepo,
+  channels: channelRepo,
+  taxExport: taxExportRepo,
+  integrations: integrationRepo,
+  ingest: ingestRepo,
+  diningEvents: diningEventRepo,
+  staff: staffRepo,
+  securityAudit: securityAuditRepo,
+  rates: rateRepo,
 });

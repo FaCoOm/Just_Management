@@ -369,6 +369,29 @@ app.get("/api/properties", asyncHandler(async (_, res) => {
   res.json(properties);
 }));
 
+app.get("/api/properties/:id", asyncHandler(async (req, res) => {
+  setShortCache(res, 300);
+  const property = await prisma.properties.findUnique({
+    where: { id: req.params.id },
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      total_rooms: true,
+      location: true,
+      status: true,
+      created_at: true,
+    },
+  });
+
+  if (!property) {
+    res.status(404).json({ error: "Not found" });
+    return;
+  }
+
+  res.json(property);
+}));
+
 app.get("/api/dashboard/summary", asyncHandler(async (req, res) => {
   setNoStore(res);
   const date = typeof req.query.date === "string" ? req.query.date : getVietnamToday();
@@ -433,7 +456,6 @@ app.get("/api/dashboard/summary", asyncHandler(async (req, res) => {
         room_name: true,
         room_type: true,
         status: true,
-        passcode: true,
         floor: true,
         created_at: true,
       },
@@ -879,13 +901,36 @@ app.get("/api/rooms", asyncHandler(async (req, res) => {
         room_name: true,
         room_type: true,
         status: true,
-        passcode: true,
         floor: true,
         created_at: true,
       },
     }),
     includeCount ? prisma.rooms.count({ where }) : undefined
   );
+}));
+
+app.get("/api/rooms/:id", asyncHandler(async (req, res) => {
+  setShortCache(res, 60);
+  const room = await prisma.rooms.findUnique({
+    where: { id: req.params.id },
+    select: {
+      id: true,
+      property_id: true,
+      room_number: true,
+      room_name: true,
+      room_type: true,
+      status: true,
+      floor: true,
+      created_at: true,
+    },
+  });
+
+  if (!room) {
+    res.status(404).json({ error: "Not found" });
+    return;
+  }
+
+  res.json(room);
 }));
 
 // =============================================================================
@@ -919,6 +964,30 @@ app.get("/api/maintenance", asyncHandler(async (req, res) => {
     }),
     includeCount ? prisma.maintenance_issues.count({ where }) : undefined
   );
+}));
+
+app.get("/api/maintenance/:id", asyncHandler(async (req, res) => {
+  setNoStore(res);
+  const issue = await prisma.maintenance_issues.findUnique({
+    where: { id: req.params.id },
+    select: {
+      id: true,
+      property_id: true,
+      room_id: true,
+      title: true,
+      description: true,
+      severity: true,
+      status: true,
+      created_at: true,
+    },
+  });
+
+  if (!issue) {
+    res.status(404).json({ error: "Not found" });
+    return;
+  }
+
+  res.json(issue);
 }));
 
 app.post("/api/maintenance", asyncHandler(async (req, res) => {
@@ -1037,6 +1106,31 @@ app.get("/api/guest-requests", asyncHandler(async (req, res) => {
   );
 }));
 
+app.get("/api/guest-requests/:id", asyncHandler(async (req, res) => {
+  setNoStore(res);
+  const request = await prisma.guest_requests.findUnique({
+    where: { id: req.params.id },
+    select: {
+      id: true,
+      guest_id: true,
+      room_id: true,
+      property_id: true,
+      reservation_id: true,
+      request_type: true,
+      notes: true,
+      is_completed: true,
+      created_at: true,
+    },
+  });
+
+  if (!request) {
+    res.status(404).json({ error: "Not found" });
+    return;
+  }
+
+  res.json(request);
+}));
+
 // =============================================================================
 // Guests (legacy compatibility)
 // =============================================================================
@@ -1071,6 +1165,131 @@ app.get("/api/guests", asyncHandler(async (req, res) => {
     }),
     includeCount ? prisma.guests.count({ where }) : undefined
   );
+}));
+
+// =============================================================================
+// Operations page data (read-only)
+// =============================================================================
+
+app.get("/api/dining-events", asyncHandler(async (req, res) => {
+  setNoStore(res);
+  const propertyId = typeof req.query.property_id === "string" ? req.query.property_id : undefined;
+  const date = typeof req.query.date === "string" ? req.query.date : undefined;
+
+  if (date && !isValidDateKey(date)) {
+    res.status(400).json({ error: "Invalid date" });
+    return;
+  }
+
+  const events = await prisma.dining_event_bookings.findMany({
+    where: {
+      ...(propertyId ? { property_id: propertyId } : {}),
+      ...(date ? { date: toDateOnly(date) } : {}),
+    },
+    orderBy: [{ date: "asc" }, { start_time: "asc" }],
+    select: {
+      id: true,
+      title: true,
+      type: true,
+      venue: true,
+      date: true,
+      start_time: true,
+      end_time: true,
+      guest_count: true,
+      guest_name: true,
+      property_id: true,
+      status: true,
+      notes: true,
+    },
+  });
+
+  res.json(events.map((event) => ({
+    ...event,
+    date: toDateKey(event.date),
+  })));
+}));
+
+app.get("/api/staff", asyncHandler(async (_req, res) => {
+  setNoStore(res);
+  const staff = await prisma.staff_members.findMany({
+    orderBy: { name: "asc" },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      property_ids: true,
+      status: true,
+      last_active_at: true,
+    },
+  });
+
+  res.json(staff);
+}));
+
+app.get("/api/security/audit", asyncHandler(async (req, res) => {
+  setNoStore(res);
+  const severity = typeof req.query.severity === "string" ? req.query.severity : undefined;
+  const limitValue = typeof req.query.limit === "string" ? req.query.limit : undefined;
+  const parsedLimit = Number.parseInt(limitValue ?? "100", 10);
+  const take = Math.min(Math.max(Number.isNaN(parsedLimit) ? 100 : parsedLimit, 1), 500);
+
+  const entries = await prisma.security_audit_entries.findMany({
+    where: severity ? { severity } : undefined,
+    orderBy: { timestamp: "desc" },
+    take,
+    select: {
+      id: true,
+      timestamp: true,
+      action: true,
+      actor: true,
+      resource: true,
+      details: true,
+      severity: true,
+    },
+  });
+
+  res.json(entries);
+}));
+
+app.get("/api/rates", asyncHandler(async (req, res) => {
+  setNoStore(res);
+  const propertyId = typeof req.query.property_id === "string" ? req.query.property_id : undefined;
+  const roomType = typeof req.query.room_type === "string" ? req.query.room_type : undefined;
+  const startDate = typeof req.query.start_date === "string" ? req.query.start_date : undefined;
+  const endDate = typeof req.query.end_date === "string" ? req.query.end_date : undefined;
+
+  if ((startDate && !isValidDateKey(startDate)) || (endDate && !isValidDateKey(endDate))) {
+    res.status(400).json({ error: "Invalid date range" });
+    return;
+  }
+
+  const rates = await prisma.room_rates.findMany({
+    where: {
+      ...(propertyId ? { OR: [{ property_id: propertyId }, { property_id: null }] } : {}),
+      ...(roomType ? { room_type: roomType } : {}),
+      ...((startDate || endDate) ? {
+        date: {
+          ...(startDate ? { gte: toDateOnly(startDate) } : {}),
+          ...(endDate ? { lte: toDateOnly(endDate) } : {}),
+        },
+      } : {}),
+    },
+    orderBy: [{ room_type: "asc" }, { date: "asc" }, { property_id: "asc" }],
+    select: {
+      id: true,
+      property_id: true,
+      room_type: true,
+      date: true,
+      base_rate_vnd: true,
+      rate_vnd: true,
+    },
+  });
+
+  res.json(rates.map((rate) => ({
+    ...rate,
+    date: toDateKey(rate.date),
+  })));
 }));
 
 app.use(

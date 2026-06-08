@@ -15,8 +15,9 @@ import {
   Receipt, Download, Play, CalendarDays, FileSpreadsheet,
   AlertCircle, CheckCircle2, Clock, Eye, History, RefreshCw,
 } from "lucide-react";
+import { createRestRepositories } from "@/lib/repositories";
 
-const API_BASE = import.meta.env.VITE_TRACK_B_API_URL ?? "http://localhost:3001";
+const repos = createRestRepositories();
 
 interface TaxExportItem {
   invoice_number: string;
@@ -159,8 +160,7 @@ export function TaxExportPage() {
   async function loadPreview() {
     setPreviewLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/api/tax-export/preview?date=${selectedDate}`);
-      const data = await res.json();
+      const data = await repos.taxExport.getPreview(selectedDate);
       setPreviewItems(data.items || []);
     } catch (e) {
       console.error("Preview failed:", e);
@@ -172,8 +172,7 @@ export function TaxExportPage() {
   async function loadJobs() {
     setJobsLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/api/tax-export/jobs`);
-      const data = await res.json();
+      const data = await repos.taxExport.getJobs();
       const nextJobs = data || [];
       setJobs(nextJobs);
 
@@ -200,13 +199,7 @@ export function TaxExportPage() {
     setSettingsLoadError(null);
 
     try {
-      const res = await fetch(`${API_BASE}/api/tax-export/settings`);
-
-      if (!res.ok) {
-        throw new Error(`Settings failed with status ${res.status}`);
-      }
-
-      const data = await res.json();
+      const data = await repos.taxExport.getSettings();
       setSettings(data);
       setTemplateColumnsDraft(stringifyTemplateColumns(data.template_columns || DEFAULT_TEMPLATE_COLUMNS));
     } catch (e) {
@@ -222,8 +215,7 @@ export function TaxExportPage() {
     setReviewError(null);
 
     try {
-      const res = await fetch(`${API_BASE}/api/tax-export/jobs/${jobId}`);
-      const data = await res.json();
+      const data = await repos.taxExport.getJob(jobId);
       const items = ((data?.items || []) as TaxExportReviewItem[]).filter((item) => item.status === "needs_review");
 
       setSelectedReviewJobId(jobId);
@@ -265,16 +257,7 @@ export function TaxExportPage() {
     setReviewError(null);
 
     try {
-      const res = await fetch(`${API_BASE}/api/tax-export/items/${item.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-
-      if (!res.ok) {
-        throw new Error(`Patch failed with status ${res.status}`);
-      }
-
+      await repos.taxExport.patchItem(item.id, body);
       await Promise.all([loadPreview(), loadJobs()]);
     } catch (e) {
       console.error("Patch failed:", e);
@@ -287,12 +270,7 @@ export function TaxExportPage() {
   async function handleRunExport() {
     setExporting(true);
     try {
-      const res = await fetch(`${API_BASE}/api/tax-export/run`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ date: selectedDate }),
-      });
-      const data = await res.json();
+      const data = await repos.taxExport.run({ date: selectedDate });
       if (data.jobId) {
         setActiveTab("history");
         await loadJobs();
@@ -307,9 +285,7 @@ export function TaxExportPage() {
   }
 
   function handleDownload(jobId?: string) {
-    const url = jobId
-      ? `${API_BASE}/api/tax-export/download?job_id=${jobId}`
-      : `${API_BASE}/api/tax-export/download?date=${selectedDate}`;
+    const url = repos.taxExport.getDownloadUrl(jobId ? { jobId } : { date: selectedDate });
     window.open(url, "_blank");
   }
 
@@ -364,17 +340,7 @@ export function TaxExportPage() {
     setSettingsSaveSuccess(null);
 
     try {
-      const res = await fetch(`${API_BASE}/api/tax-export/settings`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(submittedSettings),
-      });
-
-      if (!res.ok) {
-        throw new Error(`Settings save failed with status ${res.status}`);
-      }
-
-      const data = await res.json();
+      const data = await repos.taxExport.updateSettings(submittedSettings);
       setSettings({ ...settings, ...data });
       setTemplateColumnsDraft(stringifyTemplateColumns(data.template_columns || {}));
 

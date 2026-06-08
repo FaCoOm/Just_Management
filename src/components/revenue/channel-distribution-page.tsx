@@ -4,25 +4,10 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { createRestRepositories, type Channel } from "@/lib/repositories";
 import { Globe, Link2, CheckCircle2, AlertCircle, ExternalLink } from "lucide-react";
 
-interface Channel {
-  id: string;
-  slug: string;
-  display_name: string;
-  status: string;
-  external_accounts: ExternalAccount[];
-}
-
-interface ExternalAccount {
-  id: string;
-  channel_id: string;
-  account_key: string;
-  display_name: string;
-  status: string;
-  last_synced_at: string | null;
-  last_sync_error: string | null;
-}
+const repos = createRestRepositories();
 
 function ChannelDistributionSkeleton() {
   return (
@@ -40,9 +25,7 @@ export function ChannelDistributionPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const base = import.meta.env.VITE_TRACK_B_API_URL ?? "http://localhost:3001";
-    fetch(`${base}/api/channels`)
-      .then((r) => r.json())
+    repos.channels.getAll()
       .then((data) => { setChannels(data); setLoading(false); })
       .catch(() => setLoading(false));
   }, []);

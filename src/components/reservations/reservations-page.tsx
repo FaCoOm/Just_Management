@@ -113,7 +113,7 @@ function ReservationsSkeleton() {
   );
 }
 
-const API_BASE = import.meta.env.VITE_TRACK_B_API_URL ?? "http://localhost:3001";
+const repos = createRestRepositories();
 
 function buildColumns(rooms: Room[], properties: Property[]): ColumnDef<Guest>[] {
   return [
@@ -289,14 +289,9 @@ export function ReservationsPage() {
     const date = etd ? etd.slice(0, 10) : new Date().toISOString().slice(0, 10);
     setTaxExporting((prev) => ({ ...prev, [reservationId]: true }));
     try {
-      const res = await fetch(`${API_BASE}/api/tax-export/run`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ reservation_id: reservationId, date }),
-      });
-      const data = await res.json() as { jobId?: string };
+      const data = await repos.taxExport.run({ reservation_id: reservationId, date });
       if (data.jobId) {
-        window.open(`${API_BASE}/api/tax-export/download?job_id=${data.jobId}`, "_blank");
+        window.open(repos.taxExport.getDownloadUrl({ jobId: data.jobId }), "_blank");
       }
     } catch (e) {
       console.error("Tax export failed:", e);
@@ -681,8 +676,7 @@ function SummaryPanel({ summary }: { summary: IngestSummaryResponse | null }) {
 }
 
 async function submitCsv(formData: FormData): Promise<IngestSummaryResponse> {
-  const response = await fetch("/api/ingest/reservations", { method: "POST", body: formData });
-  return response.json() as Promise<IngestSummaryResponse>;
+  return repos.ingest.uploadReservations(formData);
 }
 
 function ReservationsHeader({ properties, rooms }: { properties: Property[], rooms: Room[] }) {

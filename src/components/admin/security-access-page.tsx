@@ -7,17 +7,9 @@ import { Input } from "@/components/ui/input";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useSecurityAuditPageData } from "@/hooks/use-page-data";
 import { ShieldCheck, Activity, Key, AlertCircle, Search, Clock, Globe, UserCog } from "lucide-react";
-
-interface AuditEntry {
-  id: string;
-  timestamp: string;
-  action: string;
-  actor: string;
-  resource: string;
-  details: string;
-  severity: "info" | "warning" | "critical";
-}
 
 const severityConfig: Record<string, { label: string; className: string; icon: typeof Activity }> = {
   info: { label: "Info", className: "bg-chart-1/10 text-chart-1 border-chart-1/20", icon: Activity },
@@ -25,32 +17,22 @@ const severityConfig: Record<string, { label: string; className: string; icon: t
   critical: { label: "Critical", className: "bg-destructive/10 text-destructive border-destructive/20", icon: ShieldCheck },
 };
 
-
-function generateAuditEntries(): AuditEntry[] {
-  const actions = [
-    { action: "User Login", actor: "Robert Austin", resource: "auth", details: "Login from 10.0.0.1", severity: "info" as const },
-    { action: "Export Job Run", actor: "System", resource: "tax-export", details: "Same-day checkout export completed: 5 items", severity: "info" as const },
-    { action: "Connection Refresh", actor: "System", resource: "withone-gmail", details: "Gmail token refreshed", severity: "info" as const },
-    { action: "Rate Override", actor: "Linh Tran", resource: "rates", details: "Deluxe King weekend rate updated to 2,160,000 VND", severity: "info" as const },
-    { action: "Failed Login Attempt", actor: "unknown@test.com", resource: "auth", details: "3 failed attempts from IP 192.168.1.50", severity: "warning" as const },
-    { action: "Permission Change", actor: "Robert Austin", resource: "staff", details: "Mai Nguyen role changed to manager", severity: "warning" as const },
-    { action: "Sync Failure", actor: "System", resource: "booking-com", details: "API timeout on reservation sync", severity: "critical" as const },
-    { action: "Sheet Write Error", actor: "System", resource: "google-sheets", details: "Quota exceeded, retry scheduled", severity: "warning" as const },
-    { action: "Webhook Received", actor: "Airbnb", resource: "webhooks", details: "Reservation update webhook processed", severity: "info" as const },
-    { action: "Staff Deactivated", actor: "Robert Austin", resource: "staff", details: "Carlos Rodriguez account deactivated", severity: "warning" as const },
-  ];
-  return actions.map((a, i) => ({
-    id: `audit-${i}`,
-    timestamp: new Date(Date.now() - i * 1800000).toISOString(),
-    ...a,
-  }));
+function SecurityAccessSkeleton() {
+  return (
+    <div className="space-y-4 p-4">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, i) => (<Skeleton key={i} className="h-24 rounded-lg" />))}
+      </div>
+      <Skeleton className="h-96 rounded-lg" />
+    </div>
+  );
 }
 
 export function SecurityAccessPage() {
+  const { entries, loading } = useSecurityAuditPageData();
   const [search, setSearch] = useState("");
   const [severityFilter, setSeverityFilter] = useState("all");
 
-  const entries = useMemo(() => generateAuditEntries(), []);
   const filtered = useMemo(() => entries.filter((e) => {
     const matchSearch = e.action.toLowerCase().includes(search.toLowerCase()) || e.actor.toLowerCase().includes(search.toLowerCase()) || e.details.toLowerCase().includes(search.toLowerCase());
     const matchSeverity = severityFilter === "all" || e.severity === severityFilter;
@@ -60,6 +42,10 @@ export function SecurityAccessPage() {
   const infoCount = entries.filter((e) => e.severity === "info").length;
   const warningCount = entries.filter((e) => e.severity === "warning").length;
   const criticalCount = entries.filter((e) => e.severity === "critical").length;
+
+  if (loading) {
+    return (<div className="flex h-full flex-col"><SecurityHeader /><SecurityAccessSkeleton /></div>);
+  }
 
   return (
     <div className="flex h-full max-h-svh flex-col" data-testid="security-access-page">

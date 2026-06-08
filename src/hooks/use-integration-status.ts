@@ -1,15 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
+import { createRestRepositories, type IntegrationStatus } from "@/lib/repositories";
 
-export interface IntegrationStatus {
-  status: "connected" | "disconnected";
-  provider: "withone";
-  error?: string;
-}
+const repos = createRestRepositories();
 
 async function fetchIntegrationStatus(): Promise<IntegrationStatus> {
-  const response = await fetch("/api/integrations/status");
-  if (!response.ok) throw new Error(`Integration status failed: ${response.status}`);
-  return response.json() as Promise<IntegrationStatus>;
+  return repos.integrations.getStatus();
 }
 
 export function useIntegrationStatus() {

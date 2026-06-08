@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useRoomsPageData } from "@/hooks/use-page-data";
+import { useRatesPageData } from "@/hooks/use-page-data";
 import {
   DollarSign,
   CalendarDays,
@@ -49,36 +49,44 @@ function getToday() {
   return new Date().toISOString().slice(0, 10);
 }
 
-const baseRates: Record<string, number> = {
-  "Deluxe King": 1800000,
-  "Superior Twin": 1500000,
-  "Standard Double": 1200000,
-  "Suite": 2800000,
-  "Family Room": 2200000,
-  "Studio": 1000000,
-};
-
 function formatVND(amount: number) {
   return new Intl.NumberFormat("vi-VN").format(amount);
 }
 
 export function RateManagerPage() {
-  const { rooms, properties, loading } = useRoomsPageData();
   const [propertyFilter, setPropertyFilter] = useState<string>("all");
   const [startDate, setStartDate] = useState(getToday());
   const daysToShow = 7;
+  const endDate = addDays(startDate, daysToShow - 1);
+  const { properties, rates, loading } = useRatesPageData(
+    startDate,
+    endDate,
+    propertyFilter === "all" ? undefined : propertyFilter
+  );
 
   const dates = useMemo(() => Array.from({ length: daysToShow }, (_, i) => addDays(startDate, i)), [startDate]);
 
   const roomTypes = useMemo(() => {
     const types = new Set<string>();
-    const filteredRooms = propertyFilter === "all" ? rooms : rooms.filter((r) => r.property_id === propertyFilter);
-    filteredRooms.forEach((r) => types.add(r.room_type));
+    rates.forEach((rate) => types.add(rate.room_type));
     return Array.from(types).sort();
-  }, [rooms, propertyFilter]);
+  }, [rates]);
+
+  const rateFor = (roomType: string, date: string) => {
+    const matchingRates = rates.filter((rate) => rate.room_type === roomType && rate.date === date);
+    return matchingRates.find((rate) => rate.property_id === propertyFilter)
+      ?? matchingRates.find((rate) => rate.property_id === null)
+      ?? matchingRates[0];
+  };
 
   const avgRate = roomTypes.length > 0
-    ? Math.round(roomTypes.reduce((sum, t) => sum + (baseRates[t] ?? 1000000), 0) / roomTypes.length)
+    ? Math.round(roomTypes.reduce((sum, t) => {
+      const typeRates = rates.filter((rate) => rate.room_type === t);
+      const avgTypeRate = typeRates.length > 0
+        ? Math.round(typeRates.reduce((typeSum, rate) => typeSum + rate.base_rate_vnd, 0) / typeRates.length)
+        : 0;
+      return sum + avgTypeRate;
+    }, 0) / roomTypes.length)
     : 0;
 
   if (loading) {
@@ -134,7 +142,7 @@ export function RateManagerPage() {
                 <CardTitle className="text-xs font-medium text-muted-foreground">Date Range</CardTitle>
                 <div className="rounded-md bg-muted p-1.5 text-muted-foreground"><CalendarDays className="h-3.5 w-3.5" /></div>
               </CardHeader>
-              <CardContent><span className="text-sm font-semibold" data-testid="date-range">{startDate} – {addDays(startDate, 6)}</span></CardContent>
+              <CardContent><span className="text-sm font-semibold" data-testid="date-range">{startDate} – {endDate}</span></CardContent>
             </Card>
           </div>
 
@@ -160,7 +168,7 @@ export function RateManagerPage() {
                   </thead>
                   <tbody>
                     {roomTypes.map((type) => {
-                      const base = baseRates[type] ?? 1000000;
+                      const base = rates.find((rate) => rate.room_type === type)?.base_rate_vnd ?? 0;
                       return (
                         <tr key={type} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
                           <td className="sticky left-0 z-10 bg-card px-3 py-2.5">
@@ -169,12 +177,12 @@ export function RateManagerPage() {
                           </td>
                           {dates.map((date) => {
                             const isWeekend = [0, 6].includes(new Date(date + "T00:00:00Z").getUTCDay());
-                            const rate = isWeekend ? Math.round(base * 1.2) : base;
+                            const rate = rateFor(type, date);
                             const isToday = date === getToday();
                             return (
                               <td key={date} className={`px-2 py-2.5 text-center ${isToday ? "bg-harbor/5" : ""} ${isWeekend ? "bg-chart-4/5" : ""}`}>
-                                <div className="font-semibold text-foreground">{formatVND(rate)}</div>
-                                {isWeekend && <div className="text-[9px] text-chart-4">+20%</div>}
+                                <div className="font-semibold text-foreground">{rate ? formatVND(rate.rate_vnd) : "—"}</div>
+                                {rate && rate.rate_vnd !== rate.base_rate_vnd && <div className="text-[9px] text-chart-4">Override</div>}
                               </td>
                             );
                           })}

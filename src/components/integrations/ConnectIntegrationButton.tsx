@@ -4,6 +4,7 @@ import { usePersistConnection } from "@/hooks/use-one-connections";
 
 const USER_ID = "dev-admin-1";
 const DEV_TOKEN = "dev-only-shared-secret";
+const DEFAULT_TOKEN_URL = "/api/one/auth-token";
 
 const platformLabels: Record<string, string> = {
   "google-sheets": "Google Sheets",
@@ -16,7 +17,7 @@ export function ConnectIntegrationButton({ platform }: { platform: "google-sheet
   const tokenUrl = import.meta.env.VITE_ONE_AUTH_TOKEN_URL as string | undefined;
   const { open } = useOneAuth({
     token: {
-      url: tokenUrl ?? "http://localhost:3001/api/one/auth-token",
+      url: tokenUrl ?? DEFAULT_TOKEN_URL,
       headers: { "x-user-id": USER_ID, "x-dev-token": DEV_TOKEN },
     },
     selectedConnection: platformLabels[platform],

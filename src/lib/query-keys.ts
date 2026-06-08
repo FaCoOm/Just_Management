@@ -11,6 +11,11 @@ export const dashboardKeys = {
   reservations: [...root, "reservations"] as const,
   guestRequests: [...root, "guestRequests"] as const,
   maintenance: [...root, "maintenance"] as const,
+  diningEvents: [...root, "diningEvents"] as const,
+  staff: [...root, "staff"] as const,
+  securityAudit: [...root, "securityAudit"] as const,
+  rates: (startDate: string, endDate: string, propertyId = "all") =>
+    [...root, "rates", startDate, endDate, propertyId] as const,
   arrivalsByDate: (date: string) => [...root, "arrivalsByDate", date] as const,
   departuresByDate: (date: string) =>
     [...root, "departuresByDate", date] as const,

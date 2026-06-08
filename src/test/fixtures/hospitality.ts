@@ -201,7 +201,6 @@ export function makeRoom(overrides: Overrides<Room> = {}): Room {
     room_name: "Deluxe King 101",
     room_type: "Deluxe King",
     status: "Check-Out Pending",
-    passcode: "4101",
     floor: 1,
     created_at: FIXTURE_NOW,
     ...overrides,

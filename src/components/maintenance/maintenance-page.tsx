@@ -40,6 +40,7 @@ import {
 } from "@/components/ui/select";
 import { useMaintenancePageData } from "@/hooks/use-page-data";
 import { useQueryClient } from "@tanstack/react-query";
+import { createRestRepositories } from "@/lib/repositories";
 import { formatVietnamDate } from "@/lib/vietnam-time";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -241,7 +242,7 @@ function buildMaintenanceColumns(
   ];
 }
 
-const API_BASE = import.meta.env.VITE_TRACK_B_API_URL ?? "http://localhost:3001";
+const repos = createRestRepositories();
 
 export function MaintenancePage() {
   const { maintenance, properties, rooms, loading } = useMaintenancePageData();
@@ -330,8 +331,7 @@ export function MaintenancePage() {
             if (!issuePropId) { setSubmitError("Property is required."); return; }
             setSubmitting(true); setSubmitError(null);
             try {
-              const res = await fetch(`${API_BASE}/api/maintenance`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title: issueTitle.trim(), description: issueDesc.trim(), priority: issuePriority, property_id: issuePropId, status: "open" }) });
-              if (!res.ok) { const d = await res.json().catch(() => ({})); throw new Error((d as { error?: string }).error ?? "Failed to create issue."); }
+              await repos.maintenance.create({ title: issueTitle.trim(), description: issueDesc.trim(), priority: issuePriority as "low" | "medium" | "high" | "critical", property_id: issuePropId });
               await queryClient.invalidateQueries();
               setIsCreateOpen(false);
               setIssueTitle(""); setIssueDesc(""); setIssuePriority("medium"); setSubmitError(null);

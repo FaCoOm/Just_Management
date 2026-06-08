@@ -10,19 +10,8 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useReservationsPageData } from "@/hooks/use-page-data";
+import { useStaffPageData } from "@/hooks/use-page-data";
 import { UserCog, Shield, Users, Search, Plus, Building2 } from "lucide-react";
-import type { Property } from "@/types/database";
-
-interface StaffMember {
-  id: string;
-  name: string;
-  email: string;
-  role: "admin" | "manager" | "accountant" | "staff";
-  propertyIds: string[];
-  status: "active" | "inactive";
-  lastActive: string;
-}
 
 const roleConfig: Record<string, { label: string; className: string }> = {
   admin: { label: "Admin", className: "bg-destructive/10 text-destructive border-destructive/20" },
@@ -42,26 +31,11 @@ function StaffRolesSkeleton() {
   );
 }
 
-function generateStaff(properties: Property[]): StaffMember[] {
-  const roles: StaffMember["role"][] = ["admin", "manager", "accountant", "staff"];
-  const names = ["Robert Austin", "Linh Tran", "David Kim", "Mai Nguyen", "James Wilson", "Hoa Pham", "Sophie Chen", "Thanh Le", "Carlos Rodriguez", "Anna Baker"];
-  return names.map((name, i) => ({
-    id: `staff-${i}`,
-    name,
-    email: `${name.toLowerCase().replace(" ", ".")}@justmanagement.co`,
-    role: roles[i % roles.length],
-    propertyIds: i < 2 ? properties.map((p) => p.id) : [properties[i % properties.length]?.id].filter(Boolean),
-    status: i === 8 ? "inactive" : "active",
-    lastActive: new Date(Date.now() - i * 3600000).toISOString(),
-  }));
-}
-
 export function StaffRolesPage() {
-  const { properties, loading } = useReservationsPageData();
+  const { properties, staff, loading } = useStaffPageData();
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
 
-  const staff = useMemo(() => generateStaff(properties), [properties]);
   const filtered = useMemo(() => staff.filter((s) => {
     const matchSearch = s.name.toLowerCase().includes(search.toLowerCase()) || s.email.toLowerCase().includes(search.toLowerCase());
     const matchRole = roleFilter === "all" || s.role === roleFilter;
@@ -138,7 +112,7 @@ export function StaffRolesPage() {
               {filtered.map((member) => {
                 const config = roleConfig[member.role];
                 const initials = member.name.split(" ").map((n) => n[0]).join("").slice(0, 2);
-                const propNames = member.propertyIds.map((pid) => properties.find((p) => p.id === pid)?.name).filter(Boolean);
+                const propNames = member.property_ids.map((pid) => properties.find((p) => p.id === pid)?.name).filter(Boolean);
                 return (
                   <div key={member.id} className="flex items-center justify-between rounded-lg border border-border px-4 py-3 hover:bg-muted/40 transition-colors" data-testid={`staff-row-${member.id}`}>
                     <div className="flex items-center gap-3">

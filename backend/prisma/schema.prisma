@@ -25,6 +25,8 @@ model properties {
   guest_requests     guest_requests[]
   maintenance_issues maintenance_issues[]
   reservations       reservations[]
+  dining_event_bookings dining_event_bookings[]
+  room_rates         room_rates[]
 }
 
 model rooms {
@@ -538,4 +540,72 @@ model tax_export_items {
   @@index([job_id])
   @@index([reservation_id])
   @@index([status])
+}
+
+model dining_event_bookings {
+  id          String   @id @default(uuid()) @db.Uuid
+  title       String
+  type        String
+  venue       String
+  date        DateTime @db.Date
+  start_time  String
+  end_time    String
+  guest_count Int      @default(1)
+  guest_name  String
+  property_id String   @db.Uuid
+  status      String   @default("pending")
+  notes       String   @default("")
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  property properties @relation(fields: [property_id], references: [id], onDelete: Restrict)
+
+  @@index([property_id, date])
+  @@index([date, status])
+}
+
+model staff_members {
+  id             String    @id @default(uuid()) @db.Uuid
+  name           String
+  email          String    @unique
+  role           String
+  property_ids   String[]  @db.Uuid
+  status         String    @default("active")
+  last_active_at DateTime? @db.Timestamptz(6)
+  created_at     DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at     DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
+
+  @@index([role])
+  @@index([status])
+}
+
+model security_audit_entries {
+  id         String   @id @default(uuid()) @db.Uuid
+  timestamp  DateTime @default(now()) @db.Timestamptz(6)
+  action     String
+  actor      String
+  resource   String
+  details    String   @default("")
+  severity   String   @default("info")
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([timestamp])
+  @@index([severity, timestamp])
+}
+
+model room_rates {
+  id            String   @id @default(uuid()) @db.Uuid
+  property_id   String?  @db.Uuid
+  room_type     String
+  date          DateTime @db.Date
+  base_rate_vnd Int
+  rate_vnd      Int
+  created_at    DateTime @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  property properties? @relation(fields: [property_id], references: [id], onDelete: SetNull)
+
+  @@unique([property_id, room_type, date])
+  @@index([room_type, date])
+  @@index([property_id, date])
 }
