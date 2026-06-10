@@ -38,6 +38,7 @@ Use the directories and files mapped below to navigate the project's design and 
 *   [m-management-ingestion-pipeline-implementation-plan.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/plans/m-management-ingestion-pipeline-implementation-plan.md) — Plan for spreadsheets normalizer and ingest pipeline.
 *   [track-b-technical-validation-plan.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/plans/track-b-technical-validation-plan.md) — Technical verification and integration validation plans.
 *   [manual-reservation-creation-2026-05-26.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/plans/manual-reservation-creation-2026-05-26.md) — Backend and frontend execution plans.
+*   [qa-testing-stack-implementation-2026-06-09.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/plans/qa-testing-stack-implementation-2026-06-09.md) — Playwright e2e + axe-core + Lighthouse CI + GitHub Actions, with Browserbase Browse CLI local-mode exploratory QA path.
 
 #### 🧠 2. [analysis/](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/analysis) — Architectural & Cost Optimization Reports
 *   [token-cost-optimization-report.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/analysis/token-cost-optimization-report.md) — Token-efficient guidelines for agent context.
