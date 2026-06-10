@@ -42,3 +42,8 @@ credentials.json
 # Agent & Tooling Caches
 .playwright-mcp/
 .omo/run-continuation/
+
+# Local-only agent scratch / research caches (do not read or commit)
+.understand-anything/
+resources/
+logs.txt

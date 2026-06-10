@@ -146,3 +146,4 @@ npm run verify:all
 ## NOTES
 - README still describes old dual Track A/B switching; current code path is Track B REST-only.
 - `.omo/`, `.sisyphus/`, `.playwright-mcp/`, `.idea/`, and `.agent/` are tooling/state unless task explicitly targets agent config.
+- Do not read content from `.understand-anything/`, `resources/`, or `logs.txt`. They are gitignored local-only agent scratch and research caches; treat them as opaque and never quote, summarize, or condition decisions on their content.

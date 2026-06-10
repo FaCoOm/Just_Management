@@ -53,6 +53,9 @@ function BillingInvoicesSkeleton() {
   );
 }
 
+// MVP: synthetic invoice records derived from reservations.
+// No real folio/payment data exists yet; rates and statuses are heuristic.
+// Replace with a real folio model when the user-story for billing lands.
 function generateInvoices(reservations: Reservation[]): InvoiceRecord[] {
   const rates: Record<string, number> = { pending: 1200000, check_in_pending: 1500000, checked_in: 1800000, check_out_pending: 2000000, checked_out: 1600000 };
   return reservations.map((r, i) => ({
