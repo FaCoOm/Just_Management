@@ -1,6 +1,6 @@
 # Project Status — Just Management Hospitality Dashboard
 
-**Last Updated**: 2026-05-29
+**Last Updated**: 2026-06-09
 **Branch**: `feature/dashboard-completion-tax-export`
 **Base**: Track B (Azure PostgreSQL / Express / Prisma)
 
@@ -41,12 +41,12 @@ Complete every sidebar-promised dashboard page, add same-day checkout Tax-Export
 2. Room Types (`/rooms/types`) — room type cards with occupancy bars, property filter
 3. Availability (`/rooms/availability`) — 14-day date grid, arriving/occupied/departing/vacant, week navigation
 4. Housekeeping (`/housekeeping`) — cleanliness board (dirty/cleaning/inspected/ready), checkout-today badges
-5. Dining & Events (`/dining-events`) — event schedule cards, type badges, venue info (mock data)
-6. Rate Manager (`/rate-manager`) — rate calendar by room type/date, weekend surcharge
+5. Dining & Events (`/dining-events`) — event schedule cards, type badges, venue info, Track B REST/Prisma data
+6. Rate Manager (`/rate-manager`) — rate calendar by room type/date, weekend surcharge, Track B REST/Prisma data
 7. Billing & Invoices (`/billing`) — TanStack Table with search, status/property filters, pagination
 8. Channel Distribution (`/channels`) — channel cards with external account status (real API data)
-9. Staff & Roles (`/staff`) — staff directory with role badges, search, role filter (mock data)
-10. Security & Access (`/security`) — audit log with severity filtering (mock data)
+9. Staff & Roles (`/staff`) — staff directory with role badges, search, role filter, Track B REST/Prisma data
+10. Security & Access (`/security`) — audit log with severity filtering, Track B REST/Prisma data
 11. VIP Guests (`/guests/vip`) — VIP-filtered guest table with pagination
 
 **Sidebar & Routing (2026-05-29)**
@@ -73,24 +73,25 @@ Complete every sidebar-promised dashboard page, add same-day checkout Tax-Export
 - Testing Agent Iteration 1: 11/11 frontend pages PASS, sidebar 11/11 navigation PASS
 - Testing Agent Iteration 2: Tax-export backend 14/16 PASS (UUID validation fixed → 16/16), frontend 100% PASS, regression 11/11 PASS
 
-### In Progress
+### Completed Since 2026-05-29
 
-- WithOne Gmail integration for confirmation code search (credentials provided: `sk_live_EXbAp...`)
-- OTA email parser registry (Airbnb, Booking.com, Agoda)
-- Google Sheets upsert writer
-- Connecting mock-data pages to backend CRUD
+- Frontend repository contracts expanded; app-level raw REST calls consolidated behind `src/lib/repositories/rest-repositories.ts`.
+- Dining & Events, Staff & Roles, Security & Access, and Rate Manager now read Track B REST/Prisma endpoints instead of frontend-generated mock/static data.
+- Added Prisma migration `20260609000000_add_ops_page_data` for page-specific operational tables and deployed it to Azure PostgreSQL on 2026-06-09 after approval.
+- Removed room passcodes from public room DTOs and confirmed `/api/rooms` response does not expose `passcode`.
+- Added frontend tests for repository-backed page data and ingest repository endpoints.
+- Added minimal accessibility hardening for icon-only controls, custom tab/date buttons, and Tax Export needs-review unit-price input.
 
-### Not Started
+### In Progress / Blocked
 
-- Test infrastructure (Vitest frontend, Node test runner backend)
-- Per-reservation Tax-Export row action
-- Scheduled Tax-Export automation
-- Sheet settings and column mapping UI
-- Needs-review correction workflow UI
-- Integration dashboard hardening
-- Accessibility and responsive QA pass
-- Performance and pagination pass
-- Full-system verification docs
+- Live WithOne Gmail/Sheets verification is blocked by connection authentication: `/api/integrations/status` returns `disconnected` with WithOne 401 using the current connection key.
+- Billing & Invoices remains a reservation-derived MVP; a real invoice/folio model is future product scope, not part of the completed dashboard hardening.
+
+### Remaining
+
+- Agile feedback review for any new user-story changes before implementation.
+- Optional live browser walkthrough with a human reviewer once valid WithOne credentials are available.
+- Decide whether to keep, delete, or commit untracked local artifacts under `.omo/`, `.understand-anything/`, `resources/`, and `logs.txt`.
 
 ---
 
@@ -106,13 +107,11 @@ Complete every sidebar-promised dashboard page, add same-day checkout Tax-Export
 
 ## Next Steps
 
-1. Wire Guests Export → CSV download
-2. Wire Maintenance Log Issue → create dialog with API call
-3. Add backend CRUD for Dining & Events, Staff & Roles, Security audit log
-4. Integrate WithOne Gmail search for OTA confirmation codes
-5. Build OTA email parsers (Airbnb, Booking.com, Agoda)
-6. Add per-reservation Tax-Export row action on Reservations page
-7. Set up Vitest + Node test runner infrastructure
+1. Rotate live secrets that were exposed in the tool transcript during env verification.
+2. Provide a valid WithOne connection key/OAuth connection, then rerun live Gmail/Sheets smoke.
+3. Review dashboard UX/a11y findings and approve any user-story-level changes before implementation.
+4. Decide whether Billing & Invoices should remain reservation-derived or become a true invoice/folio feature.
+5. Decide how to handle untracked tooling/report artifacts before the next commit.
 
 ## Relevant Files
 
