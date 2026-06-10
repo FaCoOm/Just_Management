@@ -44,10 +44,10 @@ export function DashboardHeader({ today }: DashboardHeaderProps) {
           <RefreshCw className={runPipeline.isPending ? "h-3.5 w-3.5 animate-spin" : "h-3.5 w-3.5"} />
           {runPipeline.isPending ? "Syncing" : "Sync Now"}
         </Button>
-        <Button variant="ghost" size="icon" className="h-8 w-8">
+        <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Search">
           <Search className="h-4 w-4" />
         </Button>
-        <Button variant="ghost" size="icon" className="h-8 w-8 relative">
+        <Button variant="ghost" size="icon" className="h-8 w-8 relative" aria-label="Notifications">
           <Bell className="h-4 w-4" />
           <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-destructive" />
         </Button>

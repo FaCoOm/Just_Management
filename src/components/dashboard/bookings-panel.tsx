@@ -173,6 +173,7 @@ export function BookingsPanel({
             variant="ghost"
             size="icon"
             className="h-7 w-7"
+            aria-label="Previous month"
             onClick={() => setSelectedDate(addDaysToVietnamDate(selectedDate, -30))}
           >
             <ChevronLeft className="h-4 w-4" />
@@ -184,6 +185,7 @@ export function BookingsPanel({
             variant="ghost"
             size="icon"
             className="h-7 w-7"
+            aria-label="Next month"
             onClick={() => setSelectedDate(addDaysToVietnamDate(selectedDate, 30))}
           >
             <ChevronRight className="h-4 w-4" />
@@ -195,6 +197,7 @@ export function BookingsPanel({
             variant="ghost"
             size="icon"
             className="h-6 w-6 shrink-0"
+            aria-label="Previous day"
             onClick={() => setSelectedDate(addDaysToVietnamDate(selectedDate, -1))}
           >
             <ChevronLeft className="h-3 w-3" />
@@ -202,7 +205,10 @@ export function BookingsPanel({
           {weekDays.map((d) => (
             <button
               key={d.dateKey}
+              type="button"
               onClick={() => setSelectedDate(d.dateKey)}
+              aria-pressed={d.active}
+              aria-label={`Select ${d.day} ${d.date}`}
               className={`flex flex-1 flex-col items-center rounded-lg py-1.5 text-xs transition-colors ${
                 d.active
                   ? "bg-harbor text-harbor-foreground"
@@ -217,6 +223,7 @@ export function BookingsPanel({
             variant="ghost"
             size="icon"
             className="h-6 w-6 shrink-0"
+            aria-label="Next day"
             onClick={() => setSelectedDate(addDaysToVietnamDate(selectedDate, 1))}
           >
             <ChevronRight className="h-3 w-3" />
@@ -235,6 +242,7 @@ export function BookingsPanel({
             variant="ghost"
             size="icon"
             className="absolute right-0.5 top-0.5 h-7 w-7"
+            aria-label="Filter bookings"
           >
             <SlidersHorizontal className="h-3.5 w-3.5" />
           </Button>

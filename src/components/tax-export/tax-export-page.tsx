@@ -440,16 +440,20 @@ export function TaxExportPage() {
           {/* Tab switcher */}
           <div className="flex items-center gap-1 rounded-lg bg-muted p-1">
             <button
+              type="button"
               className={`flex-1 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${activeTab === "preview" ? "bg-card shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}
               onClick={() => setActiveTab("preview")}
+              aria-pressed={activeTab === "preview"}
               data-testid="tab-preview"
             >
               <Eye className="inline h-3.5 w-3.5 mr-1.5" />
               Preview Export
             </button>
             <button
+              type="button"
               className={`flex-1 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${activeTab === "history" ? "bg-card shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}
               onClick={() => setActiveTab("history")}
+              aria-pressed={activeTab === "history"}
               data-testid="tab-history"
             >
               <History className="inline h-3.5 w-3.5 mr-1.5" />
@@ -874,6 +878,7 @@ export function TaxExportPage() {
                                   value={priceEdits[item.id] ?? ""}
                                   onChange={(e) => setPriceEdits((current) => ({ ...current, [item.id]: e.target.value }))}
                                   className="ml-auto h-8 w-28 text-right text-xs"
+                                  aria-label={`Unit price for ${item.guest_name}`}
                                   data-testid={`review-price-${item.id}`}
                                 />
                               </TableCell>

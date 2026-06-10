@@ -198,6 +198,8 @@ export function OccupancyChart({ data, today }: OccupancyChartProps) {
                   key={day.date}
                   type="button"
                   onClick={() => setSelectedDate(day.date)}
+                  aria-pressed={day.date === selectedDate}
+                  aria-label={`Select occupancy date ${formatVietnamDate(day.date)}`}
                   className={cn(
                     "rounded-lg border px-3 py-2 text-left transition-colors",
                     day.date === selectedDate
