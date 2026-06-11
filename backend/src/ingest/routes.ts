@@ -384,7 +384,7 @@ export function registerIngestRoutes(app: Express): void {
     const spreadsheetId = getString(body, "spreadsheetId") || "";
     const sheetName = getString(body, "sheetName");
     const targetKind = getString(body, "targetKind") as "listings" | "reservations";
-    const sheetsProvider = process.env.INGEST_SHEETS_PROVIDER ?? "google-sheets-direct";
+    const sheetsProvider = process.env.INGEST_SHEETS_PROVIDER ?? "withone";
 
     const errors = validateIngestRequest(req, "google-sheets");
     if (errors.length > 0) {

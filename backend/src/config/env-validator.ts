@@ -50,7 +50,7 @@ export function validateEnv(): EnvValidationReport {
   }
 
   // 3. Recommended Ingest Configuration (Google Services)
-  const sheetsProvider = process.env.INGEST_SHEETS_PROVIDER || "google-sheets-direct";
+  const sheetsProvider = process.env.INGEST_SHEETS_PROVIDER || "withone";
   if (sheetsProvider === "google-sheets-direct") {
     const serviceAccountFile = process.env.GOOGLE_SERVICE_ACCOUNT_FILE || process.env.GOOGLE_APPLICATION_CREDENTIALS;
     if (!serviceAccountFile) {
