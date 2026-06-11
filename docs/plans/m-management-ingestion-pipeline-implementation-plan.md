@@ -251,7 +251,7 @@ model seed_batches {
 ### 2.3 Feature flag in routes
 
 - [ ] In `backend/src/ingest/routes.ts` `POST /api/ingest/google-sheets`:
-  - Read `INGEST_SHEETS_PROVIDER` env (`google-sheets-direct` default | `withone`).
+  - Read `INGEST_SHEETS_PROVIDER` env (`withone` default | `google-sheets-direct` legacy fallback).
   - When `withone`: require `connectionKey` in body, validate it exists in `integration_connections` for the request user, dispatch to `services/sheets-one.ts`.
   - When `google-sheets-direct`: existing behavior.
   - Validation error if `withone` selected but no `connectionKey` provided -> `CONFIG_AUTH_FAILURE`.

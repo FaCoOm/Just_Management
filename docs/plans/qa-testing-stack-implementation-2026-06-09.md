@@ -30,7 +30,7 @@ Establish a deterministic, CI-gated QA stack on top of the existing Vitest + Nod
 |---|---|---|---|
 | Frontend unit/component | Vitest + Testing Library (existing) | Already wired, fast, Vite-native | $0 |
 | Backend unit | Node test runner + tsx (existing) | Already wired, no extra deps | $0 |
-| Backend integration | `verify-ingestion.ts` (existing) | Spawns real server, hits Prisma | $0 |
+| Backend integration | `verify-ingestion.ts` (existing, WithOne-aware) | Spawns real server with `INGEST_SHEETS_PROVIDER=withone`, hits Prisma | $0 |
 | E2E browser | **Playwright** (new) | Free parallelism, multi-browser, official MCP, matches QA docs | $0 |
 | Accessibility regression | **@axe-core/playwright** (new) | Zero false positives, runs inside e2e tests | $0 |
 | Performance gate | **Lighthouse CI** (new) | Free, GitHub Actions native, catches CWV regressions | $0 |
@@ -75,7 +75,7 @@ Key contracts:
 - Vitest tests stay sealed: jsdom + `vi.fn()` fetch mocking. They never hit a real server.
 - Playwright e2e boots Vite (`webServer.command = npm run dev:all`) and runs against `http://localhost:5173`. Vite proxies `/api` to the Express backend on `3001`.
 - Playwright requires a `DATABASE_URL` pointing to a QA-safe Postgres (Azure dev DB or local container). Tests that mutate state are tagged `@write` and skipped when only `DATABASE_URL_READONLY` is provided.
-- Browserbase local mode runs through the same Vite dev server. Remote mode requires a tunneled URL (deferred until Sprint 2).
+- Backend ingestion verification (`backend/scripts/verify-ingestion.ts`) spawns the API server with `INGEST_SHEETS_PROVIDER=withone` so the documented default Google Sheets path is exercised on every run. The deterministic assertion is the missing-`connectionKey` 400 + `CONFIG_AUTH_FAILURE`. The optional live happy-path runs only when `ONE_CONNECTION_KEY`, `ONE_SECRET_KEY`, and `GOOGLE_SHEETS_SPREADSHEET_ID` are all provided in the environment as non-placeholder values.
 
 ## Surfaces
 

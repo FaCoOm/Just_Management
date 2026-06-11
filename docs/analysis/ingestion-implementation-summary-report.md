@@ -454,7 +454,7 @@ ONE_API_BASE=https://api.withone.ai/v1
 ONE_WEBHOOK_SECRET=whsec_value_from_withone
 ONE_AUTHKIT_DEFAULT_IDENTITY_TYPE=user
 ONE_DEV_TOKEN=your_local_dev_token
-INGEST_SHEETS_PROVIDER=withone # only when using withone Sheets instead of service account
+INGEST_SHEETS_PROVIDER=withone # default; set to google-sheets-direct only for the legacy service-account fallback
 ```
 
 For folder watcher:

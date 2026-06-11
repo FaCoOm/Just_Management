@@ -200,15 +200,22 @@ Backend env vars:
 | `M_MANAGEMENT_BUILTIN_SOURCE_DIR` | Built-in seed source directory. Defaults to `../database_design`. |
 | `M_MANAGEMENT_EMAIL_IMPORT_ENABLED` | Marks email connector as configured/planned. |
 | `M_MANAGEMENT_EMAIL_IMPORT_PROVIDER` | Email provider label, for example `gmail` or `imap`. |
-| `GOOGLE_SERVICE_ACCOUNT_FILE` | Preferred Google service-account JSON file. |
+| `INGEST_SHEETS_PROVIDER` | Sheets provider mode. Default `withone`. Set to `google-sheets-direct` for the legacy service-account fallback. |
+| `GOOGLE_SERVICE_ACCOUNT_FILE` | Legacy fallback only. Used when `INGEST_SHEETS_PROVIDER=google-sheets-direct`. |
 | `GOOGLE_APPLICATION_CREDENTIALS` | Fallback Google credential JSON file. |
 | `GOOGLE_SHEETS_SPREADSHEET_ID` | Optional default spreadsheet id. |
 
 ## Google Credential Association
 
-Google Sheets ingestion uses service-account credentials.
+Google Sheets ingestion runs through WithOne unified passthrough by default; legacy direct service-account access is a fallback for environments where WithOne is unavailable.
 
-Credential lookup order:
+Default WithOne mode (`INGEST_SHEETS_PROVIDER=withone`):
+
+1. Frontend obtains an AuthKit token via `/api/one/auth-token` and the user authorises a Google connection.
+2. Backend calls Google Sheets v4 through `passthrough()` using `ONE_SECRET_KEY` + the user's `connectionKey`.
+3. No service-account JSON file is required on disk.
+
+Legacy direct mode (`INGEST_SHEETS_PROVIDER=google-sheets-direct`):
 
 1. `GOOGLE_SERVICE_ACCOUNT_FILE`
 2. `GOOGLE_APPLICATION_CREDENTIALS`
