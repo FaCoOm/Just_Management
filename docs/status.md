@@ -1,7 +1,7 @@
 # Project Status — Just Management Hospitality Dashboard
 
-**Last Updated**: 2026-06-09
-**Branch**: `feature/dashboard-completion-tax-export`
+**Last Updated**: 2026-06-11
+**Branch**: `main`
 **Base**: Track B (Azure PostgreSQL / Express / Prisma)
 
 ---
@@ -82,6 +82,14 @@ Complete every sidebar-promised dashboard page, add same-day checkout Tax-Export
 - Added frontend tests for repository-backed page data and ingest repository endpoints.
 - Added minimal accessibility hardening for icon-only controls, custom tab/date buttons, and Tax Export needs-review unit-price input.
 
+**WithOne Default Sheets Provider (2026-06-11)**
+- Switched `INGEST_SHEETS_PROVIDER` runtime default from `google-sheets-direct` to `withone` in both `backend/src/ingest/routes.ts` and `backend/src/config/env-validator.ts`.
+- `backend/.env.example` documents WithOne as the default and demotes service-account credentials to a commented legacy fallback.
+- `verify-ingestion` script now spawns the API server with `INGEST_SHEETS_PROVIDER=withone`, asserts a deterministic 400 + `CONFIG_AUTH_FAILURE` (`field=connectionKey`) for the missing-key case, and gates an opt-in live happy-path on three trimmed, non-placeholder env vars.
+- Reconciled four narrative docs to match: `docs/m-management-ingestion-pipeline.md`, `docs/plans/m-management-ingestion-pipeline-implementation-plan.md`, `docs/plans/qa-testing-stack-implementation-2026-06-09.md`, `docs/analysis/ingestion-implementation-summary-report.md`.
+- Verification: `npm run build`, `npm test` (11/11), `npm run verify-ingestion` (9/9 scenarios), `npm run typecheck` all green. Oracle-verified.
+- Handoff document for QA: `docs/qa/withone-sheets-default-handoff-2026-06-11.md`.
+
 ### In Progress / Blocked
 
 - Live WithOne Gmail/Sheets verification is blocked by connection authentication: `/api/integrations/status` returns `disconnected` with WithOne 401 using the current connection key.
@@ -90,8 +98,10 @@ Complete every sidebar-promised dashboard page, add same-day checkout Tax-Export
 ### Remaining
 
 - Agile feedback review for any new user-story changes before implementation.
+- Live WithOne happy-path verification: pending a real, non-placeholder `ONE_CONNECTION_KEY` (AuthKit-issued connection). Test plan in the QA handoff above.
 - Optional live browser walkthrough with a human reviewer once valid WithOne credentials are available.
 - Decide whether to keep, delete, or commit untracked local artifacts under `.omo/`, `.understand-anything/`, `resources/`, and `logs.txt`.
+- Address single-line `.gitignore` drift (`+.omo`) introduced outside of this work; revert before next staging cycle.
 
 ---
 
@@ -107,11 +117,12 @@ Complete every sidebar-promised dashboard page, add same-day checkout Tax-Export
 
 ## Next Steps
 
-1. Rotate live secrets that were exposed in the tool transcript during env verification.
-2. Provide a valid WithOne connection key/OAuth connection, then rerun live Gmail/Sheets smoke.
-3. Review dashboard UX/a11y findings and approve any user-story-level changes before implementation.
-4. Decide whether Billing & Invoices should remain reservation-derived or become a true invoice/folio feature.
-5. Decide how to handle untracked tooling/report artifacts before the next commit.
+1. Run the QA handoff (`docs/qa/withone-sheets-default-handoff-2026-06-11.md`) end-to-end - the user and assigned agents.
+2. Provide a real WithOne connection key/OAuth connection, then rerun live Gmail/Sheets smoke and the gated `verify-ingestion` live happy-path.
+3. Rotate live secrets that were exposed in the tool transcript during env verification.
+4. Review dashboard UX/a11y findings and approve any user-story-level changes before implementation.
+5. Decide whether Billing & Invoices should remain reservation-derived or become a true invoice/folio feature.
+6. Decide how to handle untracked tooling/report artifacts before the next commit.
 
 ## Relevant Files
 
