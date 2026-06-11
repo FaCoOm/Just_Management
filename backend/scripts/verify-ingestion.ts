@@ -8,6 +8,22 @@ const PORT = Number(process.env.VERIFY_PORT ?? String(3100 + Math.floor(Math.ran
 const API_URL = `http://127.0.0.1:${PORT}/api/ingest`;
 const TSX_CLI = path.resolve(__dirname, "../node_modules/tsx/dist/cli.mjs");
 const GOOGLE_SHEETS_VERIFY_ID = process.env.GOOGLE_SHEETS_SPREADSHEET_ID;
+function isLivePlaceholder(value: string): boolean {
+  if (value.length === 0) return true;
+  return [
+    "conn_dev_replace_me",
+    "sk_live_replace_me",
+    "your-google-sheets-spreadsheet-id",
+  ].includes(value);
+}
+
+const ONE_CONNECTION_KEY_LIVE = (process.env.ONE_CONNECTION_KEY ?? "").trim();
+const ONE_SECRET_KEY_LIVE = (process.env.ONE_SECRET_KEY ?? "").trim();
+const GOOGLE_SHEETS_VERIFY_ID_TRIMMED = (GOOGLE_SHEETS_VERIFY_ID ?? "").trim();
+const HAS_LIVE_WITHONE_CREDS =
+  !isLivePlaceholder(ONE_CONNECTION_KEY_LIVE) &&
+  !isLivePlaceholder(ONE_SECRET_KEY_LIVE) &&
+  !isLivePlaceholder(GOOGLE_SHEETS_VERIFY_ID_TRIMMED);
 
 type IngestResponse = {
   syncRunId: string;
@@ -98,6 +114,7 @@ async function main() {
       ...process.env,
       PORT: String(PORT),
       M_MANAGEMENT_LISTINGS_CREATE_INVENTORY: "true",
+      INGEST_SHEETS_PROVIDER: "withone",
     },
   });
 
@@ -153,32 +170,67 @@ async function main() {
       throw new Error(`Reservation sync summary unexpected: ${JSON.stringify(reservationSummary)}`);
     }
 
-    // 7. Google Sheets mock test
-    console.log(`\n--- Running Test: Google Sheets Integration ---`);
-    const sheetFormData = new FormData();
-    sheetFormData.append("sourceAccount", "airbnb-main");
-    sheetFormData.append("dryRun", GOOGLE_SHEETS_VERIFY_ID ? "true" : "false");
-    sheetFormData.append("sourceType", "google-sheets");
-    sheetFormData.append("spreadsheetId", GOOGLE_SHEETS_VERIFY_ID ?? "dummy");
-    sheetFormData.append("targetKind", "listings");
-    const sheetRes = await fetch(`${API_URL}/google-sheets`, { method: "POST", body: sheetFormData });
-    const sheetJson = await sheetRes.json();
-    console.log("Google Sheets Status:", sheetRes.status);
-    console.log("Response:", JSON.stringify(sheetJson, null, 2));
-
-    if (sheetRes.status !== 200) {
-      throw new Error(`Google Sheets contract call expected 200, got ${sheetRes.status}`);
+    // 7. Google Sheets WithOne provider validation
+    //    Server is started with INGEST_SHEETS_PROVIDER=withone, so this exercises the
+    //    documented default ingestion path. Without ONE_CONNECTION_KEY in the request,
+    //    the route must reject with HTTP 400 + CONFIG_AUTH_FAILURE.
+    console.log(`\n--- Running Test: Google Sheets WithOne Validation ---`);
+    const sheetsWithoutKeyRes = await fetch(`${API_URL}/google-sheets`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        dryRun: true,
+        sourceAccount: "airbnb-main",
+        sourceType: "google-sheets",
+        spreadsheetId: GOOGLE_SHEETS_VERIFY_ID_TRIMMED.length > 0 ? GOOGLE_SHEETS_VERIFY_ID_TRIMMED : "verify-fake-id",
+        targetKind: "listings",
+      }),
+    });
+    const sheetsWithoutKeyJson = await sheetsWithoutKeyRes.json();
+    console.log("Google Sheets (no connectionKey) Status:", sheetsWithoutKeyRes.status);
+    console.log("Response:", JSON.stringify(sheetsWithoutKeyJson, null, 2));
+    if (sheetsWithoutKeyRes.status !== 400) {
+      throw new Error(`WithOne provider should reject missing connectionKey with 400, got ${sheetsWithoutKeyRes.status}`);
+    }
+    if (!Array.isArray(sheetsWithoutKeyJson.errors) || sheetsWithoutKeyJson.errors.length === 0) {
+      throw new Error(`WithOne provider rejection should include errors: ${JSON.stringify(sheetsWithoutKeyJson)}`);
+    }
+    const hasConnectionKeyError = sheetsWithoutKeyJson.errors.some((err: { code?: string; field?: string }) =>
+      err.code === "CONFIG_AUTH_FAILURE" && err.field === "connectionKey",
+    );
+    if (!hasConnectionKeyError) {
+      throw new Error(`WithOne rejection should cite connectionKey: ${JSON.stringify(sheetsWithoutKeyJson)}`);
     }
 
-    if (GOOGLE_SHEETS_VERIFY_ID) {
-      if (!Array.isArray(sheetJson.errors) || sheetJson.errors.length !== 0) {
-        throw new Error(`Google Sheets happy-path verification returned errors: ${JSON.stringify(sheetJson)}`);
+    if (HAS_LIVE_WITHONE_CREDS) {
+      console.log(`\n--- Running Test: Google Sheets WithOne Live Dry Run ---`);
+      const liveSheetsRes = await fetch(`${API_URL}/google-sheets`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          dryRun: true,
+          sourceAccount: "airbnb-main",
+          sourceType: "google-sheets",
+          spreadsheetId: GOOGLE_SHEETS_VERIFY_ID_TRIMMED,
+          targetKind: "listings",
+          connectionKey: ONE_CONNECTION_KEY_LIVE,
+        }),
+      });
+      const liveSheetsJson = await liveSheetsRes.json();
+      console.log("Google Sheets (live WithOne) Status:", liveSheetsRes.status);
+      console.log("Response:", JSON.stringify(liveSheetsJson, null, 2));
+      if (liveSheetsRes.status !== 200) {
+        throw new Error(`Live WithOne dry-run expected 200, got ${liveSheetsRes.status}`);
       }
-      if (typeof sheetJson.processed !== "number" || sheetJson.processed < 1) {
-        throw new Error(`Google Sheets happy-path verification did not process any rows: ${JSON.stringify(sheetJson)}`);
+      if (!Array.isArray(liveSheetsJson.errors) || liveSheetsJson.errors.length !== 0) {
+        throw new Error(`Live WithOne dry-run returned errors: ${JSON.stringify(liveSheetsJson)}`);
       }
-    } else if (!Array.isArray(sheetJson.errors) || sheetJson.errors.length === 0) {
-      throw new Error(`Google Sheets failure-path verification should return structured errors: ${JSON.stringify(sheetJson)}`);
+      if (typeof liveSheetsJson.processed !== "number" || liveSheetsJson.processed < 1) {
+        throw new Error(`Live WithOne dry-run did not process any rows: ${JSON.stringify(liveSheetsJson)}`);
+      }
+    } else {
+      console.log(`\n--- Skipping Live WithOne Sheets Test ---`);
+      console.log("   Set ONE_CONNECTION_KEY, ONE_SECRET_KEY (both non-placeholder), and GOOGLE_SHEETS_SPREADSHEET_ID to enable.");
     }
 
     // 8. Pipeline scaffold status should be available without exposing secrets
