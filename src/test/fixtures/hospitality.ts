@@ -183,9 +183,9 @@ function manualScopeKey(checkoutDate: string, propertyId?: string, reservationId
 export function makeProperty(overrides: Overrides<Property> = {}): Property {
   return {
     id: ids.propertyMujo,
-    name: "Mujo Saigon",
-    slug: "mujo-saigon",
-    total_rooms: 2,
+    name: "Mujo — MH",
+    slug: "mh",
+    total_rooms: 7,
     location: "Ho Chi Minh City",
     status: "active",
     created_at: FIXTURE_NOW,
@@ -197,9 +197,9 @@ export function makeRoom(overrides: Overrides<Room> = {}): Room {
   return {
     id: ids.roomMujo101,
     property_id: ids.propertyMujo,
-    room_number: "101",
-    room_name: "Deluxe King 101",
-    room_type: "Deluxe King",
+    room_number: "Lotus",
+    room_name: "Master — Lotus",
+    room_type: "Master",
     status: "Check-Out Pending",
     floor: 1,
     created_at: FIXTURE_NOW,
@@ -349,7 +349,7 @@ export function makeTaxExportItem(overrides: Overrides<TaxExportItemFixture> = {
     vat_rate: 8,
     vat_amount: 96000,
     guest_name: "Alice Johnson",
-    property_name: "Mujo Saigon",
+    property_name: "Mujo — MH",
     check_in_date: FIXTURE_YESTERDAY,
     check_out_date: FIXTURE_TODAY,
     reservation_id: ids.reservationCheckout,
@@ -414,21 +414,21 @@ export function createHospitalityFixtureSet(): HospitalityFixtureSet {
     makeProperty(),
     makeProperty({
       id: ids.propertyRuby,
-      name: "Ruby Da Nang",
-      slug: "ruby-danang",
-      total_rooms: 1,
-      location: "Da Nang",
+      name: "Mujo 19 (Nguyễn Trãi)",
+      slug: "ruby",
+      total_rooms: 7,
+      location: "Ho Chi Minh City",
     }),
   ];
   const rooms = [
     makeRoom(),
-    makeRoom({ id: ids.roomMujo102, room_number: "102", room_name: "Superior Twin 102", status: "Vacant" }),
+    makeRoom({ id: ids.roomMujo102, room_number: "01", room_name: "Standard — 01", room_type: "Standard", status: "Vacant" }),
     makeRoom({
       id: ids.roomRuby201,
       property_id: ids.propertyRuby,
-      room_number: "201",
-      room_name: "Standard Double 201",
-      room_type: "Standard Double",
+      room_number: "Ruby 1",
+      room_name: "Standard — Ruby 1",
+      room_type: "Standard",
       status: "Occupied",
     }),
   ];
@@ -509,7 +509,7 @@ export function createTaxExportFixtureSet(): TaxExportFixtureSet {
       total_amount: 900000,
       vat_amount: 72000,
       guest_name: ambiguousEmailReservation.guest_name,
-      property_name: "Ruby Da Nang",
+      property_name: "Mujo 19 (Nguyễn Trãi)",
       confirmation_code: "998877",
     }),
   ];
