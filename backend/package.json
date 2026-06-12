@@ -18,7 +18,8 @@
     "db:verify:migration": "node scripts/verify-azure-migration.mjs",
     "classify:listings": "tsx scripts/classify-airbnb-listings.ts",
     "verify-ingestion": "tsx scripts/verify-ingestion.ts",
-    "verify:all": "npm run build && npm run verify-ingestion"
+    "verify:all": "npm run build && npm run verify-ingestion",
+    "seed:rooms-sot": "tsx scripts/seed-rooms-sot.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.0.0",
