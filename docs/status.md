@@ -1,6 +1,6 @@
 # Project Status — Just Management Hospitality Dashboard
 
-**Last Updated**: 2026-06-11
+**Last Updated**: 2026-06-12
 **Branch**: `main`
 **Base**: Track B (Azure PostgreSQL / Express / Prisma)
 
@@ -90,6 +90,16 @@ Complete every sidebar-promised dashboard page, add same-day checkout Tax-Export
 - Verification: `npm run build`, `npm test` (11/11), `npm run verify-ingestion` (9/9 scenarios), `npm run typecheck` all green. Oracle-verified.
 - Handoff document for QA: `docs/qa/withone-sheets-default-handoff-2026-06-11.md`.
 
+**Rooms Source-of-Truth + Reservations Replace-Mode (2026-06-12)**
+- Codified the canonical 45-room inventory across 8 properties (Mujo MH 7, 23 4, 19 7, CC 8, Latte Lounge 8, The Alley 4, The Crest 2, The Opera 5) in `backend/src/lib/rooms-source-of-truth.ts`. Compile-time guard pins the total to 45.
+- Type codes resolved against the Notion Room Standards data source. Codes 3.2 / 3.3 replaced legacy 1.2 / 1.3 per user direction; Latte Lounge Coffee 1 / Milk 1 demoted from code 1 to code 2 because the Standard label takes priority over the code.
+- `docs/database_design/Room Types.md` now tracked in git. Header counts match the table contents (Mujo 19 = 7 rooms, The Alley = 4 rooms).
+- New idempotent seed `backend/scripts/seed-rooms-sot.ts` with `--check` (default, read-only) and `--apply`. Refuses to mutate Azure DBs without `JM_ROOMS_SOT_AZURE_OK=1`. Wired as `npm run seed:rooms-sot`.
+- `POST /api/ingest/reservations` now accepts a `replaceMode` flag. When set, the (airbnb, sourceAccount) reservation scope is wiped before re-importing. Tax-export safety: HTTP 409 + `REPLACE_BLOCKED_BY_TAX_EXPORT` if any `tax_export_items` reference reservations in scope. `replaceMode` + `dryRun=true` rejected at the route with HTTP 400.
+- Test fixtures aligned with the SoT (`mh`, `ruby` slugs; SoT names; `total_rooms` matching counts). Backend 11/11, frontend 7/7 still pass.
+- Verification: build + typecheck + tests + verify-ingestion all green. Seed `--check` correctly reports drift on Azure (create=13, update=32). Live WithOne `/api/integrations/status` returns `disconnected` with WithOne 401 - external auth state, not a defect.
+- Handoff document for QA: `docs/qa/rooms-sot-and-replace-mode-handoff-2026-06-12.md`.
+
 ### In Progress / Blocked
 
 - Live WithOne Gmail/Sheets verification is blocked by connection authentication: `/api/integrations/status` returns `disconnected` with WithOne 401 using the current connection key.
@@ -98,10 +108,12 @@ Complete every sidebar-promised dashboard page, add same-day checkout Tax-Export
 ### Remaining
 
 - Agile feedback review for any new user-story changes before implementation.
-- Live WithOne happy-path verification: pending a real, non-placeholder `ONE_CONNECTION_KEY` (AuthKit-issued connection). Test plan in the QA handoff above.
-- Optional live browser walkthrough with a human reviewer once valid WithOne credentials are available.
+- Live WithOne happy-path verification: pending a real, non-placeholder `ONE_CONNECTION_KEY` AuthKit grant for Gmail/Drive. The connection key is configured; what's missing is the user-side OAuth grant. `/api/integrations/status` currently surfaces a clean WithOne 401.
+- Apply the rooms SoT to Azure when ready: `cd backend && $env:JM_ROOMS_SOT_AZURE_OK="1"; npm run seed:rooms-sot -- --apply`. Current drift: create=13, update=32 across 45 rooms.
+- Optional live browser walkthrough with a human reviewer once SoT applied + WithOne credentials available.
 - Decide whether to keep, delete, or commit untracked local artifacts under `.omo/`, `.understand-anything/`, `resources/`, and `logs.txt`.
 - Address single-line `.gitignore` drift (`+.omo`) introduced outside of this work; revert before next staging cycle.
+- `docs/database_design/listings.csv` and `reservations.csv` show as modified; user-authored content - confirm before next commit cycle.
 
 ---
 
@@ -117,7 +129,7 @@ Complete every sidebar-promised dashboard page, add same-day checkout Tax-Export
 
 ## Next Steps
 
-1. Run the QA handoff (`docs/qa/withone-sheets-default-handoff-2026-06-11.md`) end-to-end - the user and assigned agents.
+1. Run the QA handoff (`docs/qa/rooms-sot-and-replace-mode-handoff-2026-06-12.md`) end-to-end - user + assigned agents.
 2. Provide a real WithOne connection key/OAuth connection, then rerun live Gmail/Sheets smoke and the gated `verify-ingestion` live happy-path.
 3. Rotate live secrets that were exposed in the tool transcript during env verification.
 4. Review dashboard UX/a11y findings and approve any user-story-level changes before implementation.
