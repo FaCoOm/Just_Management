@@ -355,6 +355,7 @@ export function registerIngestRoutes(app: Express): void {
     const body = isObject(req.body) ? req.body : {};
     const dryRun = body.dryRun === true || body.dryRun === "true";
     const sourceAccount = getString(body, "sourceAccount") || "";
+    const replaceMode = body.replaceMode === true || body.replaceMode === "true";
 
     const errors = validateIngestRequest(req, "reservations");
     if (errors.length > 0) {
@@ -362,10 +363,33 @@ export function registerIngestRoutes(app: Express): void {
       return;
     }
 
+    if (replaceMode && dryRun) {
+      res.status(400).json(createEmptyIngestSummary("reservations", dryRun, [
+        {
+          code: "MISSING_DRY_RUN",
+          field: "replaceMode",
+          message: "replaceMode cannot be combined with dryRun=true; replace is destructive and requires a real run.",
+        },
+      ]));
+      return;
+    }
+
     if (req.file) {
       try {
         const { processReservationSync } = await import("./services/reservations.js");
-        const summary = await processReservationSync(req.file.buffer, req.file.mimetype, sourceAccount, dryRun);
+        const summary = await processReservationSync(
+          req.file.buffer,
+          req.file.mimetype,
+          sourceAccount,
+          dryRun,
+          "upload",
+          { replaceMode },
+        );
+        const replaceBlocked = summary.errors.find((err) => err.code === "REPLACE_BLOCKED_BY_TAX_EXPORT");
+        if (replaceBlocked) {
+          res.status(409).json(summary);
+          return;
+        }
         res.status(200).json(summary);
       } catch (err) {
         res.status(500).json(createEmptyIngestSummary("reservations", dryRun, [

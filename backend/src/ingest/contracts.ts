@@ -14,6 +14,7 @@ export const ingestErrorCodes = [
   "AMBIGUOUS_LISTING_MATCH",
   "CONFIG_AUTH_FAILURE",
   "SYNC_NOT_IMPLEMENTED",
+  "REPLACE_BLOCKED_BY_TAX_EXPORT",
 ] as const;
 export type IngestErrorCode = (typeof ingestErrorCodes)[number];
 
@@ -53,6 +54,12 @@ export interface BaseIngestJsonRequest {
   mimeType?: (typeof ingestFileContract.allowedMimeTypes)[number];
   fileSizeBytes?: number;
   records?: unknown[];
+  /**
+   * Reservations only. When true, the channel/account scope identified by
+   * `sourceAccount` is wiped (reservations + cascade-linked rows) before the
+   * import runs. Incompatible with `dryRun: true`.
+   */
+  replaceMode?: boolean;
 }
 
 export interface BaseIngestMultipartRequest {
@@ -65,6 +72,12 @@ export interface BaseIngestMultipartRequest {
     mimeType: (typeof ingestFileContract.allowedMimeTypes)[number];
     sizeBytes: number;
   };
+  /**
+   * Reservations only. When the multipart body field `replaceMode` is the
+   * literal string `"true"`, the route wipes reservations for
+   * `sourceAccount` before importing. Incompatible with `dryRun: true`.
+   */
+  replaceMode?: "true" | "false";
 }
 
 export interface GoogleSheetsIngestJsonRequest {

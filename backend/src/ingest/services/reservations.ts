@@ -17,12 +17,25 @@ function buildOperationalNotes(sourceAccount: string, rawStatus: string): string
   return `booking_source=Airbnb; external_account=${sourceAccount}; raw_status=${rawStatus}`;
 }
 
+export interface ReservationSyncOptions {
+  /**
+   * When true, wipe reservations belonging to the (airbnb, sourceAccount)
+   * scope before importing. Cascade-linked rows are removed via the FK
+   * cascade rules. Refused when `tax_export_items` reference the in-scope
+   * reservations: in that case the function returns a summary whose
+   * `errors[]` carries `REPLACE_BLOCKED_BY_TAX_EXPORT` with structured
+   * counts in the message. The route translates that into HTTP 409.
+   */
+  replaceMode?: boolean;
+}
+
 export async function processReservationSync(
   buffer: Buffer,
   mimeType: string,
   sourceAccount: string,
   isDryRun: boolean,
-  sourceFile = "upload"
+  sourceFile = "upload",
+  options: ReservationSyncOptions = {},
 ): Promise<IngestSummaryResponse> {
   let summary = createEmptyIngestSummary("reservations", isDryRun);
   let rows: Record<string, unknown>[];
@@ -80,6 +93,41 @@ export async function processReservationSync(
       },
     });
     externalAccountId = account.id;
+
+    if (options.replaceMode) {
+      const inScopeRefs = await prisma.reservation_external_refs.findMany({
+        where: { channel_id: channelId, external_account_id: externalAccountId },
+        select: { reservation_id: true },
+      });
+      const reservationIds = Array.from(
+        new Set(inScopeRefs.map((ref) => ref.reservation_id)),
+      );
+
+      if (reservationIds.length > 0) {
+        const blockingItems = await prisma.tax_export_items.count({
+          where: { reservation_id: { in: reservationIds } },
+        });
+        if (blockingItems > 0) {
+          await prisma.sync_runs.update({
+            where: { id: syncRunId },
+            data: {
+              status: "failed",
+              finished_at: new Date(),
+            },
+          });
+          summary.errors.push({
+            code: "REPLACE_BLOCKED_BY_TAX_EXPORT",
+            field: "replaceMode",
+            message: `Replace blocked: ${blockingItems} tax_export_items reference ${reservationIds.length} in-scope reservations. Clear the related tax export jobs before retrying.`,
+          });
+          return summary;
+        }
+
+        await prisma.$transaction([
+          prisma.reservations.deleteMany({ where: { id: { in: reservationIds } } }),
+        ]);
+      }
+    }
   }
 
   const deadLetters: Prisma.sync_dead_lettersCreateManyInput[] = [];
