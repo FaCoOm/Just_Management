@@ -35,6 +35,7 @@ const prisma = new PrismaClient();
 interface RunOptions {
   apply: boolean;
   check: boolean;
+  strictMode: boolean;
 }
 
 interface PropertyDelta {
@@ -52,10 +53,47 @@ interface RoomDelta {
   action: "create" | "update" | "noop";
 }
 
+interface StrictDeletionProperty {
+  id: string;
+  slug: string;
+  name: string;
+}
+
+interface StrictDeletionRoom {
+  id: string;
+  property_id: string;
+  property_slug: string;
+  room_number: string;
+}
+
+interface StrictDeletionPlan {
+  propertiesToDelete: StrictDeletionProperty[];
+  roomsToDelete: StrictDeletionRoom[];
+}
+
+type StrictDeletionBlockerTable =
+  | "listing_room_mappings"
+  | "reservation_room_allocations"
+  | "maintenance_issues"
+  | "guest_requests"
+  | "guests"
+  | "reservations.primary_room_id";
+
+interface StrictDeletionBlocker {
+  table: StrictDeletionBlockerTable;
+  count: number;
+}
+
+interface StrictDeletionPreflight {
+  blocked: boolean;
+  blockers: StrictDeletionBlocker[];
+}
+
 function parseOptions(argv: string[]): RunOptions {
   const apply = argv.includes("--apply");
   const check = argv.includes("--check") || !apply;
-  return { apply, check };
+  const strictMode = argv.includes("--strict");
+  return { apply, check, strictMode };
 }
 
 function isAzureDatabase(): boolean {
@@ -161,6 +199,85 @@ async function applyRoom(propertyId: string, sotRoom: SoTRoom): Promise<void> {
   }
 }
 
+async function planStrictDeletions(): Promise<StrictDeletionPlan> {
+  const sotSlugs = new Set(ROOMS_SOURCE_OF_TRUTH.map((property) => property.slug));
+  const sotRoomNumbersBySlug = new Map(
+    ROOMS_SOURCE_OF_TRUTH.map((property) => [
+      property.slug,
+      new Set(property.rooms.map((room) => room.roomName)),
+    ]),
+  );
+
+  const [propertiesToDelete, existingSoTProperties, existingRoomsInSoTProperties] = await Promise.all([
+    prisma.properties.findMany({
+      where: { slug: { notIn: Array.from(sotSlugs) } },
+      select: { id: true, slug: true, name: true },
+      orderBy: { slug: "asc" },
+    }),
+    prisma.properties.findMany({
+      where: { slug: { in: Array.from(sotSlugs) } },
+      select: { id: true, slug: true },
+    }),
+    prisma.rooms.findMany({
+      where: { property: { slug: { in: Array.from(sotSlugs) } } },
+      select: {
+        id: true,
+        property_id: true,
+        room_number: true,
+        property: { select: { slug: true } },
+      },
+      orderBy: [{ property_id: "asc" }, { room_number: "asc" }],
+    }),
+  ]);
+
+  const existingSoTPropertyIds = new Set(existingSoTProperties.map((property) => property.id));
+  const roomsToDelete = existingRoomsInSoTProperties
+    .filter((room) => existingSoTPropertyIds.has(room.property_id))
+    .filter((room) => {
+      const allowedRoomNumbers = sotRoomNumbersBySlug.get(room.property.slug);
+      return !allowedRoomNumbers?.has(room.room_number);
+    })
+    .map((room) => ({
+      id: room.id,
+      property_id: room.property_id,
+      property_slug: room.property.slug,
+      room_number: room.room_number,
+    }));
+
+  return { propertiesToDelete, roomsToDelete };
+}
+
+async function preflightStrictDeletions(plan: StrictDeletionPlan): Promise<StrictDeletionPreflight> {
+  if (plan.roomsToDelete.length === 0) {
+    return { blocked: false, blockers: [] };
+  }
+
+  const roomIds = plan.roomsToDelete.map((room) => room.id);
+  const [listingRoomMappings, reservationRoomAllocations, maintenanceIssues, guestRequests, guests, reservations] =
+    await Promise.all([
+      prisma.listing_room_mappings.count({ where: { room_id: { in: roomIds } } }),
+      prisma.reservation_room_allocations.count({ where: { room_id: { in: roomIds } } }),
+      prisma.maintenance_issues.count({ where: { room_id: { in: roomIds } } }),
+      prisma.guest_requests.count({ where: { room_id: { in: roomIds } } }),
+      prisma.guests.count({ where: { room_id: { in: roomIds } } }),
+      prisma.reservations.count({ where: { primary_room_id: { in: roomIds } } }),
+    ]);
+
+  const blockers = [
+    { table: "listing_room_mappings", count: listingRoomMappings },
+    { table: "reservation_room_allocations", count: reservationRoomAllocations },
+    { table: "maintenance_issues", count: maintenanceIssues },
+    { table: "guest_requests", count: guestRequests },
+    { table: "guests", count: guests },
+    { table: "reservations.primary_room_id", count: reservations },
+  ] satisfies StrictDeletionBlocker[];
+
+  return {
+    blocked: blockers.some((blocker) => blocker.count > 0),
+    blockers: blockers.filter((blocker) => blocker.count > 0),
+  };
+}
+
 function printPropertyPlan(deltas: PropertyDelta[]): void {
   console.log("\n=== Property plan ===");
   for (const d of deltas) {
@@ -201,10 +318,41 @@ function printRoomPlan(slug: string, deltas: RoomDelta[]): void {
   }
 }
 
+function printStrictDeletionPlan(plan: StrictDeletionPlan, apply: boolean): void {
+  console.log("\n=== Strict deletion plan ===");
+  console.log(`  Properties to delete: ${plan.propertiesToDelete.length}`);
+  for (const property of plan.propertiesToDelete) {
+    console.log(`      DELETE  property slug="${property.slug}"  name="${property.name}"  id=${property.id}`);
+  }
+
+  console.log(`  Rooms to delete: ${plan.roomsToDelete.length}`);
+  for (const room of plan.roomsToDelete) {
+    console.log(
+      `      DELETE  room property="${room.property_slug}"  number="${room.room_number}"  id=${room.id}`,
+    );
+  }
+
+  if (!apply) {
+    console.log("  Strict mode check-only: deletion plan printed, no mutations will run.");
+  }
+}
+
+function printStrictPreflight(preflight: StrictDeletionPreflight): void {
+  console.log("\n=== Strict deletion FK pre-flight ===");
+  if (!preflight.blocked) {
+    console.log("  OK      no blocking room references found.");
+    return;
+  }
+
+  for (const blocker of preflight.blockers) {
+    console.log(`  BLOCK   ${blocker.table}=${blocker.count}`);
+  }
+}
+
 async function main(): Promise<void> {
   const opts = parseOptions(process.argv.slice(2));
   console.log("Rooms Source-of-Truth seed");
-  console.log(`  Mode: ${opts.apply ? "APPLY" : "CHECK"}`);
+  console.log(`  Mode: ${opts.apply ? "APPLY" : "CHECK"}${opts.strictMode ? " + STRICT" : ""}`);
   console.log(`  Total rooms expected: ${ROOMS_SOT_TOTAL}`);
   console.log(`  Properties: ${ROOMS_SOURCE_OF_TRUTH.length}`);
 
@@ -249,11 +397,43 @@ async function main(): Promise<void> {
 
   console.log(`\nRoom plan totals: create=${totalCreate} update=${totalUpdate} ok=${totalNoop}`);
 
+  let strictDeletionPlan: StrictDeletionPlan | null = null;
+  let strictPreflight: StrictDeletionPreflight | null = null;
+  if (opts.strictMode) {
+    strictDeletionPlan = await planStrictDeletions();
+    printStrictDeletionPlan(strictDeletionPlan, opts.apply);
+
+    strictPreflight = await preflightStrictDeletions(strictDeletionPlan);
+    printStrictPreflight(strictPreflight);
+  }
+
   if (opts.apply) {
+    if (opts.strictMode && strictDeletionPlan && strictPreflight) {
+      if (strictPreflight.blocked) {
+        console.error(
+          `\nStrict delete blocked: ${strictPreflight.blockers
+            .map((blocker) => `${blocker.table}=${blocker.count}`)
+            .join(", ")}. Clear those references before retrying with --apply --strict.`,
+        );
+        process.exit(1);
+      }
+
+      await prisma.$transaction([
+        prisma.rooms.deleteMany({ where: { id: { in: strictDeletionPlan.roomsToDelete.map((room) => room.id) } } }),
+        prisma.properties.deleteMany({
+          where: { id: { in: strictDeletionPlan.propertiesToDelete.map((property) => property.id) } },
+        }),
+      ]);
+    }
+
     console.log("\nApplied. Verifying post-state...");
   } else {
     console.log("\nCHECK mode complete. Re-run with --apply to write changes.");
-    if (totalCreate + totalUpdate > 0) {
+    if (
+      totalCreate + totalUpdate > 0 ||
+      (strictDeletionPlan !== null &&
+        (strictDeletionPlan.propertiesToDelete.length > 0 || strictDeletionPlan.roomsToDelete.length > 0))
+    ) {
       console.log("Drift detected: DB does not match SoT.");
       process.exitCode = 1;
     }

@@ -131,7 +131,7 @@ async function buildCheckPlan(opts: RunOptions): Promise<CheckPlan> {
   });
 
   const account = await prisma.external_accounts.findFirst({
-    where: { channel: { slug: "airbnb" } },
+    where: { channel: { slug: "airbnb" }, account_key: "airbnb-main" },
     select: { id: true, account_key: true },
   });
   if (!account) {

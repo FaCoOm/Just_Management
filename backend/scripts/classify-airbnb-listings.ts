@@ -117,7 +117,8 @@ function parseListingsCsv(filePath: string): ListingRow[] {
     throw new Error(`CSV file ${filePath} is missing headers: ${missingHeaders.join(", ")}`);
   }
 
-  return dataLines.map((line, lineIndex) => {
+  const rows: ListingRow[] = [];
+  dataLines.forEach((line, lineIndex) => {
     const cells = parseCsvLine(line);
     const row: Record<string, string> = {};
 
@@ -129,18 +130,24 @@ function parseListingsCsv(filePath: string): ListingRow[] {
       throw new Error(`CSV file ${filePath} row ${lineIndex + 2} has empty ID`);
     }
 
-    return {
+    const status = row.Status ?? "";
+    if (/^in[\s\-]?progress$/i.test(status.trim())) {
+      return;
+    }
+
+    rows.push({
       ID: row.ID,
       Title: row.Title ?? "",
       "Internal Name": row["Internal Name"] ?? "",
       Type: row.Type ?? "",
       Location: row.Location ?? "",
-      Status: row.Status ?? "",
+      Status: status,
       "Host Editor URL": row["Host Editor URL"] ?? "",
       "Public URL": row["Public URL"] ?? "",
       "Extracted At": row["Extracted At"] ?? "",
-    };
+    });
   });
+  return rows;
 }
 
 function findDuplicateIds(rows: ListingRow[]): string[] {
@@ -219,7 +226,7 @@ function ensureSubset(subset: Set<string>, superset: Set<string>): string[] {
 
 function main() {
   const repoRoot = path.resolve(__dirname, "../..");
-  const inputDirectory = path.resolve(repoRoot, "database_design");
+  const inputDirectory = path.resolve(repoRoot, "docs/database_design");
   const outputPath = path.resolve(inputDirectory, "listing-account-classification.json");
 
   const rawRowsByAccount: Record<AccountName, ListingRow[]> = {

@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { extractListings, parseSourceFile } from "../normalizer";
-import { parseInternalName } from "../parser";
+import { normalizeListingInternalName } from "../../lib/listings-source-of-truth";
 import { createEmptyIngestSummary, type IngestSummaryResponse, type IngestValidationError } from "../contracts";
 
 import { prisma } from "../../lib/prisma";
@@ -17,7 +17,7 @@ export async function processListingSync(
   const createMissingInventory = process.env.M_MANAGEMENT_LISTINGS_CREATE_INVENTORY === "true";
 
   try {
-    rows = parseSourceFile(buffer, mimeType);
+    rows = parseSourceFile(buffer, mimeType, sourceFile);
   } catch (error) {
     summary.errors.push({
       code: "MALFORMED_FILE",
@@ -79,33 +79,33 @@ export async function processListingSync(
   const deadLetters: Prisma.sync_dead_lettersCreateManyInput[] = [];
 
   for (const listing of listings) {
-    const parserResult = parseInternalName(listing.internalName);
+    const parserResult = normalizeListingInternalName(listing.internalName || "");
 
-    if (parserResult.error) {
+    if (parserResult.errorCode) {
       deadLetters.push({
         sync_run_id: syncRunId,
         source_row_number: listing.sourceRowNumber,
         failure_code: parserResult.errorCode || "PARSING_ERROR",
-        failure_reason: parserResult.error,
+        failure_reason: parserResult.error || "Parsing error",
         normalized_payload: listing.rawPayload as Prisma.InputJsonValue,
       });
       summary.deadLetters++;
       continue;
     }
 
-    if (!isDryRun && parserResult.parsed) {
+    if (!isDryRun && parserResult.propertySlug && parserResult.roomNumbers.length > 0) {
       try {
         // Run in transaction for idempotency
         await prisma.$transaction(async (tx) => {
           let property = await tx.properties.findUnique({
-            where: { slug: parserResult.parsed!.propertySlug },
+            where: { slug: parserResult.propertySlug },
           });
 
           if (!property && createMissingInventory) {
             property = await tx.properties.create({
               data: {
-                slug: parserResult.parsed!.propertySlug,
-                name: parserResult.parsed!.propertySlug.toUpperCase(),
+                slug: parserResult.propertySlug!,
+                name: parserResult.propertySlug!.toUpperCase(),
               },
             });
           }
@@ -116,42 +116,41 @@ export async function processListingSync(
               source_file: sourceFile,
               source_row_number: listing.sourceRowNumber,
               failure_code: "UNRESOLVED_LISTING",
-              failure_reason: `Property ${parserResult.parsed!.propertySlug} does not exist; set M_MANAGEMENT_LISTINGS_CREATE_INVENTORY=true to create inventory from listings.`,
+              failure_reason: `Property ${parserResult.propertySlug} does not exist; set M_MANAGEMENT_LISTINGS_CREATE_INVENTORY=true to create inventory from listings.`,
               normalized_payload: listing.rawPayload as Prisma.InputJsonValue,
             });
             summary.deadLetters++;
             return;
           }
 
-          const parsed = parserResult.parsed!;
-          if (!("roomNumber" in parsed)) {
-            // Composite parser branch is never used by the listings ingest service today.
-            // Single-room callers never pass opts.allowComposite, so this is unreachable
-            // unless a future change opts in. Fail loudly rather than silently miscategorise.
-            throw new Error(`Unexpected composite parser result for ${listing.internalName}`);
-          }
-          const roomNumber = parsed.roomNumber;
-          let room = await tx.rooms.findFirst({
-            where: { property_id: property.id, room_number: roomNumber },
-          });
-
-          if (!room && createMissingInventory) {
-            room = await tx.rooms.create({
-              data: {
-                property_id: property.id,
-                room_number: roomNumber,
-                room_name: roomNumber,
-              },
+          const rooms: any[] = [];
+          for (const roomNumber of parserResult.roomNumbers) {
+            let room = await tx.rooms.findFirst({
+              where: { property_id: property.id, room_number: roomNumber },
             });
+
+            if (!room && createMissingInventory) {
+              room = await tx.rooms.create({
+                data: {
+                  property_id: property.id,
+                  room_number: roomNumber,
+                  room_name: roomNumber,
+                },
+              });
+            }
+
+            if (room) {
+              rooms.push(room);
+            }
           }
 
-          if (!room) {
+          if (rooms.length === 0) {
             deadLetters.push({
               sync_run_id: syncRunId,
               source_file: sourceFile,
               source_row_number: listing.sourceRowNumber,
               failure_code: "UNRESOLVED_LISTING",
-              failure_reason: `Room ${roomNumber} does not exist for property ${parserResult.parsed!.propertySlug}; set M_MANAGEMENT_LISTINGS_CREATE_INVENTORY=true to create inventory from listings.`,
+              failure_reason: `Rooms ${parserResult.roomNumbers.join(", ")} do not exist for property ${parserResult.propertySlug}; set M_MANAGEMENT_LISTINGS_CREATE_INVENTORY=true to create inventory from listings.`,
               normalized_payload: listing.rawPayload as Prisma.InputJsonValue,
             });
             summary.deadLetters++;
@@ -197,18 +196,22 @@ export async function processListingSync(
             });
             listingId = upsertedListing.id;
 
-            // Map room
-            const existingMapping = await tx.listing_room_mappings.findFirst({
-              where: { channel_listing_id: upsertedListing.id }
-            });
-            
-            if (!existingMapping) {
-              await tx.listing_room_mappings.create({
-                data: {
-                  channel_listing_id: upsertedListing.id,
-                  room_id: room.id,
-                }
+            // Map rooms
+            for (let i = 0; i < rooms.length; i++) {
+              const r = rooms[i];
+              const existingMapping = await tx.listing_room_mappings.findFirst({
+                where: { channel_listing_id: upsertedListing.id, room_id: r.id }
               });
+              
+              if (!existingMapping) {
+                await tx.listing_room_mappings.create({
+                  data: {
+                    channel_listing_id: upsertedListing.id,
+                    room_id: r.id,
+                    sort_order: i + 1,
+                  }
+                });
+              }
             }
 
             if (existingListing) {

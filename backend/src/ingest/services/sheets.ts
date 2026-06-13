@@ -95,10 +95,10 @@ export async function processGoogleSheetsSync(
     const csvBuffer = valuesToCsvBuffer(values);
 
     if (targetKind === "listings") {
-      return processListingSync(csvBuffer, "text/csv", sourceAccount, isDryRun);
+      return processListingSync(csvBuffer, "text/csv", sourceAccount, isDryRun, "google-sheets");
     }
 
-    return processReservationSync(csvBuffer, "text/csv", sourceAccount, isDryRun);
+    return processReservationSync(csvBuffer, "text/csv", sourceAccount, isDryRun, "google-sheets", { replaceMode: true });
   } catch (error) {
     return createEmptyIngestSummary(targetKind, isDryRun, [
       {

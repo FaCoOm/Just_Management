@@ -25,8 +25,10 @@ async function dispatchAttachment(
   sourceAccount: string,
   isDryRun: boolean,
 ): Promise<IngestSummaryResponse> {
-  if (targetKind === "listings") return processListingSync(buffer, "text/csv", sourceAccount, isDryRun);
-  return processReservationSync(buffer, "text/csv", sourceAccount, isDryRun);
+  if (targetKind === "listings") {
+    return processListingSync(buffer, "text/csv", sourceAccount, isDryRun, "email-attachment");
+  }
+  return processReservationSync(buffer, "text/csv", sourceAccount, isDryRun, "email-attachment", { replaceMode: true });
 }
 
 function addInto(target: IngestSummaryResponse, source: IngestSummaryResponse): void {

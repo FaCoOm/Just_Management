@@ -72,6 +72,11 @@ function normalizeDateValue(value: unknown, includeTime = false): string {
     return "";
   }
 
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    const iso = value.toISOString();
+    return includeTime ? iso : iso.slice(0, 10);
+  }
+
   if (typeof value === "number" && Number.isFinite(value)) {
     return fromExcelSerial(value, includeTime);
   }
@@ -89,9 +94,12 @@ function normalizeDateValue(value: unknown, includeTime = false): string {
     return includeTime ? `${normalized}T00:00:00.000Z` : normalized;
   }
 
-  const dayFirstMatch = normalized.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  const dayFirstMatch = normalized.match(/^(\d{1,2})[/\-](\d{1,2})[/\-](\d{2,4})$/);
   if (dayFirstMatch) {
-    const [, day, month, year] = dayFirstMatch;
+    const [, d, m, y] = dayFirstMatch;
+    const day = d.padStart(2, "0");
+    const month = m.padStart(2, "0");
+    const year = y.length === 2 ? `20${y}` : y;
     const dateOnly = `${year}-${month}-${day}`;
     return includeTime ? `${dateOnly}T00:00:00.000Z` : dateOnly;
   }
@@ -99,15 +107,50 @@ function normalizeDateValue(value: unknown, includeTime = false): string {
   return normalized;
 }
 
-export function parseSourceFile(buffer: Buffer, mimeType: string): Record<string, unknown>[] {
-  const isExcel = mimeType.includes("excel") || mimeType.includes("spreadsheetml");
-  const workbook = xlsx.read(buffer, { type: "buffer" });
-  const sheetName = workbook.SheetNames[0];
-  const sheet = workbook.Sheets[sheetName];
-  
-  // csv parsing is supported by xlsx if it's text/csv
-  const rows: any[] = xlsx.utils.sheet_to_json(sheet, { defval: "", raw: false }); // raw:false preserves 19-digit IDs as strings
-  return rows;
+export function parseSourceFile(buffer: Buffer, mimeType: string, filename?: string): Record<string, unknown>[] {
+  const isZip = buffer.length > 4 && buffer[0] === 0x50 && buffer[1] === 0x4b;
+  const isExcel = isZip || mimeType.includes("excel") || mimeType.includes("spreadsheetml") || (filename && /\.(xlsx|xls)$/i.test(filename));
+  const isCsv = !isExcel;
+
+  if (isCsv) {
+    const csvContent = buffer.toString("utf8").replace(/^\uFEFF/, "");
+    const workbook = xlsx.read(csvContent, { type: "string", raw: true });
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    const rows = xlsx.utils.sheet_to_json(sheet, { defval: "", raw: true });
+    return rows as Record<string, unknown>[];
+  } else {
+    const workbook = xlsx.read(buffer, { type: "buffer", cellDates: true });
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+
+    // Pre-process date cells to write consistent, timezone-stable strings back to cell.w and cell.v
+    for (const key of Object.keys(sheet)) {
+      if (key[0] === "!") continue;
+      const cell = sheet[key];
+      if (cell && cell.t === "d" && cell.v instanceof Date && !Number.isNaN(cell.v.getTime())) {
+        const dateObj = cell.v;
+        const hasTime = dateObj.getUTCHours() !== 0 || dateObj.getUTCMinutes() !== 0 || dateObj.getUTCSeconds() !== 0;
+        if (!hasTime) {
+          const year = dateObj.getUTCFullYear();
+          const month = String(dateObj.getUTCMonth() + 1).padStart(2, "0");
+          const day = String(dateObj.getUTCDate()).padStart(2, "0");
+          const formattedDate = `${year}-${month}-${day}`;
+          cell.v = formattedDate;
+          cell.t = "s";
+          cell.w = formattedDate;
+        } else {
+          const formattedDate = dateObj.toISOString();
+          cell.v = formattedDate;
+          cell.t = "s";
+          cell.w = formattedDate;
+        }
+      }
+    }
+
+    const rows = xlsx.utils.sheet_to_json(sheet, { defval: "", raw: false });
+    return rows as Record<string, unknown>[];
+  }
 }
 
 export function extractListings(rows: Record<string, unknown>[]): ListingSourceRow[] {

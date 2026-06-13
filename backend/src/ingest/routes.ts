@@ -275,14 +275,23 @@ export function registerIngestRoutes(app: Express): void {
         }
         const pending = await prisma.watched_files.findMany({ where: { watch_dir: importRoot, target_kind: targetKind, status: "seen" }, orderBy: { last_seen_at: "asc" } });
         const summary = createEmptyIngestSummary(targetKind, dryRun);
-        const processor = targetKind === "listings"
-          ? (await import("./services/listings.js")).processListingSync
-          : (await import("./services/reservations.js")).processReservationSync;
+        const isReservations = targetKind === "reservations";
+        const listingsSync = isReservations ? null : (await import("./services/listings.js")).processListingSync;
+        const reservationsSync = isReservations ? (await import("./services/reservations.js")).processReservationSync : null;
 
         for (const file of pending) {
           const absolutePath = path.join(importRoot, file.relative_path);
           const buffer = await fs.readFile(absolutePath);
-          const child = await processor(buffer, "text/csv", sourceAccount, dryRun, file.relative_path);
+          const ext = file.relative_path.toLowerCase();
+          const mimeType = ext.endsWith(".xlsx")
+            ? "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            : ext.endsWith(".xls")
+            ? "application/vnd.ms-excel"
+            : "text/csv";
+
+          const child = isReservations
+            ? await reservationsSync!(buffer, mimeType, sourceAccount, dryRun, file.relative_path, { replaceMode: true })
+            : await listingsSync!(buffer, mimeType, sourceAccount, dryRun, file.relative_path);
           summary.processed += child.processed;
           summary.created += child.created;
           summary.updated += child.updated;
@@ -339,7 +348,7 @@ export function registerIngestRoutes(app: Express): void {
     if (req.file) {
       try {
         const { processListingSync } = await import("./services/listings.js");
-        const summary = await processListingSync(req.file.buffer, req.file.mimetype, sourceAccount, dryRun);
+        const summary = await processListingSync(req.file.buffer, req.file.mimetype, sourceAccount, dryRun, req.file.originalname);
         res.status(200).json(summary);
       } catch (err) {
         res.status(500).json(createEmptyIngestSummary("listings", dryRun, [
@@ -355,7 +364,7 @@ export function registerIngestRoutes(app: Express): void {
     const body = isObject(req.body) ? req.body : {};
     const dryRun = body.dryRun === true || body.dryRun === "true";
     const sourceAccount = getString(body, "sourceAccount") || "";
-    const replaceMode = body.replaceMode === true || body.replaceMode === "true";
+    const replaceMode = body.replaceMode !== false && body.replaceMode !== "false";
 
     const errors = validateIngestRequest(req, "reservations");
     if (errors.length > 0) {
@@ -363,7 +372,7 @@ export function registerIngestRoutes(app: Express): void {
       return;
     }
 
-    if (replaceMode && dryRun) {
+    if ((body.replaceMode === true || body.replaceMode === "true") && dryRun) {
       res.status(400).json(createEmptyIngestSummary("reservations", dryRun, [
         {
           code: "MISSING_DRY_RUN",
@@ -382,7 +391,7 @@ export function registerIngestRoutes(app: Express): void {
           req.file.mimetype,
           sourceAccount,
           dryRun,
-          "upload",
+          req.file.originalname,
           { replaceMode },
         );
         const replaceBlocked = summary.errors.find((err) => err.code === "REPLACE_BLOCKED_BY_TAX_EXPORT");

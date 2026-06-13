@@ -41,7 +41,7 @@ export async function processReservationSync(
   let rows: Record<string, unknown>[];
 
   try {
-    rows = parseSourceFile(buffer, mimeType);
+    rows = parseSourceFile(buffer, mimeType, sourceFile);
   } catch (error) {
     summary.errors.push({
       code: "MALFORMED_FILE",

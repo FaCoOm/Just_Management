@@ -167,3 +167,14 @@ Complete every sidebar-promised dashboard page, add same-day checkout Tax-Export
 - `backend/.env` — Azure PostgreSQL URL + WithOne API key
 - `backend/package.json` — Build: `prisma generate && tsc`
 - `frontend/package.json` — Vite dev bridge on port 3000
+
+### 2026-06-13 Diagnostic cleanup
+
+PATH A (delete) — 5 legacy diagnostic scripts already removed:
+- `backend/scripts/inspect-channel-listings.ts`
+- `backend/scripts/inspect-listings-vs-csv.ts`
+- `backend/scripts/inspect-dead-letters.ts`
+- `backend/scripts/inspect-listing-dupes.ts`
+- `backend/scripts/repro-xlsx-precision.ts`
+
+Rationale: All 5 were one-shot diagnostics from prior debugging sessions. No production code imports them, no npm scripts reference them, and they haven't been maintained. They constitute technical debt. Verified: files are absent from disk, `backend/package.json` has no stale entries, and `npm run build` passes cleanly.

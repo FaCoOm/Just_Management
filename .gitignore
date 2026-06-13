@@ -27,7 +27,7 @@ credentials.json
 .DS_Store
 *.suo
 *.ntvs*
-*.njsproj
+*.njsprojP
 *.sln
 *.sw?
 .env.*
@@ -42,6 +42,7 @@ credentials.json
 # Agent & Tooling Caches
 .playwright-mcp/
 .omo/run-continuation/
+
 
 # Local-only agent scratch / research caches (do not read or commit)
 .understand-anything/

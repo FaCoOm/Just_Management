@@ -120,6 +120,9 @@ const DRIFT_CATALOG: DriftEntry[] = [
   { propertySlug: "ll", surplus: "Latte 1", canonical: "Latte" },
   { propertySlug: "theo", surplus: "B20.12A Main", canonical: "B20.12A" },
   { propertySlug: "ta", surplus: "The Alley 1", canonical: "Alley 1" },
+  { propertySlug: "cc", surplus: "303 (301 cu)", canonical: "303" },
+  { propertySlug: "cc", surplus: "303 (301 cÅ©)", canonical: "303" },
+  { propertySlug: "cc", surplus: "303 (301 cũ)", canonical: "303" },
 ];
 
 function findDrift(propertySlug: string, room: string): DriftEntry | undefined {

@@ -23,7 +23,8 @@
     "seed:rooms-sot:strict": "tsx scripts/seed-rooms-sot.ts --strict",
     "seed:listings-sot": "tsx scripts/seed-listings-sot.ts",
     "seed:listings-sot:apply": "tsx scripts/seed-listings-sot.ts --apply",
-    "merge:surplus-rooms": "tsx scripts/merge-surplus-rooms.ts"
+    "merge:surplus-rooms": "tsx scripts/merge-surplus-rooms.ts",
+    "seed:reservations-sot": "tsx scripts/seed-reservations-sot.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.0.0",
