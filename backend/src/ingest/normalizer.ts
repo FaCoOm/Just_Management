@@ -106,7 +106,7 @@ export function parseSourceFile(buffer: Buffer, mimeType: string): Record<string
   const sheet = workbook.Sheets[sheetName];
   
   // csv parsing is supported by xlsx if it's text/csv
-  const rows: any[] = xlsx.utils.sheet_to_json(sheet, { defval: "" });
+  const rows: any[] = xlsx.utils.sheet_to_json(sheet, { defval: "", raw: false }); // raw:false preserves 19-digit IDs as strings
   return rows;
 }
 

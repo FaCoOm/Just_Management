@@ -3,15 +3,20 @@ export interface ParsedPropertyRoom {
   roomNumber: string;
 }
 
+export interface ParsedCompositeRoom {
+  propertySlug: string;
+  roomNumbers: string[];
+}
+
 export interface ParserResult {
-  parsed?: ParsedPropertyRoom;
+  parsed?: ParsedPropertyRoom | ParsedCompositeRoom;
   error?: string;
   errorCode?: string;
 }
 
 export const KNOWN_PREFIXES = ["LL", "TheO", "MH", "CC", "TC", "23", "TA", "Ruby"];
 
-export function parseInternalName(internalName: string | null): ParserResult {
+export function parseInternalName(internalName: string | null, opts?: { allowComposite?: boolean }): ParserResult {
   if (!internalName || internalName.trim().length === 0) {
     return {
       error: "Internal name is empty",
@@ -49,7 +54,31 @@ export function parseInternalName(internalName: string | null): ParserResult {
   let roomNumber = rawRoom.trim();
   
   // Standardize things like "B 9.08" -> "B9.08", "C 12.02" -> "C12.02"
-  roomNumber = roomNumber.replace(/^([A-Za-z])\s+(\d)/, '$1$2');
+  const collapseLeadingLetterSpace = (s: string): string =>
+    s.replace(/^([A-Za-z])\s+(\d)/, "$1$2");
+  roomNumber = collapseLeadingLetterSpace(roomNumber);
+
+  // Composite room handling: when caller opts in via { allowComposite: true },
+  // split on ampersand or case-insensitive ' and ' and return roomNumbers as array.
+  // Without the opt-in, fall through to the legacy COMPOSITE_ROOM rejection below
+  // so existing single-room callers stay backward compatible.
+  const isComposite =
+    roomNumber.includes("&") || roomNumber.toLowerCase().includes(" and ");
+  if (opts?.allowComposite && isComposite) {
+    const parts = roomNumber
+      .split(/\s*&\s*|\s+and\s+/i)
+      .map((p) => p.trim())
+      .filter((p) => p.length > 0)
+      .map(collapseLeadingLetterSpace);
+    if (parts.length > 1) {
+      return {
+        parsed: {
+          propertySlug: getPropertySlug(prefix),
+          roomNumbers: parts,
+        },
+      };
+    }
+  }
 
   // Handle case where room number looks like a composite string like "Milk 2 & Coffee 2"
   // For now, if we have a room part, we just take it as the room number.

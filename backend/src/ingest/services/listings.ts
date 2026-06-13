@@ -123,7 +123,14 @@ export async function processListingSync(
             return;
           }
 
-          const roomNumber = parserResult.parsed!.roomNumber;
+          const parsed = parserResult.parsed!;
+          if (!("roomNumber" in parsed)) {
+            // Composite parser branch is never used by the listings ingest service today.
+            // Single-room callers never pass opts.allowComposite, so this is unreachable
+            // unless a future change opts in. Fail loudly rather than silently miscategorise.
+            throw new Error(`Unexpected composite parser result for ${listing.internalName}`);
+          }
+          const roomNumber = parsed.roomNumber;
           let room = await tx.rooms.findFirst({
             where: { property_id: property.id, room_number: roomNumber },
           });

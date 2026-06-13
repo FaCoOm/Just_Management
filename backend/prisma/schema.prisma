@@ -215,6 +215,7 @@ model listing_room_mappings {
   channel_listing channel_listings @relation(fields: [channel_listing_id], references: [id], onDelete: Cascade)
   room            rooms            @relation(fields: [room_id], references: [id], onDelete: Restrict)
 
+  @@unique([channel_listing_id, room_id, mapping_role], name: "listing_room_mappings_clr_unique")
   @@index([channel_listing_id, room_id])
 }
 

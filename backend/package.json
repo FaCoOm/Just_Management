@@ -19,7 +19,11 @@
     "classify:listings": "tsx scripts/classify-airbnb-listings.ts",
     "verify-ingestion": "tsx scripts/verify-ingestion.ts",
     "verify:all": "npm run build && npm run verify-ingestion",
-    "seed:rooms-sot": "tsx scripts/seed-rooms-sot.ts"
+    "seed:rooms-sot": "tsx scripts/seed-rooms-sot.ts",
+    "seed:rooms-sot:strict": "tsx scripts/seed-rooms-sot.ts --strict",
+    "seed:listings-sot": "tsx scripts/seed-listings-sot.ts",
+    "seed:listings-sot:apply": "tsx scripts/seed-listings-sot.ts --apply",
+    "merge:surplus-rooms": "tsx scripts/merge-surplus-rooms.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.0.0",
