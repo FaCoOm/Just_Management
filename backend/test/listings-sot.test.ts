@@ -364,7 +364,7 @@ describe("mergeCsvWithOwnership", () => {
     assert.equal(rows.length, 59);
   });
 
-  it("ID 33932700 owner=ruby, internalName from listings.csv", () => {
+  it("ID 33932700 owner=manuka (Manuka is rightful owner), internalName from listings.csv", () => {
     const listingsCsv = [
       "ID,Title,Internal Name,Type,Location,Status,Host Editor URL,Public URL,Extracted At",
       '"33932700","Title","LL - Latte 1","home","","Listed","https://edit/1","https://pub/1","2026-05-26T04:10:09.461Z"',
@@ -379,11 +379,11 @@ describe("mergeCsvWithOwnership", () => {
     ].join("\n");
     const rows = mergeCsvWithOwnership({ listings: listingsCsv, ruby: rubyCsv, manuka: manukaCsv });
     assert.equal(rows.length, 1);
-    assert.equal(rows[0].owner, "ruby");
+    assert.equal(rows[0].owner, "manuka");
     assert.equal(rows[0].internalName, "LL - Latte 1");
   });
 
-  it("Ruby beats Manuka for ID 947584081523929277", () => {
+  it("Manuka beats Ruby for ID 947584081523929277 (Manuka is rightful owner)", () => {
     const listingsCsv = [
       "ID,Title,Internal Name,Type,Location,Status,Host Editor URL,Public URL,Extracted At",
       '"947584081523929277","T","MH - 01","home","","Listed","https://edit/1","https://pub/1","2026-05-26Z"',
@@ -397,10 +397,10 @@ describe("mergeCsvWithOwnership", () => {
       '"947584081523929277","T","MH - 01","home","","Đã đăng","https://edit/1","https://pub/1","2026-05-26Z"',
     ].join("\n");
     const rows = mergeCsvWithOwnership({ listings: listingsCsv, ruby: rubyCsv, manuka: manukaCsv });
-    assert.equal(rows[0].owner, "ruby");
+    assert.equal(rows[0].owner, "manuka");
   });
 
-  it("Ruby beats Manuka for ID 1027327396117322855", () => {
+  it("Manuka beats Ruby for ID 1027327396117322855 (Manuka is rightful owner)", () => {
     const listingsCsv = [
       "ID,Title,Internal Name,Type,Location,Status,Host Editor URL,Public URL,Extracted At",
       '"1027327396117322855","T","MH - 02","home","","Listed","https://edit/1","https://pub/1","2026-05-26Z"',
@@ -414,7 +414,7 @@ describe("mergeCsvWithOwnership", () => {
       '"1027327396117322855","T","MH - 02","home","","Đã đăng","https://edit/1","https://pub/1","2026-05-26Z"',
     ].join("\n");
     const rows = mergeCsvWithOwnership({ listings: listingsCsv, ruby: rubyCsv, manuka: manukaCsv });
-    assert.equal(rows[0].owner, "ruby");
+    assert.equal(rows[0].owner, "manuka");
   });
 
   it("parseListingsCsv accepts Vietnamese 'Đã đăng' status (Manuka)", () => {

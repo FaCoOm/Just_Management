@@ -556,10 +556,10 @@ export function mergeCsvWithOwnership(input: {
   return listingRows.map((base) => {
     const ruby = rubyById.get(base.providerListingId);
     const manuka = manukaById.get(base.providerListingId);
-    const owner: "ruby" | "manuka" | "listings" = ruby
-      ? "ruby"
-      : manuka
-        ? "manuka"
+    const owner: "ruby" | "manuka" | "listings" = manuka
+      ? "manuka"
+      : ruby
+        ? "ruby"
         : "listings";
     const sourceMetadata: Record<string, unknown> = {
       listings: base.sourceMetadata["listings"],
