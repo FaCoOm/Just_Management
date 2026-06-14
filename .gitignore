@@ -49,5 +49,5 @@ backend/imports/
 
 # Local-only agent scratch / research caches (do not read or commit)
 .understand-anything/
-resources/
+/resources/
 logs.txt

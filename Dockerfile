@@ -5,11 +5,11 @@ WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
+COPY frontend/package*.json ./frontend/
 COPY backend/package*.json ./backend/
 
 # Install dependencies
 RUN npm install
-RUN cd backend && npm install
 
 # Copy source code
 COPY . .
