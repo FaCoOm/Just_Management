@@ -51,3 +51,4 @@ backend/imports/
 .understand-anything/
 /resources/
 logs.txt
+.firecrawl/

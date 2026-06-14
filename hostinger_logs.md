@@ -144,14 +144,175 @@ single consolidated `dist/` at repo root that Hostinger can find.
 4. Trigger Hostinger redeploy; build log should no longer report
    *"No output directory found after build"*.
 
-## Status
+## Status (as of 2026-06-14)
 
 - Build pipeline: ✅ unified. `npm run build` produces `frontend/dist/`,
   `backend/dist/`, and root `dist/` in one chain.
 - TypeScript config: ✅ unchanged. Already correct.
 - Express SPA serving: ✅ already pointed at repo-root `dist/`.
-- Hostinger panel config: action required — set Application root, Build
-  command, and Output directory as listed under Path C above.
+- Frontend build artifact: ✅ confirmed clean (no `localhost:3001` baked in;
+  `.env.production` propagates `VITE_TRACK_B_API_URL=` for same-origin).
+- Live site: ❌ `https://manage.mujosaigon.com/` returns Hostinger's default
+  "This Page Does Not Exist" Angular 404. Backend never starts because
+  Hostinger app is misconfigured — see Restoration Plan below.
+
+## Restoration Plan (2026-06-14): switch framework from `Vite` to `Other` (Express.js)
+
+### Why the live site is broken
+
+Hostinger MCP `listJsDeployments` shows the latest 5 builds for
+`manage.mujosaigon.com` all configured with:
+
+```json
+{ "app_type": "vite", "build_script": "build", "output_directory": "dist" }
+```
+
+`app_type: "vite"` tells Hostinger to treat the app as a **static-only** site.
+After the build pipeline produces `dist/`, Hostinger serves those files via
+its static web server. **The Node.js Express backend is never started**, so:
+
+- `/api/*` returns 404 (no Express to handle it)
+- SPA client-side routes other than `/` return 404 (no Express SPA fallback)
+- The Hostinger default Angular 404 page leaks through because the static
+  doc-root is not pointing at the freshly-built `dist/` directory under the
+  `app_type=vite` model when it expects a different layout
+
+### What to switch to
+
+Change Hostinger's framework type from auto-detected `vite` to **Other** with
+**Entry file** = `backend/dist/index.js`. Per Hostinger's official docs, the
+`Other` type is the explicit selector for Node.js apps where auto-detect cannot
+categorize a custom Express setup. The single Express process then:
+
+1. Handles `/api/*` (already wired in `backend/src/index.ts:92-94`).
+2. Serves the SPA from `path.resolve(__dirname, "../../dist")` at `/`
+   with a catch-all SPA fallback (already wired around line 1320).
+3. Trusts the Hostinger reverse-proxy hop (`app.set("trust proxy", 1)`,
+   line 24) so `req.protocol`/`req.ip` reflect the real client over HTTPS.
+
+**Source citation**: https://www.hostinger.com/support/how-to-deploy-a-nodejs-website-in-hostinger/
+(verbatim: "Backend-supported Applications: Next.js, Express.js, NestJS,
+Nuxt.js, Fastify, Astro, SvelteKit" and "You can also select 'Other' manually
+from the framework dropdown during setup").
+
+**The git-based commit-from-repo deploy flow is preserved.** Hostinger keeps
+pulling from git on every deploy; the only thing that changes is what it does
+with the build output (run `node backend/dist/index.js` instead of serving
+`dist/` statically).
+
+### hPanel reconfiguration steps (validated against official Hostinger docs)
+
+**Source**: https://www.hostinger.com/support/how-to-deploy-a-nodejs-website-in-hostinger/
+
+1. **hPanel → Websites → `manage.mujosaigon.com` → Manage → Node.js Apps**.
+2. Click the existing app (currently typed as `Vite`). **Stop** if running.
+3. **Settings → Build Settings**: change framework dropdown from `Vite` to **`Other`**.
+   This unlocks the Entry file field. Per official docs:
+   > "You can also select 'Other' manually from the framework dropdown during setup."
+   > "Entry file - Enter the main file that starts your application (e.g.,
+   > index.js, server.js). This is only required if your application needs it."
+4. Set the build settings:
+   - **Framework**: `Other`
+   - **Build script**: `build` (already set; runs `npm run build` per root package.json)
+   - **Output directory**: `dist` (already set; matches `sync-dist.mjs` target)
+   - **Entry file**: **`backend/dist/index.js`** ⬅ this is the critical change
+   - **Node version**: `22` (LTS; already set; auto-selected by Hostinger)
+   - **Package manager**: leave auto (npm via root `package-lock.json`)
+   - **Root directory**: leave empty (defaults to repo root, where
+     workspace `package.json` lives)
+5. **Source**: keep existing git source (commit-from-repo flow preserved).
+6. **Environment Variables** panel — paste each KEY=VALUE row from
+   `backend/.env.production` (gitignored local file). Required keys per
+   `backend/src/config/env-validator.ts`:
+   - `DATABASE_URL` — Azure Postgres URL with `sslmode=require` (REQUIRED)
+   - `PORT=3001`
+   - `NODE_ENV=production`
+   - `SLOW_REQUEST_THRESHOLD_MS=500`
+   - `ALLOWED_ORIGINS=https://manage.mujosaigon.com`
+   - `ONE_CONNECTION_KEY` — live WithOne keys (3 comma-separated)
+   - `ONE_SECRET_KEY` — `sk_live_...`
+   - `ONE_API_BASE=https://api.withone.ai/v1`
+   - `ONE_WEBHOOK_SECRET` — placeholder until webhooks enabled
+   - `ONE_DEV_TOKEN` — placeholder; replace before exposing /api/one/auth-token
+   - `ONE_AUTHKIT_DEFAULT_IDENTITY_TYPE=user`
+   - `INGEST_PIPELINE_ENABLED=false` — disabled day one (Linux import path
+     not yet configured on Hostinger filesystem)
+   - `INGEST_SHEETS_PROVIDER=withone`
+   - `GOOGLE_SHEETS_SPREADSHEET_ID` — placeholder until sheets ingestion live
+   - Optional: `M_MANAGEMENT_LISTINGS_CREATE_INVENTORY=false`,
+     `M_MANAGEMENT_EMAIL_IMPORT_ENABLED=false`
+7. Also add the two **frontend** VITE_* keys (Vite reads `process.env`
+   during `vite build` and embeds the value into the static bundle):
+   - `VITE_TRACK_B_API_URL=` (empty — same-origin)
+   - `VITE_ONE_AUTH_TOKEN_URL=/api/one/auth-token`
+8. **Save** environment variables.
+9. Click **Deploy** (triggers fresh git pull + build + start under new framework type).
+
+### Where Hostinger places build output (verified from docs)
+
+Per Hostinger official docs, server-side Node.js apps (Express.js included)
+have build output stored **outside** `public_html/`:
+
+- Build files: `/home/u247402862/domains/manage.mujosaigon.com/nodejs/`
+- Auto-generated routing: `/home/u247402862/domains/manage.mujosaigon.com/public_html/.htaccess`
+  (Hostinger writes this on every deploy to forward public requests to the
+  `nodejs/` directory; do not edit manually)
+
+**Path math under this layout** (verified):
+
+```
+node backend/dist/index.js   →   __dirname = /home/.../nodejs/backend/dist
+                                  __dirname/../../dist
+                              =   /home/.../nodejs/dist
+                              =   exactly where sync-dist.mjs mirrors frontend/dist/
+```
+
+Express SPA serving (`backend/src/index.ts:1320`) and the Hostinger build
+directory align without any code change.
+
+### Post-deploy verification
+
+After the Hostinger panel restart, confirm via curl from any client:
+
+```bash
+curl -i https://manage.mujosaigon.com/health
+# expect: HTTP/2 200 + body {"status":"ok","track":"B"}
+
+curl -i https://manage.mujosaigon.com/api/dashboard/summary
+# expect: HTTP/2 200 + JSON body ~46 KB starting with {"properties":[...
+
+curl -fsS https://manage.mujosaigon.com/ | head -c 400
+# expect: <!doctype html> with Vite-built <script type="module" src="/assets/...">
+
+curl -i https://manage.mujosaigon.com/some-spa-route
+# expect: HTTP/2 200 (SPA fallback serves index.html)
+```
+
+Or via Hostinger MCP:
+
+```
+hostinger-api_hosting_listJsDeployments(domain="manage.mujosaigon.com")
+# expect: latest deployment state="completed" with new app_type
+
+hostinger-api_hosting_getNodeJSBuildLogsV1(uuid="<latest>")
+# expect: "Server listening on 3001" or equivalent in tail
+```
+
+### Rollback
+
+If the Node.js app fails to start:
+
+1. hPanel → Stop App.
+2. Revert app_type to `vite` (frontend-only static serving will resume
+   in the broken state, but at least the deploy pipeline runs).
+3. Pull build logs via `getNodeJSBuildLogsV1` to diagnose.
+4. Common failure modes to check first:
+   - `DATABASE_URL` missing or wrong → startup logs show
+     `❌ FATAL CONFIGURATION ERROR: DATABASE_URL`
+   - `ALLOWED_ORIGINS` mismatched with public domain → CORS errors in
+     browser console only (server still runs)
+   - Port collision → Hostinger reverse-proxy expects PORT env to match
+     what the app actually listens on
 
 ## Environment Notes
 
@@ -160,3 +321,12 @@ single consolidated `dist/` at repo root that Hostinger can find.
   prior `node` process is holding the engine DLL. This is a Windows file-
   lock issue, not a deploy issue. Stop dev processes and retry, or build
   in a clean shell. Linux/Hostinger build agents do not have this problem.
+  Verified: latest Hostinger build `019ec59b...` cleanly emitted Prisma
+  Client v6.19.3 in 193ms.
+
+- Both `.env.production` (root) and `backend/.env.production` are local-only
+  files. They are gitignored (`.gitignore:33` `.env.*`) and never reach
+  Hostinger via the git pipeline. Their values must be configured in the
+  Hostinger panel Environment Variables UI per the steps above. The local
+  files exist as the source-of-truth template (and as the contract enforced
+  by `scripts/verify-prod-env.mjs`).

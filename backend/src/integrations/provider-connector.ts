@@ -249,9 +249,25 @@ registerOtaParser(genericParser);
 export class WithOneProviderConnector implements ProviderConnector {
   constructor(private readonly connectionKey: string) {}
 
+  private resolveKey(type: "gmail" | "sheets"): string {
+    const keys = this.connectionKey.split(",").map((k) => k.trim());
+    if (type === "gmail") {
+      const gmailKey = keys.find((k) => k.includes("::gmail::"));
+      return gmailKey || keys[0];
+    } else {
+      const sheetsKey = keys.find(
+        (k) =>
+          k.includes("::google-drive::") ||
+          k.includes("::google-sheets::") ||
+          k.includes("::sheets::")
+      );
+      return sheetsKey || keys[0];
+    }
+  }
+
   async getConnectionStatus(): Promise<ConnectionStatus> {
     try {
-      await listGmailMessages(this.connectionKey, "", { maxResults: 1 });
+      await listGmailMessages(this.resolveKey("gmail"), "", { maxResults: 1 });
       return { connected: true, provider: "withone" };
     } catch (error) {
       if (error instanceof OneApiError || error instanceof OneConfigError) {
@@ -266,12 +282,13 @@ export class WithOneProviderConnector implements ProviderConnector {
   }
 
   async listEmails(query: EmailQuery): Promise<EmailMessage[]> {
-    const data = await listGmailMessages(this.connectionKey, toGmailQuery(query), { maxResults: query.maxResults ?? 50 });
+    const gmailKey = this.resolveKey("gmail");
+    const data = await listGmailMessages(gmailKey, toGmailQuery(query), { maxResults: query.maxResults ?? 50 });
     const messages: EmailMessage[] = [];
 
     for (const item of data.messages) {
       try {
-        const message = await getMessage(this.connectionKey, item.id);
+        const message = await getMessage(gmailKey, item.id);
         const subject = getHeader(message.payload, "subject") ?? "";
         const from = getHeader(message.payload, "from") ?? "";
         const date = getHeader(message.payload, "date") ?? message.internalDate ?? "";
@@ -293,7 +310,7 @@ export class WithOneProviderConnector implements ProviderConnector {
   }
 
   async getEmailBody(messageId: string): Promise<string> {
-    const message = await getMessage(this.connectionKey, messageId);
+    const message = await getMessage(this.resolveKey("gmail"), messageId);
     if (!message.payload) return "";
 
     const extractBody = (part: any): string => {
@@ -320,6 +337,7 @@ export class WithOneProviderConnector implements ProviderConnector {
       return result;
     }
 
+    const sheetsKey = this.resolveKey("sheets");
     const sheetName = options?.sheetName ?? "Sheet1";
     const idempotencyKey = options?.idempotencyKeyColumn;
 
@@ -328,7 +346,7 @@ export class WithOneProviderConnector implements ProviderConnector {
     if (idempotencyKey) {
       try {
         const existingData = await passthrough<{ values?: unknown[][] }>({
-          connectionKey: this.connectionKey,
+          connectionKey: sheetsKey,
           actionId: SHEETS_GET_ACTION_ID,
           method: "GET",
           path: `/v4/spreadsheets/${encodeURIComponent(sheetId)}/values/${encodeURIComponent(sheetName)}`,
@@ -375,7 +393,7 @@ export class WithOneProviderConnector implements ProviderConnector {
     if (rowsToAppend.length > 0) {
       const values = rowsToAppend.map(row => Object.values(row));
       await passthrough({
-        connectionKey: this.connectionKey,
+        connectionKey: sheetsKey,
         actionId: SHEETS_APPEND_ACTION_ID,
         method: "POST",
         path: `/v4/spreadsheets/${encodeURIComponent(sheetId)}/values/${encodeURIComponent(sheetName)}:append`,
@@ -392,7 +410,7 @@ export class WithOneProviderConnector implements ProviderConnector {
     for (const { rowIndex, row } of rowsToUpdate) {
       const values = Object.values(row);
       await passthrough({
-        connectionKey: this.connectionKey,
+        connectionKey: sheetsKey,
         actionId: SHEETS_APPEND_ACTION_ID,
         method: "PUT",
         path: `/v4/spreadsheets/${encodeURIComponent(sheetId)}/values/${encodeURIComponent(sheetName)}!A${rowIndex}`,
