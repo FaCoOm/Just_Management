@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRoomsPageData } from "@/hooks/use-page-data";
+import { useVietnamClock } from "@/hooks/use-vietnam-clock";
+import { deriveRoomDisplayStatus } from "@/lib/room-status";
 import { BedDouble, Layers } from "lucide-react";
 import type { Property } from "@/types/database";
 
@@ -37,13 +39,22 @@ function RoomTypesSkeleton() {
 }
 
 export function RoomTypesPage() {
-  const { rooms, properties, loading } = useRoomsPageData();
+  const { rooms, properties, reservations, loading } = useRoomsPageData();
+  const { today } = useVietnamClock();
   const [propertyFilter, setPropertyFilter] = useState<string>("all");
 
+  const roomsWithStatus = useMemo(
+    () => rooms.map((room) => ({
+      ...room,
+      status: deriveRoomDisplayStatus(room, reservations, today),
+    })),
+    [rooms, reservations, today]
+  );
+
   const filteredRooms = useMemo(() => {
-    if (propertyFilter === "all") return rooms;
-    return rooms.filter((r) => r.property_id === propertyFilter);
-  }, [rooms, propertyFilter]);
+    if (propertyFilter === "all") return roomsWithStatus;
+    return roomsWithStatus.filter((r) => r.property_id === propertyFilter);
+  }, [roomsWithStatus, propertyFilter]);
 
   const typeGroups = useMemo<RoomTypeGroup[]>(() => {
     const map = new Map<string, RoomTypeGroup>();

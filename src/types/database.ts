@@ -55,6 +55,7 @@ export interface Reservation {
   guest_notes: string;
   created_at: string;
   updated_at: string;
+  reservation_room_allocations?: ReservationRoomAllocation[];
 }
 
 export interface ReservationCreateInput {

@@ -15,6 +15,8 @@ import { useReservationsPageData } from "@/hooks/use-page-data";
 import { ChevronLeft, ChevronRight, CalendarDays, BedDouble, Layers } from "lucide-react";
 import type { Property } from "@/types/database";
 
+const NON_OCCUPYING_RESERVATION_STATUSES = new Set(["cancelled", "no_show"]);
+
 function AvailabilitySkeleton() {
   return (
     <div className="space-y-4 p-4">
@@ -45,6 +47,14 @@ function getToday() {
   return new Date().toISOString().slice(0, 10);
 }
 
+function reservationRoomIds(reservation: { primary_room_id: string | null; reservation_room_allocations?: Array<{ room_id: string }> }) {
+  if (reservation.reservation_room_allocations && reservation.reservation_room_allocations.length > 0) {
+    return reservation.reservation_room_allocations.map((allocation) => allocation.room_id);
+  }
+
+  return reservation.primary_room_id ? [reservation.primary_room_id] : [];
+}
+
 export function AvailabilityPage() {
   const { rooms, properties, reservations, loading } = useReservationsPageData();
   const [propertyFilter, setPropertyFilter] = useState<string>("all");
@@ -63,7 +73,9 @@ export function AvailabilityPage() {
   const roomAvailability = useMemo(() => {
     return filteredRooms.map((room) => {
       const roomReservations = reservations.filter(
-        (res) => res.primary_room_id === room.id
+        (res) =>
+          reservationRoomIds(res).includes(room.id) &&
+          !NON_OCCUPYING_RESERVATION_STATUSES.has(res.status)
       );
       const dateMap = new Map<string, { status: "occupied" | "arriving" | "departing" | "vacant"; guestName?: string }>();
       for (const date of dates) {

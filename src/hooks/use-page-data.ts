@@ -19,6 +19,7 @@ interface ReservationPageData {
 interface RoomsPageData {
   properties: Property[];
   rooms: Room[];
+  reservations: Reservation[];
   guests: Guest[];
   loading: boolean;
 }
@@ -47,7 +48,7 @@ interface SecurityAuditPageData {
   loading: boolean;
 }
 
-interface RatesPageData extends RoomsPageData {
+interface RatesPageData extends Omit<RoomsPageData, "reservations"> {
   rates: RoomRate[];
 }
 
@@ -91,8 +92,8 @@ export function useGuestsPageData(): ReservationPageData {
 }
 
 export function useRoomsPageData(): RoomsPageData {
-  const { properties, rooms, guests, loading } = useReservationsPageData();
-  return { properties, rooms, guests, loading };
+  const { properties, rooms, reservations, guests, loading } = useReservationsPageData();
+  return { properties, rooms, reservations, guests, loading };
 }
 
 export function useMaintenancePageData(): MaintenancePageData {

@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRoomsPageData } from "@/hooks/use-page-data";
+import { useVietnamClock } from "@/hooks/use-vietnam-clock";
+import { deriveRoomDisplayStatus } from "@/lib/room-status";
 import { Sparkles, CheckCircle2, Clock, AlertTriangle } from "lucide-react";
 import type { Property, Room } from "@/types/database";
 
@@ -52,12 +54,21 @@ function deriveCleanState(room: Room): CleanlinessState {
 }
 
 export function HousekeepingPage() {
-  const { rooms, properties, guests, loading } = useRoomsPageData();
+  const { rooms, properties, reservations, guests, loading } = useRoomsPageData();
+  const { today } = useVietnamClock();
   const [propertyFilter, setPropertyFilter] = useState<string>("all");
   const [stateFilter, setStateFilter] = useState<string>("all");
 
+  const roomsWithStatus = useMemo(
+    () => rooms.map((room) => ({
+      ...room,
+      status: deriveRoomDisplayStatus(room, reservations, today),
+    })),
+    [rooms, reservations, today]
+  );
+
   const housekeepingRooms = useMemo<HousekeepingRoom[]>(() => {
-    return rooms
+    return roomsWithStatus
       .filter((r) => propertyFilter === "all" || r.property_id === propertyFilter)
       .map((room) => {
         const cleanState = deriveCleanState(room);
@@ -71,7 +82,7 @@ export function HousekeepingPage() {
         const priorityOrder = { high: 0, normal: 1, low: 2 };
         return priorityOrder[a.priority] - priorityOrder[b.priority];
       });
-  }, [rooms, properties, propertyFilter, stateFilter]);
+  }, [roomsWithStatus, properties, propertyFilter, stateFilter]);
 
   const dirtyCount = housekeepingRooms.filter((hr) => hr.cleanState === "dirty").length;
   const cleaningCount = housekeepingRooms.filter((hr) => hr.cleanState === "cleaning").length;

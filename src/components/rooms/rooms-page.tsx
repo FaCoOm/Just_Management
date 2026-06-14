@@ -12,6 +12,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useRoomsPageData } from "@/hooks/use-page-data";
+import { useVietnamClock } from "@/hooks/use-vietnam-clock";
+import { deriveRoomDisplayStatus } from "@/lib/room-status";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BedDouble, Layers, Settings2 } from "lucide-react";
 import type { RoomStatus } from "@/types/database";
@@ -71,7 +73,8 @@ function RoomsSkeleton() {
 }
 
 export function RoomsPage() {
-  const { rooms, properties, guests, loading } = useRoomsPageData();
+  const { rooms, properties, reservations, guests, loading } = useRoomsPageData();
+  const { today } = useVietnamClock();
   const [propertyFilter, setPropertyFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
@@ -85,9 +88,14 @@ export function RoomsPage() {
     );
   }
 
-  const roomTypes = Array.from(new Set(rooms.map((r) => r.room_type))).sort();
+  const roomsWithStatus = rooms.map((room) => ({
+    ...room,
+    status: deriveRoomDisplayStatus(room, reservations, today),
+  }));
 
-  const filtered = rooms.filter((r) => {
+  const roomTypes = Array.from(new Set(roomsWithStatus.map((r) => r.room_type))).sort();
+
+  const filtered = roomsWithStatus.filter((r) => {
     const matchProperty =
       propertyFilter === "all" || r.property_id === propertyFilter;
     const matchStatus = statusFilter === "all" || r.status === statusFilter;
@@ -95,15 +103,15 @@ export function RoomsPage() {
     return matchProperty && matchStatus && matchType;
   });
 
-  const vacantCount = rooms.filter((r) => r.status === "Vacant").length;
-  const occupiedCount = rooms.filter((r) =>
+  const vacantCount = roomsWithStatus.filter((r) => r.status === "Vacant").length;
+  const occupiedCount = roomsWithStatus.filter((r) =>
     ["Occupied", "Checked In"].includes(r.status)
   ).length;
-  const attentionCount = rooms.filter(
+  const attentionCount = roomsWithStatus.filter(
     (r) => r.status === "Needs Attention"
   ).length;
   const occupancyRate =
-    rooms.length > 0 ? Math.round((occupiedCount / rooms.length) * 100) : 0;
+    roomsWithStatus.length > 0 ? Math.round((occupiedCount / roomsWithStatus.length) * 100) : 0;
 
   // Group by floor for the selected property (or all)
   const grouped = properties
@@ -135,7 +143,7 @@ export function RoomsPage() {
               </CardHeader>
               <CardContent>
                 <span className="text-2xl font-bold tracking-tight">
-                  {rooms.length}
+                  {roomsWithStatus.length}
                 </span>
               </CardContent>
             </Card>
