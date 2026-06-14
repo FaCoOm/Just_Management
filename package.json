@@ -7,9 +7,11 @@
     "backend"
   ],
   "scripts": {
+    "preinstall": "node scripts/clean-stale-esbuild.mjs",
     "dev": "concurrently \"npm run dev -w frontend\" \"npm run dev -w backend\"",
     "dev:all": "npm run dev",
-    "build": "npm run build -w frontend && npm run build -w backend && npm run sync:dist",
+    "build": "node scripts/ensure-build-deps.mjs && npm run build:app",
+    "build:app": "npm run build -w frontend && npm run build -w backend && npm run sync:dist",
     "sync:dist": "node scripts/sync-dist.mjs",
     "build:all": "npm run build",
     "install:all": "npm install",
