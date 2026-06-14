@@ -10,6 +10,7 @@
     "preinstall": "node scripts/clean-stale-esbuild.mjs",
     "dev": "concurrently \"npm run dev -w frontend\" \"npm run dev -w backend\"",
     "dev:all": "npm run dev",
+    "prebuild": "npm install --include=dev --legacy-peer-deps",
     "build": "node scripts/ensure-build-deps.mjs && npm run build:app",
     "build:app": "npm run build -w frontend && npm run build -w backend && npm run sync:dist",
     "sync:dist": "node scripts/sync-dist.mjs",
