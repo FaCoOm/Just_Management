@@ -13,6 +13,7 @@ import { WithOneProviderConnector } from "./integrations/provider-connector";
 import { prisma } from "./lib/prisma";
 import { registerOneRoutes } from "./routes/one";
 import { registerTaxExportRoutes } from "./tax-export/routes";
+import { deriveOccupancyMetrics } from "./dashboard/occupancy";
 
 const app = express();
 const SLOW_REQUEST_THRESHOLD_MS = Number.parseInt(
@@ -539,14 +540,19 @@ app.get("/api/dashboard/summary", asyncHandler(async (req, res) => {
   const todayDepartures = departureReservations.map(toDashboardGuest);
   const todayCheckouts = checkoutReservations.map(toDashboardGuest);
 
+  const occupancyMetrics = deriveOccupancyMetrics({
+    date,
+    properties,
+    rooms,
+    reservations: occupancyReservations,
+  });
+
   const metrics = properties.map((property) => {
     const propertyRooms = rooms.filter((room) => room.property_id === property.id);
     const propertyMaintenance = maintenance.filter(
       (issue) => issue.property_id === property.id
     );
-    const occupiedRooms = propertyRooms.filter((room) =>
-      ["Occupied", "Checked In", "Check-Out Pending"].includes(room.status)
-    ).length;
+    const occupiedRooms = occupancyMetrics.perProperty.get(property.id)?.occupiedRooms ?? 0;
     const totalRooms = propertyRooms.length || property.total_rooms || 1;
 
     return {
@@ -565,12 +571,6 @@ app.get("/api/dashboard/summary", asyncHandler(async (req, res) => {
     };
   });
 
-  const occupiedRooms = metrics.reduce((sum, metric) => sum + metric.occupiedRooms, 0);
-  const totalRooms = properties.reduce((sum, property) => {
-    const propertyRooms = rooms.filter((room) => room.property_id === property.id);
-    return sum + (propertyRooms.length || property.total_rooms || 0);
-  }, 0);
-
   res.json({
     properties,
     rooms,
@@ -585,7 +585,7 @@ app.get("/api/dashboard/summary", asyncHandler(async (req, res) => {
     totals: {
       arrivals: todayArrivals.length,
       departures: todayDepartures.length,
-      occupancyRate: totalRooms > 0 ? Math.round((occupiedRooms / totalRooms) * 100) : 0,
+      occupancyRate: occupancyMetrics.occupancyRate,
       maintenanceOpen: metrics.reduce((sum, metric) => sum + metric.maintenanceOpen, 0),
     },
     occupancySeries: buildOccupancySeries({
@@ -749,6 +749,19 @@ app.get("/api/reservations", asyncHandler(async (req, res) => {
         guest_notes: true,
         created_at: true,
         updated_at: true,
+        reservation_room_allocations: {
+          select: {
+            id: true,
+            reservation_id: true,
+            room_id: true,
+            allocation_role: true,
+            sort_order: true,
+            notes: true,
+            created_at: true,
+            updated_at: true,
+          },
+          orderBy: { sort_order: "asc" },
+        },
       },
     }),
     includeCount ? prisma.reservations.count({ where }) : undefined
