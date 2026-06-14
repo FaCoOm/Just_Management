@@ -34,6 +34,7 @@ credentials.json
 *.env
 *.pem
 *.key
+.omo
 .credentials
 
 # Scratch directories
@@ -42,6 +43,8 @@ credentials.json
 # Agent & Tooling Caches
 .playwright-mcp/
 .omo/run-continuation/
+.codegraph/
+backend/imports/
 
 
 # Local-only agent scratch / research caches (do not read or commit)

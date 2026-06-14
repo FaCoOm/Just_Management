@@ -1,6 +1,0 @@
-{
-  "last_turn_at": "2026-04-28T11:55:40.028Z",
-  "turn_count": 5,
-  "last_progress_at": "2026-04-28T11:55:40.028Z",
-  "last_agent_output": "I checked your Azure PostgreSQL server `webdbmujo` in resource group `webdev`.\n\nWhat I found:\n- Serv"
-}
