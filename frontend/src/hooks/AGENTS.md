@@ -1,7 +1,7 @@
 # Hooks Data Contract Guide
 
 ## Scope
-- `src/hooks/` owns frontend data hooks, Vietnam clock state, and dashboard/page derivations.
+- `frontend/src/hooks/` owns frontend data hooks, Vietnam clock state, and dashboard/page derivations.
 - Components consume hook results; they must not build repository clients or fetch data directly.
 
 ## Files
@@ -13,7 +13,7 @@
 ## Rules
 - Keep `useDashboardData(today)` as the single dashboard data source for dashboard panels.
 - Keep reservation-to-legacy-guest compatibility in `toDashboardGuest`, not panels or repositories.
-- Use `dashboardKeys.*` from `src/lib/query-keys.ts` for TanStack Query keys.
+- Use `dashboardKeys.*` from `frontend/src/lib/query-keys.ts` for TanStack Query keys.
 - Use `REFERENCE_STALE_TIME` style only for stable reference data such as properties and rooms.
 - Instantiate repositories inside hooks with `useMemo(() => createRestRepositories(), [])` when needed.
 - Preserve Vietnam date semantics by using `useVietnamClock` or backend-provided date keys.
@@ -31,4 +31,4 @@ npm run typecheck
 npm run build
 ```
 
-For data-shape changes, run affected page against backend and confirm query output matches `src/lib/repositories/types.ts`.
+For data-shape changes, run affected page against backend and confirm query output matches `frontend/src/lib/repositories/types.ts`.

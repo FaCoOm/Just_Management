@@ -21,7 +21,7 @@
 
 ## Editing Rules
 - Preserve the public API shape unless the task explicitly requires a breaking change.
-- Keep styling token-driven through `src/index.css` values and Tailwind utilities.
+- Keep styling token-driven through `frontend/src/index.css` values and Tailwind utilities.
 - Do not hardcode one-off dashboard colors when Harbor/Brass tokens already exist.
 - Assume a change here can affect dozens of call sites.
 

@@ -1,7 +1,7 @@
 # Frontend Repository Contract Guide
 
 ## Scope
-- `src/lib/repositories/` is frontend data-access seam for Track B REST backend.
+- `frontend/src/lib/repositories/` is frontend data-access seam for Track B REST backend.
 - Hooks and pages consume repository interfaces; only this folder constructs API requests.
 
 ## Files
@@ -13,7 +13,7 @@
 1. Change `types.ts` first when adding repository methods or returned fields.
 2. Update `rest-repositories.ts` to satisfy the contract.
 3. Update backend route response in `backend/src/index.ts` if contract needs new data.
-4. Update consumers such as `src/hooks/use-dashboard-data.ts` after contract and implementation agree.
+4. Update consumers such as `frontend/src/hooks/use-dashboard-data.ts` after contract and implementation agree.
 
 ## Rules
 - Keep `fetch`, API URL construction, and query-string building in `rest-repositories.ts`.

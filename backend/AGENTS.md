@@ -13,7 +13,7 @@
 ## Where To Edit
 | Change | Location | Notes |
 |---|---|---|
-| API response shape | `src/index.ts` | Keep compatible with `src/lib/repositories/types.ts`. |
+| API response shape | `src/index.ts` | Keep compatible with `frontend/src/lib/repositories/types.ts`. |
 | Ingestion contract | `src/ingest/contracts.ts` | Validate before service writes. |
 | Spreadsheet parsing | `src/ingest/parser.ts`, `src/ingest/normalizer.ts` | Keep raw parsing separate from canonical normalization. |
 | Provider sync behavior | `src/ingest/services/` | Keep provider-specific logic at edge. |

@@ -12,8 +12,8 @@
 - Put shared dashboard calculations in the hook, not in multiple panel files.
 
 ## Data Contract
-- Source of truth: `src/hooks/use-dashboard-data.ts`.
-- Shared types: `src/types/database.ts`.
+- Source of truth: `frontend/src/hooks/use-dashboard-data.ts`.
+- Shared types: `frontend/src/types/database.ts`.
 - If a panel needs a new derived value, add it to the hook or the shared types first.
 - If a change affects many panels, update the hook contract before touching presentation.
 
@@ -21,8 +21,8 @@
 - New panel: add a file here and register it in `dashboard-page.tsx`.
 - Layout change: edit `dashboard-page.tsx` first.
 - Metric change: edit `use-dashboard-data.ts`.
-- Schema field change: update `src/types/database.ts` and then repair consumers.
-- Primitive styling issue: prefer wrapper classes or feature-level composition before editing `src/components/ui`.
+- Schema field change: update `frontend/src/types/database.ts` and then repair consumers.
+- Primitive styling issue: prefer wrapper classes or feature-level composition before editing `frontend/src/components/ui`.
 
 ## Responsive Expectations
 - The main content and `BookingsPanel` split is intentional.
