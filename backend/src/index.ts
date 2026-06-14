@@ -1,4 +1,5 @@
-import "dotenv/config";
+
+import "dotenv/config";
 import { validateEnv } from "./config/env-validator";
 
 validateEnv();
@@ -14,8 +15,13 @@ import { prisma } from "./lib/prisma";
 import { registerOneRoutes } from "./routes/one";
 import { registerTaxExportRoutes } from "./tax-export/routes";
 import { deriveOccupancyMetrics } from "./dashboard/occupancy";
+import path from "node:path";
 
 const app = express();
+
+// Hostinger / managed Node.js hosting terminates TLS and forwards over HTTP.
+// Trust the first proxy hop so req.protocol / req.ip reflect the real client.
+app.set("trust proxy", 1);
 const SLOW_REQUEST_THRESHOLD_MS = Number.parseInt(
   process.env.SLOW_REQUEST_THRESHOLD_MS ?? "500",
   10
@@ -1305,6 +1311,24 @@ app.get("/api/rates", asyncHandler(async (req, res) => {
   })));
 }));
 
+// =============================================================================
+// Static SPA serving (Option A: single-origin deployment)
+// dist/ is produced by `vite build` at the repo root. From backend/dist/index.js
+// (post-tsc), `../../dist` resolves to the repo-root frontend bundle.
+// =============================================================================
+
+const distPath = path.resolve(__dirname, "../../dist");
+app.use(express.static(distPath, { index: false, maxAge: "1h" }));
+app.get("*", (req, res, next) => {
+  if (req.path.startsWith("/api/") || req.path === "/health") {
+    next();
+    return;
+  }
+  res.sendFile(path.join(distPath, "index.html"), (err) => {
+    if (err) next(err);
+  });
+});
+
 app.use(
   (
     error: unknown,
@@ -1334,10 +1358,24 @@ async function startServer() {
     console.warn("Prisma warm-up failed; continuing startup", error);
   }
 
-  app.listen(PORT, () => {
+  const server = app.listen(PORT, () => {
     console.log(`Track B server running on port ${PORT}`);
     startFolderWatcher();
   });
+
+  const shutdown = (signal: string) => {
+    console.log(`${signal} received, shutting down gracefully`);
+    server.close(() => {
+      void prisma.$disconnect().finally(() => process.exit(0));
+    });
+    setTimeout(() => {
+      console.warn("Graceful shutdown timed out, forcing exit");
+      process.exit(1);
+    }, 10000).unref();
+  };
+
+  process.on("SIGTERM", () => shutdown("SIGTERM"));
+  process.on("SIGINT", () => shutdown("SIGINT"));
 }
 
 void startServer();

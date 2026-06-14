@@ -29,7 +29,7 @@ type FetchFn = typeof fetch;
 const apiFetch: FetchFn = (...args) => fetch(...args);
 
 function apiUrl(path: string): string {
-  const base = import.meta.env.VITE_TRACK_B_API_URL ?? "http://localhost:3001";
+  const base = import.meta.env.VITE_TRACK_B_API_URL ?? "";
   return `${base}${path}`;
 }
 

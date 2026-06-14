@@ -6,13 +6,14 @@
   "scripts": {
     "dev": "vite",
     "dev:all": "concurrently \"npm run dev\" \"cd backend && npm run dev\"",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && cd backend && npm run build",
     "build:all": "npm run build && cd backend && npm run build",
     "install:all": "npm install && cd backend && npm install",
     "typecheck": "tsc --noEmit",
     "test:frontend": "vitest run --passWithNoTests",
     "preview": "vite preview",
-    "start": "vite preview"
+    "start": "cd backend && node dist/index.js",
+    "postinstall": "cd backend && npm install"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
