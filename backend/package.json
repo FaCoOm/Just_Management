@@ -2,6 +2,10 @@
   "name": "m-management-track-b",
   "version": "1.0.0",
   "description": "Track B: Azure/Node/Prisma backend for M_Management",
+  "engines": {
+    "node": "22.x",
+    "npm": ">=10"
+  },
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
