@@ -3,7 +3,7 @@ import { describe, it } from "node:test";
 import { sanitizeDatabaseUrl } from "../src/lib/prisma.js";
 
 describe("sanitizeDatabaseUrl", () => {
-  it("removes missing TLS certificate file parameters while preserving sslmode", () => {
+  it("removes TLS certificate file parameters while preserving sslmode", () => {
     const input = "postgresql://user:pass@example.postgres.database.azure.com:5432/db?sslmode=require&sslcert=missing.crt&sslrootcert=also-missing.crt&sslkey=missing.key";
 
     const sanitized = new URL(sanitizeDatabaseUrl(input));
