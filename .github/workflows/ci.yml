@@ -1,0 +1,129 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+env:
+  NODE_VERSION: 22.x
+  VITE_TRACK: B
+  VITE_TRACK_B_API_URL: ""
+  VITE_ONE_AUTH_TOKEN_URL: /api/one/auth-token
+
+jobs:
+  frontend:
+    name: Frontend typecheck and tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck frontend
+        run: npm run typecheck
+
+      - name: Test frontend
+        run: npm run test:frontend
+
+  backend:
+    name: Backend typecheck, tests, and Prisma gates
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: just_management
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d just_management"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/just_management
+      ALLOWED_ORIGINS: http://localhost:5173
+      ONE_CONNECTION_KEY: conn_test_mock_connection_key
+      ONE_SECRET_KEY: sk_test_mock_secret_key
+      ONE_WEBHOOK_SECRET: whsec_test_mock_webhook_secret
+      ONE_DEV_TOKEN: ci-dev-token
+      INGEST_PIPELINE_ENABLED: "false"
+      INGEST_SHEETS_PROVIDER: withone
+      M_MANAGEMENT_LISTINGS_CREATE_INVENTORY: "false"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate Prisma schema
+        run: npm run db:validate -w backend
+
+      - name: Verify Azure-safe migrations
+        run: npm run db:verify:migration -w backend
+
+      - name: Typecheck backend
+        run: npx tsc --noEmit -p backend/tsconfig.json
+
+      - name: Test backend
+        run: npm run test -w backend
+
+  build:
+    name: Build deploy artifacts
+    runs-on: ubuntu-latest
+    needs:
+      - frontend
+      - backend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build frontend, backend, and root dist
+        run: npm run build
+
+      - name: Upload Hostinger static artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hostinger-root-dist
+          path: dist/
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload backend artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-dist
+          path: backend/dist/
+          if-no-files-found: error
+          retention-days: 7

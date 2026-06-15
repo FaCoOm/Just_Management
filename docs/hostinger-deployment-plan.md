@@ -10,7 +10,7 @@ Deploy as a single-VPS, single-origin Node.js webapp on Hostinger VPS KVM2 (Ubun
 - Reverse proxy: nginx
 - Frontend serving: nginx serves `dist/`, `/api/*` proxied to Node
 - Database: self-hosted PostgreSQL 16 on same VPS
-- Node runtime: Node 20 LTS via nvm
+- Node runtime: Node 22 LTS via Hostinger Node.js app settings or nvm
 - Secrets storage: Hostinger panel env vars + `.env` on disk read by dotenv/config
 - TLS: Let's Encrypt via certbot
 - Domain: A record to VPS IPv4
@@ -28,7 +28,7 @@ Deploy as a single-VPS, single-origin Node.js webapp on Hostinger VPS KVM2 (Ubun
 ### Frontend
 - Set `VITE_TRACK_B_API_URL` for production build.
 - Set `VITE_ONE_AUTH_TOKEN_URL=/api/one/auth-token`.
-- Add `engines.node` to root `package.json`.
+- Keep `engines.node` pinned to `22.x` in root and backend `package.json`.
 - Generate and commit root `package-lock.json`.
 - Optional: remove unused `VITE_TRACK` from `.env.example`.
 
@@ -50,7 +50,7 @@ Deploy as a single-VPS, single-origin Node.js webapp on Hostinger VPS KVM2 (Ubun
 - Lock down SSH.
 - Configure UFW.
 - Install git, build tools, nginx, certbot, and Docker.
-- Install Node 20 via nvm.
+- Install Node 22 via nvm when using VPS mode.
 - Install PM2.
 
 ## Phase 2 — Database
@@ -103,7 +103,7 @@ Deploy as a single-VPS, single-origin Node.js webapp on Hostinger VPS KVM2 (Ubun
 ## What this plan does not do
 - Authentication is out of scope.
 - Auto-scaling is out of scope.
-- CI/CD is manual for the first cut.
+- CI is automated through GitHub Actions; deployment remains Hostinger git-based/manual until protected deployment secrets and approvals are configured.
 - Cloudflare is optional later.
 
 ## Needed to proceed
