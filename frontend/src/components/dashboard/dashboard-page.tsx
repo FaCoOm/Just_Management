@@ -7,7 +7,6 @@ import { BranchComparison } from "./branch-comparison";
 import { ArrivalsDetail } from "./arrivals-detail";
 import { DeparturesDetail } from "./departures-detail";
 import { CheckoutsToday } from "./checkouts-today";
-import { OccupancyDetail } from "./occupancy-detail";
 import { MaintenanceDetail } from "./maintenance-detail";
 import { BookingsPanel } from "./bookings-panel";
 import { useDashboardData } from "@/hooks/use-dashboard-data";
@@ -86,14 +85,12 @@ export function DashboardPage() {
                 rooms={rooms}
               />
             </div>
-
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-4">
               <DeparturesDetail
                 guests={todayDepartures}
                 properties={properties}
                 rooms={rooms}
               />
-              <OccupancyDetail metrics={metrics} />
             </div>
 
             <div className="grid gap-4">
