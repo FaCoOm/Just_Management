@@ -1,0 +1,16 @@
+{
+  "id": "T-17a00ee2-9310-4f37-a6e4-a851157ea5f8",
+  "subject": "Implement real data gaps",
+  "description": "Replace mock dining, staff, security and fake revenue derivations with backend-backed lean models/APIs.",
+  "status": "completed",
+  "activeForm": "Implemented real backend-backed data gaps",
+  "blocks": [],
+  "blockedBy": [
+    "T-c00850cd-ec77-4bc2-a781-5c6791fe3d2f"
+  ],
+  "metadata": {
+    "priority": "P2",
+    "source": "audit+dashboard-plan"
+  },
+  "threadID": "ses_1582e8bfcffecCvoc7UHNIwCpB"
+}

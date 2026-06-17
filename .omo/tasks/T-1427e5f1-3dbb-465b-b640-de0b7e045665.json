@@ -1,0 +1,15 @@
+{
+  "id": "T-1427e5f1-3dbb-465b-b640-de0b7e045665",
+  "subject": "Repair Hostinger backend runtime",
+  "description": "Diagnose manage.mujosaigon.com deployment mismatch, deploy corrected Node/Express runtime if confirmed, verify API/UI health.",
+  "status": "in_progress",
+  "activeForm": "Repairing Hostinger backend runtime",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "domain": "manage.mujosaigon.com",
+    "phase": "runtime-evidence"
+  },
+  "repoURL": "",
+  "threadID": "ses_13af17750ffeLYoq3s72OdbWWa"
+}

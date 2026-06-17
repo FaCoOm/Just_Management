@@ -1,0 +1,9 @@
+{
+  "id": "T-c88e0c1b-bfd2-4fa0-8e97-72b5fabdad2f",
+  "subject": "T7: Re-insert 59 channel_listings + mappings in transaction",
+  "description": "For each of 59 merged CSV rows: create channel_listings with owner+source_metadata+all canonical fields. Then create listing_room_mappings for each resolved room (composite-split aware, sort_order 1,2).",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1582e8bfcffecCvoc7UHNIwCpB"
+}

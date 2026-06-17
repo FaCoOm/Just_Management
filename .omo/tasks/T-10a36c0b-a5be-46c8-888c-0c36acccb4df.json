@@ -1,0 +1,13 @@
+{
+  "id": "T-10a36c0b-a5be-46c8-888c-0c36acccb4df",
+  "subject": "Implement repo migration",
+  "description": "Move raw ingest pipeline fetch calls into repository seam while preserving hook API.",
+  "status": "completed",
+  "activeForm": "implemented repository migration",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "scope": "ingest pipeline hooks and repository seam"
+  },
+  "threadID": "ses_157aa4b3dffeqNv3Dq6UeQN8em"
+}

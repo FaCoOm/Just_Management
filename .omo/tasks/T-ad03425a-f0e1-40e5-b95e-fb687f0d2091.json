@@ -1,0 +1,9 @@
+{
+  "id": "T-ad03425a-f0e1-40e5-b95e-fb687f0d2091",
+  "subject": "T10: Dry-run --check against Azure",
+  "description": "Run npm run seed:listings-sot (check mode) against Azure. Capture output. Verify: 59 INSERTs planned, N orphan DELETEs, N reservation-ref clears. Report to user for review before apply.",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1582e8bfcffecCvoc7UHNIwCpB"
+}

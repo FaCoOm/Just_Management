@@ -1,0 +1,13 @@
+{
+  "id": "T-c738fd82-6991-4c34-af7c-a93fa6253f48",
+  "subject": "Verify TypeScript health",
+  "description": "Run LSP diagnostics and npm typecheck after migration.",
+  "status": "completed",
+  "activeForm": "typecheck passed",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "scope": "changed TS files"
+  },
+  "threadID": "ses_157aa4b3dffeqNv3Dq6UeQN8em"
+}

@@ -1,0 +1,10 @@
+{
+  "id": "T-3d1ee02b-4c90-4c41-ad3d-cd5efd3425fd",
+  "subject": "Decide listing_room_mappings uniqueness ADR",
+  "description": "Read schema/additive migration rules/current insertion path, run read-only duplicate query, write docs/adr/2026-06-13-listing-room-mappings-uniqueness.md with YES/NO decision and T8 status.",
+  "status": "completed",
+  "activeForm": "Writing uniqueness ADR",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1406155e8ffeBiwQ9SkYEtX7wk"
+}

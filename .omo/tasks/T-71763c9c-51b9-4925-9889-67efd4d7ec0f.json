@@ -1,0 +1,14 @@
+{
+  "id": "T-71763c9c-51b9-4925-9889-67efd4d7ec0f",
+  "subject": "Add frontend repository-backed page tests",
+  "description": "Add narrow Vitest coverage for repository-backed page data and ingest endpoint wiring under src/test only, then run frontend test/typecheck verification.",
+  "status": "completed",
+  "activeForm": "adding targeted frontend tests",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "area": "frontend tests",
+    "scope": "src/test only"
+  },
+  "threadID": "ses_157a58e7bffeTJvjkhJIwp4z08"
+}

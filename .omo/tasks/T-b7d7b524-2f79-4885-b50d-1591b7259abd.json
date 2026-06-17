@@ -1,0 +1,10 @@
+{
+  "id": "T-b7d7b524-2f79-4885-b50d-1591b7259abd",
+  "subject": "Run final scope audit",
+  "description": "Verify guardrails: Track B only, no frontend Gmail/Sheets calls, no passcode exposure, no scope creep.",
+  "status": "completed",
+  "activeForm": "Auditing scope fidelity",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1582e8bfcffecCvoc7UHNIwCpB"
+}

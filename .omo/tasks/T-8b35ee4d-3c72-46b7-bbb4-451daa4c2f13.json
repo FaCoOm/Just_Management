@@ -1,0 +1,10 @@
+{
+  "id": "T-8b35ee4d-3c72-46b7-bbb4-451daa4c2f13",
+  "subject": "T3 RED test: listings-sot module",
+  "description": "Wave 1. backend/test/listings-sot.test.ts new file with all 8 drift rules + classify + cross-building. RED expected.",
+  "status": "completed",
+  "activeForm": "Writing failing tests for listings SoT module",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1582e8bfcffecCvoc7UHNIwCpB"
+}

@@ -1,0 +1,10 @@
+{
+  "id": "T-73ac5a92-a867-48a0-85d1-161e883aacf3",
+  "subject": "Verify schema status refs",
+  "description": "Prisma status fields, triggers/middleware absence, room status writers.",
+  "status": "pending",
+  "activeForm": "Verifying schema status refs",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_13f31946affekau0jk5g0BJ595"
+}

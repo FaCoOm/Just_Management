@@ -1,0 +1,10 @@
+{
+  "id": "T-823037cd-e43f-4667-8b21-1eafd58e370e",
+  "subject": "Verify backend reservation refs",
+  "description": "backend POST /api/reservations + ingest refs; confirm no rooms.status writes.",
+  "status": "pending",
+  "activeForm": "Verifying backend reservation refs",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_13f31946affekau0jk5g0BJ595"
+}

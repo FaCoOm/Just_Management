@@ -1,0 +1,9 @@
+{
+  "id": "T-fe66b393-0045-4ffb-a99c-16e59efca752",
+  "subject": "T6: Wipe phase inside prisma transaction",
+  "description": "Inside prisma.$transaction: (1) updateMany provider_reservation_import_rows.resolved_channel_listing_id=null, (2) deleteMany reservation_external_refs, (3) deleteMany channel_listings (cascades aliases+mappings).",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1582e8bfcffecCvoc7UHNIwCpB"
+}

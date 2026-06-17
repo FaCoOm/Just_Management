@@ -1,0 +1,9 @@
+{
+  "id": "T-22188c78-9fdb-4083-8cb5-bd9a0d5efb1f",
+  "subject": "T9: Full test + build gate",
+  "description": "Run: cd backend && npm run build, npx tsx --test test/listings-sot.test.ts, npm run db:validate, npm run db:verify:migration. All must exit 0.",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1582e8bfcffecCvoc7UHNIwCpB"
+}

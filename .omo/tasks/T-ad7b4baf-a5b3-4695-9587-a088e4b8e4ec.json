@@ -1,0 +1,9 @@
+{
+  "id": "T-ad7b4baf-a5b3-4695-9587-a088e4b8e4ec",
+  "subject": "T8: Idempotency guard + Azure env gate",
+  "description": "Gate --apply on JM_LISTINGS_SOT_AZURE_OK=1 when Azure DB. After apply, run programmatic --check to assert 0 pending changes. Exit 1 if drift detected post-apply.",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1582e8bfcffecCvoc7UHNIwCpB"
+}

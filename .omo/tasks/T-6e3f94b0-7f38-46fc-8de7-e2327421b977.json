@@ -1,0 +1,10 @@
+{
+  "id": "T-6e3f94b0-7f38-46fc-8de7-e2327421b977",
+  "subject": "Verify dashboard occupancy refs",
+  "description": "Dashboard KPI, occupancySeries, /api/stats/occupancy, Availability page.",
+  "status": "pending",
+  "activeForm": "Verifying dashboard occupancy refs",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_13f31946affekau0jk5g0BJ595"
+}

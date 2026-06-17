@@ -1,0 +1,16 @@
+{
+  "id": "T-da7fa601-2e29-41a8-88b2-0eddeab9a243",
+  "subject": "Close pipeline repo seam",
+  "description": "Move ingest pipeline status/run calls from hooks into repository contract and REST implementation.",
+  "status": "completed",
+  "activeForm": "Moved pipeline hooks to repository seam",
+  "blocks": [],
+  "blockedBy": [
+    "T-17a00ee2-9310-4f37-a6e4-a851157ea5f8"
+  ],
+  "metadata": {
+    "priority": "P2-cleanup",
+    "source": "post-implementation grep"
+  },
+  "threadID": "ses_1582e8bfcffecCvoc7UHNIwCpB"
+}

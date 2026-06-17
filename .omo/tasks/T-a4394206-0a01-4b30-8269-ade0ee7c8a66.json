@@ -1,0 +1,9 @@
+{
+  "id": "T-a4394206-0a01-4b30-8269-ade0ee7c8a66",
+  "subject": "T5: Replace seed-listings-sot.ts with wipe-and-reload skeleton",
+  "description": "Replace backend/scripts/seed-listings-sot.ts body. Read 3 CSVs, call mergeCsvWithOwnership, resolve external_account_id via airbnb-main lookup, resolve room IDs per row. --check prints full plan. --apply calls wipe+insert transaction.",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1582e8bfcffecCvoc7UHNIwCpB"
+}

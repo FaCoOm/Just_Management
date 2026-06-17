@@ -1,0 +1,23 @@
+{
+  "id": "T-d2ecb957-155e-4884-b34f-80037c0fe151",
+  "subject": "Redeploy Hostinger as Express app",
+  "description": "Create clean source archive and trigger Hostinger Node.js build with Express entry backend/dist/index.js so /health and /api/* route to backend.",
+  "status": "completed",
+  "activeForm": "Preparing Express deployment archive",
+  "blocks": [],
+  "blockedBy": [
+    "T-ac6c16f8-d6a6-4d49-a21c-deb5c9cb17ec"
+  ],
+  "metadata": {
+    "domain": "manage.mujosaigon.com",
+    "username": "u247402862",
+    "entry_file": "backend/dist/index.js",
+    "build_script": "build",
+    "firstAttempt": "archive path rejected by Hostinger file validator; retrying workspace-local archive",
+    "latestCleanDeploy": "019ec528-6180-72c9-bd7b-ee7ff15d6f19",
+    "health": "200 Track B",
+    "diagRoute": "404 removed",
+    "apiProperties": "500 until DATABASE_URL credentials corrected"
+  },
+  "threadID": "ses_13aec8a67ffeH5tf8SQ3ub74S1"
+}

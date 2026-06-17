@@ -1,0 +1,25 @@
+{
+  "active_plan": "C:/Users/Fate_Conqueror/GitHub/Just_Management/.omo/plans/listings-source-of-truth.md",
+  "started_at": "2026-06-13T08:08:09.263Z",
+  "plan_name": "listings-source-of-truth",
+  "agent": "atlas",
+  "schema_version": 2,
+  "task_sessions": {},
+  "session_ids": [],
+  "session_origins": {},
+  "works": {
+    "listings-source-of-truth": {
+      "work_id": "listings-source-of-truth",
+      "active_plan": "C:/Users/Fate_Conqueror/GitHub/Just_Management/.omo/plans/listings-source-of-truth.md",
+      "plan_name": "listings-source-of-truth",
+      "started_at": "2026-06-13T08:08:09.263Z",
+      "updated_at": "2026-06-13T08:08:09.263Z",
+      "session_ids": [],
+      "session_origins": {},
+      "agent": "atlas",
+      "task_sessions": {}
+    }
+  },
+  "active_work_id": "listings-source-of-truth",
+  "updated_at": "2026-06-13T08:08:09.263Z"
+}

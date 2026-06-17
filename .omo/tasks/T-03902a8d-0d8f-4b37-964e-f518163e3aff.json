@@ -1,0 +1,9 @@
+{
+  "id": "T-03902a8d-0d8f-4b37-964e-f518163e3aff",
+  "subject": "T2: Add mergeCsvWithOwnership helper",
+  "description": "Add exported function mergeCsvWithOwnership to backend/src/lib/listings-source-of-truth.ts. Canonical set = listings.csv IDs. Owner precedence: Ruby > Manuka > listings. internalName/title/url always from listings.csv. sourceMetadata = union of all CSVs.",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1582e8bfcffecCvoc7UHNIwCpB"
+}

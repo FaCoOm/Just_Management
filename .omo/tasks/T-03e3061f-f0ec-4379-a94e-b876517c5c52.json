@@ -1,0 +1,10 @@
+{
+  "id": "T-03e3061f-f0ec-4379-a94e-b876517c5c52",
+  "subject": "T12 cleanup diagnostic scripts",
+  "description": "Wave 1. Choose delete vs consolidate path for 5 inspect-* + repro-* scripts.",
+  "status": "completed",
+  "activeForm": "Consolidating diagnostic scripts",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1582e8bfcffecCvoc7UHNIwCpB"
+}

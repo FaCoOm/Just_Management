@@ -1,0 +1,9 @@
+{
+  "id": "T-b322a291-2d4d-4212-9aeb-2b3758e515a3",
+  "subject": "T1: Extend ListingsCsvRow with owner + sourceMetadata + fix Manuka filter",
+  "description": "Edit backend/src/lib/listings-source-of-truth.ts. Add owner and sourceMetadata fields to ListingsCsvRow. Update parseListingsCsv to accept optional csvName arg. Loosen status filter to drop only /^in.progress$/i.",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1582e8bfcffecCvoc7UHNIwCpB"
+}

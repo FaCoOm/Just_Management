@@ -1,0 +1,13 @@
+{
+  "id": "T-79b1d042-618e-418f-990e-6892ad17a0a8",
+  "subject": "Inspect ingest repo seam",
+  "description": "Read hook/repository files and identify minimal changes for pipeline status/run migration.",
+  "status": "completed",
+  "activeForm": "finished reading relevant files",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "scope": "src/hooks/use-pipeline-status.ts, src/hooks/use-run-pipeline.ts, src/lib/repositories/types.ts, src/lib/repositories/rest-repositories.ts"
+  },
+  "threadID": "ses_157aa4b3dffeqNv3Dq6UeQN8em"
+}

@@ -1,0 +1,16 @@
+{
+  "id": "T-18553762-fb35-4e6b-813f-a8c9225c4835",
+  "subject": "Fix doctor findings",
+  "description": "Address all actionable issues reported by `bunx oh-my-openagent doctor` in repository code/config.",
+  "status": "completed",
+  "activeForm": "Fixing doctor findings",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "source": "user request",
+    "doctorFinding": "oh-my-openagent is not registered",
+    "recommendedFix": "bunx oh-my-opencode install",
+    "resolvedBy": "Added plugin entry to active OpenCode config at ~/.config/opencode/opencode.jsonc"
+  },
+  "threadID": "ses_169f8565affeWpu8W7s1pPHf4E"
+}

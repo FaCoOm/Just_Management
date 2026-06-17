@@ -1,0 +1,12 @@
+{
+  "id": "T-1fdbbebc-1656-468a-af89-c232d8a4c91e",
+  "subject": "Verify generated DB/API/frontend",
+  "description": "Run required Prisma, backend build, root typecheck checks plus diagnostics on changed files.",
+  "status": "completed",
+  "activeForm": "Verifying generated DB/API/frontend",
+  "blocks": [],
+  "blockedBy": [
+    "T-afb959a9-5ee5-4355-8667-8de9ebc5d28c"
+  ],
+  "threadID": "ses_157b691e3ffe3B2YbG47zIW1i5"
+}

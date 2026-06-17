@@ -1,0 +1,16 @@
+{
+  "id": "T-c2d97395-79a3-47a9-a83f-5b6b888f7fe2",
+  "subject": "Move direct fetches to repos",
+  "description": "Add repository/hook methods for tax export, channels, maintenance create, ingest, integrations.",
+  "status": "completed",
+  "activeForm": "Direct fetches moved where backend-backed",
+  "blocks": [],
+  "blockedBy": [
+    "T-c00850cd-ec77-4bc2-a781-5c6791fe3d2f"
+  ],
+  "metadata": {
+    "priority": "P1",
+    "source": "audit+dashboard-plan"
+  },
+  "threadID": "ses_1582e8bfcffecCvoc7UHNIwCpB"
+}

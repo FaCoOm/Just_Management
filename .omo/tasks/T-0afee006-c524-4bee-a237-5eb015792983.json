@@ -1,0 +1,9 @@
+{
+  "id": "T-0afee006-c524-4bee-a237-5eb015792983",
+  "subject": "T4: Add 6 new tests for ownership + precedence + multilingual filter",
+  "description": "Add 6 tests to backend/test/listings-sot.test.ts covering: mergeCsvWithOwnership returns 59 rows, ID 33932700 owner=ruby internalName=LL-Latte-1, ID 947584081523929277 owner=ruby, ID 1027327396117322855 owner=ruby, Manuka parses 4 rows with Đã đăng status, empty internalName+In progress dropped.",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1582e8bfcffecCvoc7UHNIwCpB"
+}

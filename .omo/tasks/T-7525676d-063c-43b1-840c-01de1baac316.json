@@ -1,0 +1,10 @@
+{
+  "id": "T-7525676d-063c-43b1-840c-01de1baac316",
+  "subject": "Review reservation-derived occupancy/Floor Plan fix",
+  "description": "Inspect changed implementation and tests for dashboard occupancy and Floor Plan reservation-derived room status; verify correctness, edge cases, scope creep, and required verification evidence; return binding PASS/FAIL.",
+  "status": "completed",
+  "activeForm": "completed binding review",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_13ef8d92effe92T0JbfFafRDhp"
+}

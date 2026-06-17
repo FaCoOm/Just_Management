@@ -1,0 +1,9 @@
+{
+  "id": "T-19ddab2c-a931-4c83-b913-27a0e564d08c",
+  "subject": "T12: Reservation re-ingest + status update",
+  "description": "Re-ingest docs/database_design/reservations.csv via existing endpoint. Verify dead-letter count drops from 28 to 0. Update docs/status.md. Atomic commits per task.",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1582e8bfcffecCvoc7UHNIwCpB"
+}

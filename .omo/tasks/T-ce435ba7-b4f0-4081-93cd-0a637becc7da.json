@@ -1,0 +1,10 @@
+{
+  "id": "T-ce435ba7-b4f0-4081-93cd-0a637becc7da",
+  "subject": "T1 RED test: normalizer 19-digit precision",
+  "description": "Wave 1. backend/test/normalizer.test.ts new file with extractListings precision assertions. RED expected.",
+  "status": "completed",
+  "activeForm": "Writing failing test for 19-digit ID precision",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1582e8bfcffecCvoc7UHNIwCpB"
+}

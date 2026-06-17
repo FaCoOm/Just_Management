@@ -1,0 +1,16 @@
+{
+  "id": "T-dceb2bda-f293-4c79-8eb0-a550aefda028",
+  "subject": "Propagate reservation-derived status to related room pages",
+  "description": "Update Availability, Room Types, and Housekeeping consumers so reservation-derived room status and allocation rows are reflected beyond the Floor Plan and dashboard.",
+  "status": "completed",
+  "activeForm": "Updating related room pages",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "scope": "frontend reservation-derived status propagation",
+    "validation": "frontend typecheck/test/build passed; backend test/build passed"
+  },
+  "repoURL": "",
+  "parentID": "",
+  "threadID": "ses_13f31946affekau0jk5g0BJ595"
+}

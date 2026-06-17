@@ -34,7 +34,6 @@ credentials.json
 *.env
 *.pem
 *.key
-.omo
 .credentials
 
 # Scratch directories

@@ -1,0 +1,10 @@
+{
+  "id": "T-81d90c18-6d75-4224-96b4-b67b3e3c8f89",
+  "subject": "Hostinger production env + Node.js single-origin restoration",
+  "description": "14-task plan across 10 waves. Decisions: hostname=manage.mujosaigon.com, app=Node.js single-origin, ingestion=disabled day one. Plan session ses_13a525381ffefL4RcQBQr5XqKU.",
+  "status": "pending",
+  "activeForm": "Executing Wave 1: dev diagnosis + RED probe",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_13a85d0adffexgjNhCezEdrQxP"
+}

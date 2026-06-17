@@ -1,0 +1,10 @@
+{
+  "id": "T-8c1faf58-26b7-4b0e-8b1b-0740639a7ad4",
+  "subject": "T4 ADR: composite unique on listing_room_mappings",
+  "description": "Wave 1. Decide if Prisma schema gets @@unique([channel_listing_id, room_id, mapping_role]). Output: 1-paragraph ADR.",
+  "status": "completed",
+  "activeForm": "Writing ADR for listing_room_mappings unique constraint",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1582e8bfcffecCvoc7UHNIwCpB"
+}

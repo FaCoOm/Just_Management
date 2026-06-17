@@ -1,0 +1,16 @@
+{
+  "id": "T-611dd1a6-93f9-4558-b42c-3cac1c4eae05",
+  "subject": "Add test coverage",
+  "description": "Add targeted frontend/backend tests for new contracts and critical pages.",
+  "status": "completed",
+  "activeForm": "Added targeted coverage for completed audit fixes",
+  "blocks": [],
+  "blockedBy": [
+    "T-c00850cd-ec77-4bc2-a781-5c6791fe3d2f"
+  ],
+  "metadata": {
+    "priority": "P4",
+    "source": "audit+dashboard-plan"
+  },
+  "threadID": "ses_1582e8bfcffecCvoc7UHNIwCpB"
+}

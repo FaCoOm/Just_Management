@@ -1,0 +1,10 @@
+{
+  "id": "T-8cdfda39-6329-46b8-ba1c-62bbbff15044",
+  "subject": "T2 RED test: parser composite arrays",
+  "description": "Wave 1. Extend backend/test/parser.test.ts with composite cases. RED expected.",
+  "status": "completed",
+  "activeForm": "Writing failing test for parser composite arrays",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1582e8bfcffecCvoc7UHNIwCpB"
+}

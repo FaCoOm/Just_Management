@@ -1,0 +1,14 @@
+{
+  "id": "T-1e44a34e-9655-4ead-af35-49e411e92321",
+  "subject": "Run doctor audit",
+  "description": "Execute `bunx oh-my-openagent doctor` and capture all reported issues in current repo.",
+  "status": "completed",
+  "activeForm": "Running doctor audit",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "source": "user request",
+    "command": "bunx oh-my-openagent doctor"
+  },
+  "threadID": "ses_169f8565affeWpu8W7s1pPHf4E"
+}

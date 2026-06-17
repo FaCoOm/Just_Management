@@ -1,0 +1,35 @@
+{
+  "id": "T-2e980dcc-4af0-4b77-870d-ddd1ed774c90",
+  "subject": "Fix Hostinger env build failure",
+  "description": "Diagnose issues.md Hostinger npm install/build failure after production env changes, implement minimal config fix, verify local build/env checks.",
+  "status": "completed",
+  "activeForm": "Fixing Hostinger env build failure",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "scope": "deployment/build config",
+    "source": "issues.md",
+    "hypotheses": [
+      "NODE_ENV=production or npm production mode omits devDependencies so tsc/vite/prisma/tsx missing during build",
+      "Hostinger partial cache caused esbuild binary mismatch",
+      "Workspace lock/root install mismatch prevents frontend devDependency bin linking"
+    ],
+    "rootCause": "Hostinger deploy env/cached install: stale nested tsx/esbuild caused binary mismatch; NODE_ENV=production caused devDependencies to be omitted so tsc/vite/prisma were unavailable.",
+    "resolution": [
+      "Add .npmrc include=dev and legacy-peer-deps for Hostinger npm install",
+      "Add preinstall cleanup for stale nested tsx esbuild directories",
+      "Wrap root build with ensure-build-deps guard that reinstalls build tools if Hostinger still omits them",
+      "Keep old app build chain as build:app"
+    ],
+    "verification": [
+      "Hostinger logs pulled: latest failed deployment used correct app_type=other/output=dist/entry_file=backend/dist/index.js and failed exactly as issues.md described",
+      "Clean temp NODE_ENV=production npm ci installed 619 packages and produced tsc/vite/prisma shims",
+      "clean-stale-esbuild fixture passed when run from deploy root",
+      "frontend build passed",
+      "backend tsc --noEmit passed",
+      "node scripts/verify-prod-env.mjs passed",
+      "full local npm run build reached backend prisma generate then hit known Windows EPERM DLL lock, unrelated to Hostinger Linux deploy"
+    ]
+  },
+  "threadID": "ses_13a85d0adffexgjNhCezEdrQxP"
+}

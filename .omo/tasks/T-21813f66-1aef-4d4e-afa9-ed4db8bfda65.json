@@ -1,0 +1,15 @@
+{
+  "id": "T-21813f66-1aef-4d4e-afa9-ed4db8bfda65",
+  "subject": "Verify doctor clean",
+  "description": "Re-run doctor and project verification after fixes to confirm issues are resolved.",
+  "status": "completed",
+  "activeForm": "Verifying doctor clean",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "source": "user request",
+    "doctorExitCode": 0,
+    "doctorPassedChecks": 5
+  },
+  "threadID": "ses_169f8565affeWpu8W7s1pPHf4E"
+}

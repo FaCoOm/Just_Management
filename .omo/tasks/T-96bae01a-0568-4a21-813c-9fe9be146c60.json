@@ -1,0 +1,14 @@
+{
+  "id": "T-96bae01a-0568-4a21-813c-9fe9be146c60",
+  "subject": "Audit remaining implementation work",
+  "description": "Evidence-based feature audit across frontend/backend to identify exact unfinished tasks before implementation.",
+  "status": "completed",
+  "activeForm": "Audit complete",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "scope": "status-audit",
+    "noEdits": true
+  },
+  "threadID": "ses_1582e8bfcffecCvoc7UHNIwCpB"
+}

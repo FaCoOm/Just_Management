@@ -1,0 +1,16 @@
+{
+  "id": "T-dc028dda-2ddc-4073-8f08-c8aa95550d11",
+  "subject": "Write reservation status propagation doc",
+  "description": "Create docs/analysis/reservation-status-propagation.md from verified refs only.",
+  "status": "pending",
+  "activeForm": "Writing reservation status propagation doc",
+  "blocks": [],
+  "blockedBy": [
+    "T-a4c68c20-5768-4adb-99d0-8a9600ad961b",
+    "T-823037cd-e43f-4667-8b21-1eafd58e370e",
+    "T-73ac5a92-a867-48a0-85d1-161e883aacf3",
+    "T-94270a03-c7f5-4222-a719-538b0d3f2ad6",
+    "T-6e3f94b0-7f38-46fc-8de7-e2327421b977"
+  ],
+  "threadID": "ses_13f31946affekau0jk5g0BJ595"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "T-c00850cd-ec77-4bc2-a781-5c6791fe3d2f",
+  "subject": "Fix verification blockers",
+  "description": "Restore runnable test/build/ingestion verification baseline before larger feature work.",
+  "status": "completed",
+  "activeForm": "Verification baseline fixed",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "priority": "P0",
+    "source": "audit+dashboard-plan"
+  },
+  "threadID": "ses_1582e8bfcffecCvoc7UHNIwCpB"
+}

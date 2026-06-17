@@ -1,0 +1,9 @@
+{
+  "id": "T-f3b3ad07-83d2-492e-9458-2969cd90ecaf",
+  "subject": "T3: Update classifyDbRowsAgainstCsv for owner-aware drift",
+  "description": "Edit classifyDbRowsAgainstCsv in listings-source-of-truth.ts. Compare DB owner vs merged CSV owner. Add ownerDrift boolean to DriftResolution. Emit drift fix when owner disagrees.",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1582e8bfcffecCvoc7UHNIwCpB"
+}

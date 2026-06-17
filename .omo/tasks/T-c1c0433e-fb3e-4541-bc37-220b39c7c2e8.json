@@ -1,0 +1,10 @@
+{
+  "id": "T-c1c0433e-fb3e-4541-bc37-220b39c7c2e8",
+  "subject": "Plan dashboard audit backlog implementation",
+  "description": "Read existing dashboard completion plan and produce ordered implementation chunks with dependencies, verification commands, and deferrals. No file edits.",
+  "status": "completed",
+  "activeForm": "Planning dashboard audit backlog implementation",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_157c5581bffeiLhWAbXNSVImda"
+}

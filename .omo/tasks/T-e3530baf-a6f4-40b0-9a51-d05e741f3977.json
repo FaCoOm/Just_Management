@@ -1,0 +1,12 @@
+{
+  "id": "T-e3530baf-a6f4-40b0-9a51-d05e741f3977",
+  "subject": "Add additive backend models/endpoints",
+  "description": "Edit Prisma schema, add Azure-safe migration, add read-only API endpoints selecting UI-needed fields only.",
+  "status": "completed",
+  "activeForm": "Adding additive backend models/endpoints",
+  "blocks": [],
+  "blockedBy": [
+    "T-cd450d48-9e97-42de-9d73-7d0ee6dacf6c"
+  ],
+  "threadID": "ses_157b691e3ffe3B2YbG47zIW1i5"
+}

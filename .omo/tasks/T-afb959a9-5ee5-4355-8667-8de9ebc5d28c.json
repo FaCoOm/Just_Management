@@ -1,0 +1,12 @@
+{
+  "id": "T-afb959a9-5ee5-4355-8667-8de9ebc5d28c",
+  "subject": "Wire frontend repos/pages",
+  "description": "Add repository contracts/REST methods and replace mock/constant data source in four pages.",
+  "status": "completed",
+  "activeForm": "Wiring frontend repos/pages",
+  "blocks": [],
+  "blockedBy": [
+    "T-e3530baf-a6f4-40b0-9a51-d05e741f3977"
+  ],
+  "threadID": "ses_157b691e3ffe3B2YbG47zIW1i5"
+}

@@ -1,0 +1,31 @@
+{
+  "id": "T-ac6c16f8-d6a6-4d49-a21c-deb5c9cb17ec",
+  "subject": "Diagnose Hostinger backend failure",
+  "description": "Inspect Hostinger website/deployment/build state and logs for manage.mujosaigon.com before modifying production.",
+  "status": "completed",
+  "activeForm": "Inspecting Hostinger runtime state",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "domain": "manage.mujosaigon.com",
+    "phase": "diagnosis",
+    "latestDeployment": "019ec504-b675-715d-b682-2abbca633d10",
+    "observed": "Hostinger JS deploy app_type=vite output dist",
+    "clarification": "Static Vite deploy fixed to Express; /health now 200; /api/properties now reaches Express but returns 500; env vars not directly listable via available Hostinger MCP, using redacted runtime diagnostics next.",
+    "ultrawork": "enabled",
+    "goal": "complete root-cause diagnosis and functional .env",
+    "next": "temporary redacted diagnostics",
+    "rootCause1": "Hostinger was deployed as vite/static so /health and /api did not reach Express; fixed by Express package deploy.",
+    "rootCause2": "DATABASE_URL parses correctly to Azure host webdbmujo.postgres.database.azure.com db m_management sslmode=require, but Prisma auth fails for user mujoadminh; password/credential invalid.",
+    "envObserved": {
+      "NODE_ENV": "production",
+      "PORT": "3001",
+      "VITE_TRACK": "B",
+      "VITE_TRACK_B_API_URL": "https://manage.mujosaigon.com",
+      "INGEST_PIPELINE_ENABLED": "true",
+      "INGEST_SHEETS_PROVIDER": "withone",
+      "M_MANAGEMENT_IMPORT_ROOT": ".backend/imports"
+    }
+  },
+  "threadID": "ses_13aec8a67ffeH5tf8SQ3ub74S1"
+}

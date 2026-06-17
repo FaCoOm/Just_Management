@@ -1,0 +1,9 @@
+{
+  "id": "T-f0f90e6e-ce39-4778-9e0b-773530df0a27",
+  "subject": "T11: --apply against Azure",
+  "description": "Run JM_LISTINGS_SOT_AZURE_OK=1 npm run seed:listings-sot:apply. Verify: channel_listings count=59, owner distribution correct, all listings have mappings, second --apply produces 0 changes.",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1582e8bfcffecCvoc7UHNIwCpB"
+}

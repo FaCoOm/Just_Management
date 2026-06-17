@@ -1,0 +1,10 @@
+{
+  "id": "T-a4c68c20-5768-4adb-99d0-8a9600ad961b",
+  "subject": "Verify frontend reservation refs",
+  "description": "src/components/reservations/reservations-page.tsx etc: capture create/caching refs for doc.",
+  "status": "pending",
+  "activeForm": "Verifying frontend reservation refs",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_13f31946affekau0jk5g0BJ595"
+}

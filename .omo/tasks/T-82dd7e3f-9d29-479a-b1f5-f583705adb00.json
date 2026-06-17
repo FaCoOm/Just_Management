@@ -1,0 +1,16 @@
+{
+  "id": "T-82dd7e3f-9d29-479a-b1f5-f583705adb00",
+  "subject": "Close API contract drift",
+  "description": "Align frontend repositories with backend routes and remove sensitive room passcode exposure.",
+  "status": "in_progress",
+  "activeForm": "Closing API contract drift and passcode exposure",
+  "blocks": [],
+  "blockedBy": [
+    "T-c00850cd-ec77-4bc2-a781-5c6791fe3d2f"
+  ],
+  "metadata": {
+    "priority": "P1",
+    "source": "audit+dashboard-plan"
+  },
+  "threadID": "ses_1582e8bfcffecCvoc7UHNIwCpB"
+}
