@@ -2,13 +2,17 @@ import { execSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 
-const requiredBuildTools = [
-  path.join("node_modules", ".bin", process.platform === "win32" ? "tsc.cmd" : "tsc"),
-  path.join("node_modules", ".bin", process.platform === "win32" ? "vite.cmd" : "vite"),
-  path.join("node_modules", ".bin", process.platform === "win32" ? "prisma.cmd" : "prisma"),
-];
+function findTool(name) {
+  const binary = process.platform === "win32" ? `${name}.cmd` : name;
+  const paths = [
+    path.join("node_modules", ".bin", binary),
+    path.join("frontend", "node_modules", ".bin", binary),
+    path.join("backend", "node_modules", ".bin", binary),
+  ];
+  return paths.some((p) => fs.existsSync(p));
+}
 
-const hasBuildTools = requiredBuildTools.every((toolPath) => fs.existsSync(toolPath));
+const hasBuildTools = findTool("tsc") && findTool("vite") && findTool("prisma");
 
 if (hasBuildTools) {
   process.exit(0);
