@@ -15,6 +15,7 @@ import { prisma } from "./lib/prisma";
 import { registerOneRoutes } from "./routes/one";
 import { registerTaxExportRoutes } from "./tax-export/routes";
 import { deriveOccupancyMetrics } from "./dashboard/occupancy";
+import { applyRoomStatusUpdate } from "./room-status";
 import path from "node:path";
 
 const app = express();
@@ -950,6 +951,22 @@ app.get("/api/rooms/:id", asyncHandler(async (req, res) => {
   }
 
   res.json(room);
+}));
+
+app.patch("/api/rooms/:id/status", asyncHandler(async (req, res) => {
+  setNoStore(res);
+  const body = req.body && typeof req.body === "object" && !Array.isArray(req.body)
+    ? req.body as Record<string, unknown>
+    : {};
+
+  const result = await applyRoomStatusUpdate(
+    prisma,
+    req.params.id,
+    body.status,
+    getVietnamToday()
+  );
+
+  res.status(result.status).json(result.body);
 }));
 
 // =============================================================================
