@@ -203,4 +203,19 @@ describe("Floor Plan derived room status", () => {
     expect(within(roomB).getByText("102").previousElementSibling).toHaveClass("bg-chart-1");
     expect(screen.getByText("33%")).toBeInTheDocument();
   });
+
+  it("does not treat checked-out reservations as occupying rooms", async () => {
+    installFetchMock([
+      { match: "/api/properties", response: [property] },
+      { match: "/api/rooms", response: rooms },
+      { match: "/api/reservations", response: [{ ...activeReservation(), status: "checked_out" }] },
+    ]);
+
+    renderWithProviders(<RoomsPage />);
+
+    const roomA = await screen.findByTitle(/Room 101 — Vacant/);
+
+    expect(within(roomA).getByText("101").previousElementSibling).toHaveClass("bg-emerald-500");
+    expect(screen.getByText("0%")).toBeInTheDocument();
+  });
 });

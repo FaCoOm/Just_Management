@@ -1,6 +1,6 @@
 import type { Reservation, Room, RoomStatus } from "@/types/database";
 
-const NON_OCCUPYING_RESERVATION_STATUSES = new Set(["cancelled", "no_show"]);
+const NON_OCCUPYING_RESERVATION_STATUSES = new Set(["cancelled", "checked_out", "no_show"]);
 
 function addDays(dateStr: string, days: number) {
   const date = new Date(`${dateStr}T00:00:00Z`);
