@@ -11,53 +11,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useRoomsPageData } from "@/hooks/use-page-data";
+import { useRoomsPageData, useUpdateRoomStatus } from "@/hooks/use-page-data";
 import { useVietnamClock } from "@/hooks/use-vietnam-clock";
 import { deriveRoomDisplayStatus } from "@/lib/room-status";
+import { roomStatusConfig } from "@/lib/room-status-config";
+import { RoomStatusChooser } from "@/components/rooms/room-status-chooser";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BedDouble, Layers, Settings2 } from "lucide-react";
-import type { RoomStatus } from "@/types/database";
+import { toast } from "sonner";
+import type { RoomStatus, Room } from "@/types/database";
 
-const statusConfig: Record<
-  RoomStatus,
-  { label: string; dot: string; card: string }
-> = {
-  Vacant: {
-    label: "Vacant",
-    dot: "bg-emerald-500",
-    card: "border-emerald-200 dark:border-emerald-800",
-  },
-  Occupied: {
-    label: "Occupied",
-    dot: "bg-chart-1",
-    card: "border-chart-1/30",
-  },
-  "Checked In": {
-    label: "Checked In",
-    dot: "bg-chart-1",
-    card: "border-chart-1/30",
-  },
-  "Check-In Pending": {
-    label: "Arriving",
-    dot: "bg-chart-4",
-    card: "border-chart-4/30",
-  },
-  "Check-Out Pending": {
-    label: "Departing",
-    dot: "bg-amber-500",
-    card: "border-amber-200 dark:border-amber-800",
-  },
-  "Checked Out": {
-    label: "Checked Out",
-    dot: "bg-muted-foreground/40",
-    card: "border-border",
-  },
-  "Needs Attention": {
-    label: "Needs Attention",
-    dot: "bg-destructive",
-    card: "border-destructive/30",
-  },
-};
+type RoomWithStatus = Room & { status: RoomStatus };
 
 function RoomsSkeleton() {
   return (
@@ -78,6 +42,8 @@ export function RoomsPage() {
   const [propertyFilter, setPropertyFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
+  const [chooserRoom, setChooserRoom] = useState<RoomWithStatus | null>(null);
+  const updateRoomStatus = useUpdateRoomStatus();
 
   if (loading) {
     return (
@@ -217,7 +183,7 @@ export function RoomsPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Statuses</SelectItem>
-                {Object.entries(statusConfig).map(([s, c]) => (
+                {Object.entries(roomStatusConfig).map(([s, c]) => (
                   <SelectItem key={s} value={s}>
                     {c.label}
                   </SelectItem>
@@ -290,18 +256,21 @@ export function RoomsPage() {
                       <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
                         {floorRooms.map((room) => {
                           const config =
-                            statusConfig[room.status] ??
-                            statusConfig["Checked Out"];
+                            roomStatusConfig[room.status] ??
+                            roomStatusConfig["Checked Out"];
                           const currentGuest = guests.find(
                             (g) =>
                               g.room_id === room.id &&
                               g.check_in_status !== "Checked Out"
                           );
                           return (
-                            <div
+                            <button
+                              type="button"
                               key={room.id}
+                              aria-label={`${room.room_name} room ${room.room_number} ${room.status}${currentGuest ? ` ${currentGuest.guest_name}` : ""}`}
                               title={`${room.room_name} — ${room.status}${currentGuest ? ` — ${currentGuest.guest_name}` : ""}`}
-                              className={`group relative flex flex-col items-center justify-center rounded-md border p-2.5 text-center cursor-pointer hover:shadow-sm transition-shadow ${config.card} bg-card`}
+                              className={`group relative flex flex-col items-center justify-center rounded-md border p-2.5 text-center cursor-pointer hover:shadow-sm transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${config.card} bg-card`}
+                              onClick={() => setChooserRoom(room)}
                             >
                               <div
                                 className={`mb-1 h-1.5 w-1.5 rounded-full ${config.dot}`}
@@ -312,7 +281,7 @@ export function RoomsPage() {
                               <p className="mt-0.5 text-[9px] text-muted-foreground leading-tight truncate w-full">
                                 {room.room_type}
                               </p>
-                            </div>
+                            </button>
                           );
                         })}
                       </div>
@@ -332,6 +301,24 @@ export function RoomsPage() {
               </CardContent>
             </Card>
           )}
+          <RoomStatusChooser
+            open={chooserRoom !== null}
+            currentStatus={chooserRoom?.status ?? "Vacant"}
+            isPending={updateRoomStatus.isPending}
+            onOpenChange={(open) => {
+              if (!open) setChooserRoom(null);
+            }}
+            onSelect={(status) => {
+              if (!chooserRoom) return;
+              updateRoomStatus.mutate(
+                { roomId: chooserRoom.id, status },
+                {
+                  onSuccess: () => setChooserRoom(null),
+                  onError: (error) => toast.error(error.message),
+                }
+              );
+            }}
+          />
         </div>
       </div>
     </div>
