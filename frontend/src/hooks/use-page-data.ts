@@ -1,9 +1,10 @@
 import { useMemo } from "react";
-import { useQueries } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQueries } from "@tanstack/react-query";
 import { createRestRepositories } from "@/lib/repositories";
 import { dashboardKeys } from "@/lib/query-keys";
 import { toDashboardGuest } from "@/hooks/use-dashboard-data";
-import type { Guest, MaintenanceIssue, Property, Reservation, Room } from "@/types/database";
+import { useVietnamClock } from "@/hooks/use-vietnam-clock";
+import type { Guest, MaintenanceIssue, Property, Reservation, Room, RoomStatus } from "@/types/database";
 import type { DiningEventBooking, RoomRate, SecurityAuditEntry, StaffMember } from "@/lib/repositories";
 
 const REFERENCE_STALE_TIME = 10 * 60_000;
@@ -94,6 +95,22 @@ export function useGuestsPageData(): ReservationPageData {
 export function useRoomsPageData(): RoomsPageData {
   const { properties, rooms, reservations, guests, loading } = useReservationsPageData();
   return { properties, rooms, reservations, guests, loading };
+}
+
+export function useUpdateRoomStatus() {
+  const repos = useMemo(() => createRestRepositories(), []);
+  const queryClient = useQueryClient();
+  const { today } = useVietnamClock();
+
+  return useMutation({
+    mutationFn: ({ roomId, status }: { roomId: string; status: RoomStatus }) =>
+      repos.rooms.updateStatus(roomId, status),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: dashboardKeys.rooms });
+      void queryClient.invalidateQueries({ queryKey: dashboardKeys.reservations });
+      void queryClient.invalidateQueries({ queryKey: dashboardKeys.summary(today) });
+    },
+  });
 }
 
 export function useMaintenancePageData(): MaintenancePageData {

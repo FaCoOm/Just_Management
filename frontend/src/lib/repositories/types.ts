@@ -13,6 +13,7 @@ import type {
   Reservation,
   ReservationCreateInput,
   ReservationStatus,
+  RoomStatus,
 } from "@/types/database";
 
 export interface MaintenanceCreateInput {
@@ -305,6 +306,7 @@ export interface PropertyRepository extends Repository<Property> {}
 // Room repository
 export interface RoomRepository extends Repository<Room> {
   getByPropertyId(propertyId: string): Promise<Room[]>;
+  updateStatus(roomId: string, status: RoomStatus): Promise<{ room: Room; reservation: Reservation | null }>;
 }
 
 // Reservation repository

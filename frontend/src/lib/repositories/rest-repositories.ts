@@ -20,7 +20,7 @@ import type {
   StaffRepository,
   TaxExportRepository,
 } from "./types";
-import type { ReservationCreateInput } from "@/types/database";
+import type { ReservationCreateInput, RoomStatus } from "@/types/database";
 
 type FetchFn = typeof fetch;
 
@@ -140,6 +140,9 @@ const roomRepo: RoomRepository = {
   },
   async getByPropertyId(propertyId) {
     return getJson(`/api/rooms?property_id=${propertyId}`);
+  },
+  async updateStatus(roomId: string, status: RoomStatus) {
+    return patchJson(`/api/rooms/${roomId}/status`, { status });
   },
 };
 
