@@ -6,8 +6,16 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   NODE_VERSION: 22.x
+  CI: true
   VITE_TRACK: B
   VITE_TRACK_B_API_URL: ""
   VITE_ONE_AUTH_TOKEN_URL: /api/one/auth-token
@@ -16,6 +24,7 @@ jobs:
   frontend:
     name: Frontend typecheck and tests
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -39,6 +48,7 @@ jobs:
   backend:
     name: Backend typecheck, tests, and Prisma gates
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     services:
       postgres:
         image: postgres:16
@@ -55,6 +65,7 @@ jobs:
           --health-retries 5
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/just_management
+      SHADOW_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/just_management_shadow
       ALLOWED_ORIGINS: http://localhost:5173
       ONE_CONNECTION_KEY: conn_test_mock_connection_key
       ONE_SECRET_KEY: sk_test_mock_secret_key
@@ -84,7 +95,10 @@ jobs:
         run: npm run db:verify:migration -w backend
 
       - name: Typecheck backend
-        run: npx tsc --noEmit -p backend/tsconfig.json
+        run: npm run typecheck -w backend
+
+      - name: Apply test database migrations
+        run: npm run db:deploy -w backend
 
       - name: Test backend
         run: npm run test -w backend
@@ -92,6 +106,7 @@ jobs:
   build:
     name: Build deploy artifacts
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs:
       - frontend
       - backend
@@ -110,7 +125,7 @@ jobs:
         run: npm ci
 
       - name: Build frontend, backend, and root dist
-        run: npm run build
+        run: npm run build:app
 
       - name: Upload Hostinger static artifact
         uses: actions/upload-artifact@v4
