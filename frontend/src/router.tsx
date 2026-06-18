@@ -53,15 +53,6 @@ const guestsRoute = createRoute({
   ),
 });
 
-const vipGuestsRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/guests/vip",
-  component: lazyRouteComponent(
-    () => import("@/components/guests/vip-guests-page"),
-    "VipGuestsPage"
-  ),
-});
-
 const roomsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/rooms",
@@ -184,7 +175,6 @@ const routeTree = rootRoute.addChildren([
   reservationsRoute,
   checkInOutRoute,
   guestsRoute,
-  vipGuestsRoute,
   roomsRoute,
   roomTypesRoute,
   availabilityRoute,

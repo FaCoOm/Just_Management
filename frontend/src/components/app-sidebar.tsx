@@ -113,11 +113,6 @@ export function AppSidebar() {
                           <Link to="/guests">All Guests</Link>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
-                      <SidebarMenuSubItem>
-                        <SidebarMenuSubButton asChild isActive={pathname === "/guests/vip"} data-testid="nav-vip-guests">
-                          <Link to="/guests/vip">VIP Guests</Link>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
                     </SidebarMenuSub>
                   </CollapsibleContent>
                 </SidebarMenuItem>
