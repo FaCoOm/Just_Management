@@ -262,7 +262,9 @@ Use harbor for arrivals and primary activity, harbor deep for departures or comp
 
 ### Section Cards
 
-Use shadcn `Card`, `CardHeader`, `CardTitle`, `CardDescription`, `CardContent`. Keep `CardTitle` at `text-sm font-semibold`; use `text-xs` descriptions for dense pages.
+Use shadcn `Card`, `CardHeader`, `CardTitle`, `CardDescription`, `CardContent`. Dense dashboard card headers use the `title-md` role: `text-base font-semibold tracking-[-0.005em]` in `Plus Jakarta Sans`. Reserve `Newsreader` for page-level editorial display, not operational card headers. Use `text-xs` descriptions for dense pages.
+
+Room Calendar defaults to a 45-day operational window around Vietnam-today and exposes explicit previous/next/full-year controls. Do not render the full -30/+365 day horizon on initial dashboard load; full-year mode is opt-in to protect dashboard responsiveness.
 
 ### Status Badges
 

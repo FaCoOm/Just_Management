@@ -10,7 +10,7 @@ export function RevenueOverview() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="font-serif text-lg">Revenue Overview</CardTitle>
+        <CardTitle className="text-base font-semibold tracking-[-0.005em]">Revenue Overview</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         <Badge variant="outline" className="w-fit">

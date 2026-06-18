@@ -39,7 +39,7 @@ export function MaintenanceDetail({ maintenance, properties }: MaintenanceDetail
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="font-serif text-lg">Maintenance Queue</CardTitle>
+        <CardTitle className="text-base font-semibold tracking-[-0.005em]">Maintenance Queue</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {grouped.map(({ property, issues }) => (

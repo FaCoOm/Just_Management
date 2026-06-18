@@ -26,7 +26,7 @@ export function DeparturesDetail({ guests, properties, rooms }: DeparturesDetail
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="font-serif text-lg">Departures Today</CardTitle>
+        <CardTitle className="text-base font-semibold tracking-[-0.005em]">Departures Today</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {grouped.map(({ property, guests: propGuests }) => (

@@ -21,7 +21,7 @@ export function DashboardHeader({ today }: DashboardHeaderProps) {
 
       <div className="flex flex-1 items-center gap-3">
         <div className="hidden md:block">
-          <h2 className="text-sm font-semibold">Portfolio Dashboard</h2>
+          <h2 className="text-base font-semibold tracking-[-0.005em]">Portfolio Dashboard</h2>
           <p className="text-xs text-muted-foreground">
             Vietnam time (GMT+7) · {formatVietnamDate(today, {
               weekday: "long",

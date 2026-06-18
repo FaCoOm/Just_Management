@@ -19,6 +19,7 @@ dist-ssr
 backend/.env
 credentials.json
 .agents
+.codeboarding
 
 # Editor directories and files
 .vscode/*

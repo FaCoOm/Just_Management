@@ -44,6 +44,7 @@ Use the directories and files mapped below to navigate the project's design and 
 *   [token-cost-optimization-report.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/analysis/token-cost-optimization-report.md) — Token-efficient guidelines for agent context.
 *   [current-orchestration-efficiency-guide.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/analysis/current-orchestration-efficiency-guide.md) — Multi-agent workflow telemetry and efficiency patterns.
 *   [omo-context-architecture-guide.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/analysis/omo-context-architecture-guide.md) — Guide on Context management, prompts, and agent behaviors.
+*   [frontend-pages-reference.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/analysis/frontend-pages-reference.md) — Stakeholder-friendly page inventory with user stories and Mermaid sequence diagrams for every routed frontend page.
 
 #### 💾 3. [database_design/](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/database_design) & [db_design/](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/db_design) — Schemas & Raw Source Mappings
 *   [database-implementation-overview.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/db_design/database-implementation-overview.md) — Database design models, constraints, and tables.

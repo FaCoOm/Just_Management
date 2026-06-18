@@ -104,7 +104,7 @@ export function OccupancyChart({ data, today }: OccupancyChartProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="font-serif text-lg">Occupancy</CardTitle>
+        <CardTitle className="text-base font-semibold tracking-[-0.005em]">Occupancy</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">

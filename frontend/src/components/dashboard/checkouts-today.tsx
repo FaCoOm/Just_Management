@@ -35,7 +35,7 @@ export function CheckoutsToday({
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0">
-        <CardTitle className="font-serif text-lg">Checkouts Today</CardTitle>
+        <CardTitle className="text-base font-semibold tracking-[-0.005em]">Checkouts Today</CardTitle>
         <Badge variant="outline">{sortedGuests.length}</Badge>
       </CardHeader>
       <CardContent className="px-0">

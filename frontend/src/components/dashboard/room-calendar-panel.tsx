@@ -1,5 +1,6 @@
-import { Fragment, useLayoutEffect, useMemo, useRef } from "react";
+import { Fragment, useLayoutEffect, useMemo, useRef, useState } from "react";
 
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   addDaysToVietnamDate,
@@ -10,6 +11,8 @@ import {
 import type { Property, Reservation, Room } from "@/types/database";
 
 type CellStatus = "vacant" | "arriving" | "occupied" | "departing";
+const DEFAULT_RANGE_DAYS = 45;
+const FULL_RANGE_DAYS = 396;
 
 interface RoomCalendarPanelProps {
   readonly properties: Property[];
@@ -20,6 +23,7 @@ interface RoomCalendarPanelProps {
 
 type RoomRow = Room & { propertyName: string };
 type PropertyGroup = { propertyId: string; propertyName: string; rooms: RoomRow[] };
+type CalendarCell = { status: CellStatus; initial: string; title: string };
 
 function roomReservationIds(reservation: Reservation) {
   const allocations = reservation.reservation_room_allocations ?? [];
@@ -46,16 +50,19 @@ function reservationStatusClass(status: CellStatus) {
 }
 
 export function RoomCalendarPanel({ properties, rooms, reservations, today }: RoomCalendarPanelProps) {
+  const [rangeDays, setRangeDays] = useState(DEFAULT_RANGE_DAYS);
+  const [windowStartDate, setWindowStartDate] = useState(addDaysToVietnamDate(today, -7));
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const fullYearLoaded = rangeDays === FULL_RANGE_DAYS;
+
   const dateColumns = useMemo(() => {
-    const start = addDaysToVietnamDate(today, -30);
-    const end = addDaysToVietnamDate(today, 365);
     const dates: string[] = [];
-    for (let date = start; compareVietnamDateKeys(date, end) <= 0; date = addDaysToVietnamDate(date, 1)) {
-      dates.push(date);
-    }
+    for (let index = 0; index < rangeDays; index += 1) dates.push(addDaysToVietnamDate(windowStartDate, index));
     return dates;
-  }, [today]);
+  }, [rangeDays, windowStartDate]);
+
+  const windowEndDate = dateColumns.at(-1) ?? windowStartDate;
 
   const groupedProperties = useMemo<PropertyGroup[]>(() => {
     const propertyNameById = new Map(properties.map((property) => [property.id, property.name]));
@@ -83,18 +90,34 @@ export function RoomCalendarPanel({ properties, rooms, reservations, today }: Ro
     }));
   }, [properties, rooms]);
 
-  const reservationByRoom = useMemo(() => {
-    const map = new Map<string, Reservation[]>();
+  const cellByRoomDate = useMemo(() => {
+    const map = new Map<string, CalendarCell>();
     for (const reservation of reservations) {
       if (reservation.status === "cancelled" || reservation.status === "checked_out" || reservation.status === "no_show") continue;
+      const checkIn = getVietnamDateKey(reservation.check_in_date);
+      const checkOut = getVietnamDateKey(reservation.check_out_date);
+      const lastStayDate = addDaysToVietnamDate(checkOut, -1);
+      const firstVisibleDate = compareVietnamDateKeys(checkIn, windowStartDate) > 0 ? checkIn : windowStartDate;
+      const lastVisibleDate = compareVietnamDateKeys(lastStayDate, windowEndDate) < 0 ? lastStayDate : windowEndDate;
+      if (compareVietnamDateKeys(firstVisibleDate, lastVisibleDate) > 0) continue;
+
       for (const roomId of roomReservationIds(reservation)) {
-        const list = map.get(roomId) ?? [];
-        list.push(reservation);
-        map.set(roomId, list);
+        for (let date = firstVisibleDate; compareVietnamDateKeys(date, lastVisibleDate) <= 0; date = addDaysToVietnamDate(date, 1)) {
+          const status: CellStatus = compareVietnamDateKeys(date, checkIn) === 0
+            ? "arriving"
+            : compareVietnamDateKeys(date, lastStayDate) === 0
+              ? "departing"
+              : "occupied";
+          map.set(`${roomId}:${date}`, {
+            status,
+            initial: reservation.guest_name.trim().slice(0, 2).toUpperCase(),
+            title: `${reservation.guest_name} · ${status}`,
+          });
+        }
       }
     }
     return map;
-  }, [reservations]);
+  }, [reservations, windowEndDate, windowStartDate]);
 
   useLayoutEffect(() => {
     const scrollElement = scrollRef.current;
@@ -110,11 +133,45 @@ export function RoomCalendarPanel({ properties, rooms, reservations, today }: Ro
     return () => window.cancelAnimationFrame(frameId);
   }, [today, dateColumns]);
 
+  function moveWindow(days: number) {
+    setWindowStartDate(addDaysToVietnamDate(windowStartDate, days));
+  }
+
+  function resetWindow() {
+    setRangeDays(DEFAULT_RANGE_DAYS);
+    setWindowStartDate(addDaysToVietnamDate(today, -7));
+  }
+
+  function loadFullYear() {
+    setRangeDays(FULL_RANGE_DAYS);
+    setWindowStartDate(addDaysToVietnamDate(today, -30));
+  }
+
   return (
     <Card className="flex h-full min-h-0 min-w-0 flex-col gap-3 overflow-hidden py-4">
       <CardHeader className="gap-2 pb-0">
-        <CardTitle className="font-serif text-lg">Room calendar</CardTitle>
-        <p className="text-xs text-muted-foreground">-30 days → +365 days. Next 14 days highlighted; today is strongest.</p>
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <CardTitle className="text-base font-semibold tracking-[-0.005em]">Room Calendar</CardTitle>
+            <p className="text-xs text-muted-foreground">
+              Fast window: {formatVietnamDate(windowStartDate, { month: "short", day: "numeric" })} - {formatVietnamDate(windowEndDate, { month: "short", day: "numeric" })}. Load full year only when needed.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button type="button" variant="outline" size="sm" className="h-8 text-xs" onClick={() => moveWindow(-DEFAULT_RANGE_DAYS)}>
+              Previous 45d
+            </Button>
+            <Button type="button" variant="ghost" size="sm" className="h-8 text-xs" onClick={resetWindow}>
+              Today Window
+            </Button>
+            <Button type="button" variant="outline" size="sm" className="h-8 text-xs" onClick={() => moveWindow(DEFAULT_RANGE_DAYS)}>
+              Next 45d
+            </Button>
+            <Button type="button" variant={fullYearLoaded ? "default" : "outline"} size="sm" className="h-8 text-xs" onClick={loadFullYear} disabled={fullYearLoaded}>
+              {fullYearLoaded ? "Full year loaded" : "Load full year"}
+            </Button>
+          </div>
+        </div>
       </CardHeader>
       <CardContent className="min-h-0 min-w-0 flex-1 p-0">
         <div ref={scrollRef} className="h-full min-w-0 overflow-auto" aria-label="Scrollable room calendar, initially focused on today and the next 14 days">
@@ -160,26 +217,15 @@ export function RoomCalendarPanel({ properties, rooms, reservations, today }: Ro
                         <div className="text-[10px] text-muted-foreground">F{room.floor} · {room.room_type}</div>
                       </td>
                       {dateColumns.map((date) => {
-                        const active = (reservationByRoom.get(room.id) ?? []).find((reservation) => {
-                          const checkIn = getVietnamDateKey(reservation.check_in_date);
-                          const checkOut = getVietnamDateKey(reservation.check_out_date);
-                          return compareVietnamDateKeys(checkIn, date) <= 0 && compareVietnamDateKeys(date, checkOut) < 0;
-                        });
-                        const status: CellStatus = !active
-                          ? "vacant"
-                          : compareVietnamDateKeys(date, getVietnamDateKey(active.check_in_date)) === 0
-                            ? "arriving"
-                            : compareVietnamDateKeys(date, addDaysToVietnamDate(getVietnamDateKey(active.check_out_date), -1)) === 0
-                              ? "departing"
-                              : "occupied";
-                        const initial = active?.guest_name.trim().slice(0, 2).toUpperCase() ?? "";
+                        const cell = cellByRoomDate.get(`${room.id}:${date}`);
+                        const status = cell?.status ?? "vacant";
                         const todayBand = compareVietnamDateKeys(date, today) === 0 ? "ring-1 ring-inset ring-harbor/30" : "";
                         const priorityBand = compareVietnamDateKeys(date, today) >= 0 && compareVietnamDateKeys(date, addDaysToVietnamDate(today, 13)) <= 0 ? "bg-harbor/5" : "";
-                        const title = active ? `${active.guest_name} · ${status}` : "Vacant";
+                        const title = cell?.title ?? "Vacant";
                         return (
                           <td key={date} className={`min-w-11 border-b border-border px-0.5 py-1 align-top ${priorityBand} ${todayBand}`} aria-label={`${room.room_number} ${title} on ${date}`} title={title}>
                             <div className={`flex h-8 items-center justify-center rounded-sm text-[10px] font-medium ${reservationStatusClass(status)}`}>
-                              {active ? <span className="truncate px-1">{initial}</span> : null}
+                              {cell ? <span className="truncate px-1">{cell.initial}</span> : null}
                             </div>
                           </td>
                         );

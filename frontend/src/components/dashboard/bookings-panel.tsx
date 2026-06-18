@@ -161,7 +161,7 @@ export function BookingsPanel({
   return (
     <div className="flex h-full flex-col border-l border-border bg-card">
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
-        <h3 className="font-serif text-base font-semibold">Bookings</h3>
+        <h3 className="text-base font-semibold tracking-[-0.005em]">Bookings</h3>
         <Button variant="link" size="sm" className="text-xs">
           See All
         </Button>

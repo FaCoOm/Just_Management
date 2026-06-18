@@ -38,7 +38,7 @@ export function RecentArrivals({ guests, rooms }: RecentArrivalsProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="font-serif text-lg">Recent Arrivals</CardTitle>
+        <CardTitle className="text-base font-semibold tracking-[-0.005em]">Recent Arrivals</CardTitle>
         <CardAction>
           <Button variant="link" size="sm" className="text-xs">
             View All

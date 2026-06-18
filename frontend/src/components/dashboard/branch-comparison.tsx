@@ -28,7 +28,7 @@ export function BranchComparison({ metrics }: BranchComparisonProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="font-serif text-lg">
+        <CardTitle className="text-base font-semibold tracking-[-0.005em]">
           Portfolio Comparison
         </CardTitle>
       </CardHeader>
