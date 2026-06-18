@@ -300,9 +300,18 @@ Use shadcn `Skeleton` with current layout dimensions. Dashboard loading mirrors 
 
 Charts use `--chart-*` tokens only. Avoid un-tokened palette additions. Add labels/tooltips that explain operational meaning, not only numeric values. Use brass sparingly to highlight revenue, occupancy, or premium deltas.
 
-## Dark Mode
+## Light And Dark Mode
 
-Dark mode is toggled by `.dark` on document root. `ThemeProvider` persists preference with `localStorage` key `vite-ui-theme`. Every new surface, chart, and status treatment must use tokens so dark parity comes free.
+Light and dark mode are toggled by `.light` / `.dark` on the document root. `ThemeProvider` persists the explicit toolbar preference with `localStorage` key `vite-ui-theme`; the dashboard toolbar `ModeToggle` flips directly between light and dark so a reload keeps the chosen surface.
+
+Toolbar theme control rules:
+
+- Place the mode toggle with other right-aligned operational actions in the 56px page toolbar.
+- Use an outlined 32px icon button, Sun for light and Moon for dark.
+- Label the action as `Switch to light mode` or `Switch to dark mode`; do not rely on icon meaning alone.
+- Persist only explicit `light` or `dark` choices from the toolbar. Reserve `system` for future settings screens, not the primary operations toolbar.
+
+Every new surface, chart, and status treatment must use tokens so dark parity comes free.
 
 Do not hardcode light-only backgrounds in feature components. Use token classes such as `bg-background`, `bg-card`, `text-foreground`, `text-muted-foreground`, `border-border`, `bg-harbor`, and `text-harbor-foreground`.
 
@@ -353,3 +362,4 @@ Primary Stitch design system should use:
 - [x] Accessibility rules cover focus, contrast, target size, status labels, icon labels, and reduced motion.
 - [x] Iconography uses Lucide sizing conventions from existing components.
 - [x] Brand identity is Just Management, not Latte Lounge placeholder branding.
+- [x] Toolbar light/dark mode persistence is defined with `vite-ui-theme` and token-only dark parity rules.

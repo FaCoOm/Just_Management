@@ -1,5 +1,6 @@
 import { Search, Bell, CalendarDays, ChevronDown, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ModeToggle } from "@/components/mode-toggle";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { formatVietnamDate, formatVietnamRangeLabel } from "@/lib/vietnam-time";
@@ -51,6 +52,7 @@ export function DashboardHeader({ today }: DashboardHeaderProps) {
           <Bell className="h-4 w-4" />
           <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-destructive" />
         </Button>
+        <ModeToggle />
         <Separator orientation="vertical" className="mx-1 h-5" />
         <Button
           variant="outline"
