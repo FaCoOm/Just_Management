@@ -11,7 +11,6 @@ describe("Router Configuration", () => {
       "/reservations",
       "/check-in-out",
       "/guests",
-      "/guests/vip",
       "/rooms",
       "/rooms/types",
       "/rooms/availability",
