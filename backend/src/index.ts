@@ -16,6 +16,9 @@ import { registerOneRoutes } from "./routes/one";
 import { registerTaxExportRoutes } from "./tax-export/routes";
 import { deriveOccupancyMetrics } from "./dashboard/occupancy";
 import { applyRoomStatusUpdate } from "./room-status";
+import { registerTenantRoutes } from "./routes/tenants";
+import { registerStayRegistrationRoutes } from "./routes/stay-registrations";
+import { registerGuestRequestRoutes } from "./routes/guest-requests";
 import path from "node:path";
 
 const app = express();
@@ -93,6 +96,9 @@ app.use((req, res, next) => {
 registerIngestRoutes(app);
 registerOneRoutes(app, prisma);
 registerTaxExportRoutes(app, prisma);
+registerTenantRoutes(app, prisma);
+registerStayRegistrationRoutes(app, prisma);
+registerGuestRequestRoutes(app, prisma);
 
 function getVietnamToday() {
   const parts = new Intl.DateTimeFormat("en-CA", {
@@ -1107,65 +1113,7 @@ app.get("/api/external-accounts", asyncHandler(async (req, res) => {
   res.json(accounts);
 }));
 
-// =============================================================================
-// Guest Requests
-// =============================================================================
 
-app.get("/api/guest-requests", asyncHandler(async (req, res) => {
-  setNoStore(res);
-  const { property_id, guest_id, reservation_id } = req.query;
-  const pagination = getOptionalPagination(req.query);
-  const includeCount = shouldIncludeCount(req.query);
-  const where: any = {};
-  if (property_id) where.property_id = property_id;
-  if (guest_id) where.guest_id = guest_id;
-  if (reservation_id) where.reservation_id = reservation_id;
-  await sendListResponse(
-    res,
-    prisma.guest_requests.findMany({
-      where,
-      ...pagination,
-      orderBy: { created_at: "desc" },
-      select: {
-        id: true,
-        guest_id: true,
-        room_id: true,
-        property_id: true,
-        reservation_id: true,
-        request_type: true,
-        notes: true,
-        is_completed: true,
-        created_at: true,
-      },
-    }),
-    includeCount ? prisma.guest_requests.count({ where }) : undefined
-  );
-}));
-
-app.get("/api/guest-requests/:id", asyncHandler(async (req, res) => {
-  setNoStore(res);
-  const request = await prisma.guest_requests.findUnique({
-    where: { id: req.params.id },
-    select: {
-      id: true,
-      guest_id: true,
-      room_id: true,
-      property_id: true,
-      reservation_id: true,
-      request_type: true,
-      notes: true,
-      is_completed: true,
-      created_at: true,
-    },
-  });
-
-  if (!request) {
-    res.status(404).json({ error: "Not found" });
-    return;
-  }
-
-  res.json(request);
-}));
 
 // =============================================================================
 // Guests (legacy compatibility)
