@@ -7,8 +7,49 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+enum StayType {
+  short_term
+  long_term
+}
+
+enum TenantStatus {
+  active
+  inactive
+  archived
+}
+
+enum DriveFolderStatus {
+  pending
+  created
+  failed
+}
+
+enum IdDocumentType {
+  passport
+  national_id
+  drivers_license
+  other
+}
+
+enum GuestRequestStatus {
+  open
+  assigned
+  in_progress
+  fulfilled
+  closed
+  reopened
+}
+
+enum GuestRequestPriority {
+  low
+  medium
+  high
+  urgent
 }
 
 model properties {
@@ -27,6 +68,8 @@ model properties {
   reservations       reservations[]
   dining_event_bookings dining_event_bookings[]
   room_rates         room_rates[]
+  tenants           tenants[]
+  stay_registrations stay_registrations[]
 }
 
 model rooms {
@@ -47,9 +90,66 @@ model rooms {
   maintenance_issues           maintenance_issues[]
   primary_reservations         reservations[]                @relation("reservation_primary_room")
   reservation_room_allocations reservation_room_allocations[]
+  stay_registrations           stay_registrations[]
 
   @@unique([id, property_id])
   @@index([property_id])
+}
+
+model tenants {
+  id                      String         @id @default(uuid()) @db.Uuid
+  property_id             String         @db.Uuid
+  name                    String
+  email                   String?
+  phone                   String?
+  id_document_type        IdDocumentType
+  id_document_number      String
+  nationality             String?
+  lease_start             DateTime       @db.Date
+  lease_end               DateTime       @db.Date
+  monthly_rent            Int
+  deposit_amount          Int?
+  emergency_contact_name  String?
+  emergency_contact_phone String?
+  notes                   String?
+  status                  TenantStatus   @default(active)
+  is_vip                  Boolean        @default(false)
+  created_at              DateTime       @default(now()) @db.Timestamptz(6)
+  updated_at              DateTime       @default(now()) @updatedAt @db.Timestamptz(6)
+
+  property           properties           @relation(fields: [property_id], references: [id], onDelete: Restrict)
+  stay_registrations stay_registrations[]
+
+  @@index([property_id])
+  @@index([status])
+  @@index([property_id, status])
+  @@index([property_id, is_vip])
+}
+
+model stay_registrations {
+  id                  String             @id @default(uuid()) @db.Uuid
+  property_id          String             @db.Uuid
+  tenant_id            String?            @db.Uuid
+  room_id              String?            @db.Uuid
+  guest_name           String
+  guest_count          Int                @default(1)
+  registration_date    DateTime           @db.Date
+  registration_number  String?
+  drive_folder_id      String?
+  drive_folder_status  DriveFolderStatus  @default(pending)
+  notes                String?
+  created_at           DateTime           @default(now()) @db.Timestamptz(6)
+  updated_at           DateTime           @default(now()) @updatedAt @db.Timestamptz(6)
+
+  property properties @relation(fields: [property_id], references: [id], onDelete: Restrict)
+  tenant   tenants?   @relation(fields: [tenant_id], references: [id], onDelete: SetNull)
+  room     rooms?     @relation(fields: [room_id], references: [id], onDelete: SetNull)
+
+  @@index([property_id])
+  @@index([tenant_id])
+  @@index([room_id])
+  @@index([registration_date])
+  @@index([property_id, registration_date])
 }
 
 model guests {
@@ -80,8 +180,14 @@ model guest_requests {
   room_id        String   @db.Uuid
   request_type   String
   notes          String   @default("")
+  description    String?
+  status         GuestRequestStatus   @default(open)
+  priority       GuestRequestPriority  @default(medium)
+  assigned_to    String?
   is_completed   Boolean  @default(false)
   created_at     DateTime @default(now()) @db.Timestamptz(6)
+  updated_at     DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+  completed_at   DateTime? @db.Timestamptz(6)
   reservation_id String?  @db.Uuid
   property_id    String?  @db.Uuid
 
@@ -92,6 +198,11 @@ model guest_requests {
 
   @@index([guest_id])
   @@index([property_id])
+  @@index([status])
+  @@index([priority])
+  @@index([assigned_to])
+  @@index([property_id, status])
+  @@index([property_id, priority])
   @@index([reservation_id])
 }
 
