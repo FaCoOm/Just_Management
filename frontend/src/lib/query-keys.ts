@@ -10,6 +10,21 @@ export const dashboardKeys = {
   rooms: [...root, "rooms"] as const,
   reservations: [...root, "reservations"] as const,
   guestRequests: [...root, "guestRequests"] as const,
+  guestRequestsByProperty: (
+    propertyId: string,
+    status = "all",
+    priority = "all",
+    assignedTo = "all"
+  ) => [...root, "guestRequests", propertyId, status, priority, assignedTo] as const,
+  tenants: [...root, "tenants"] as const,
+  tenantsByProperty: (propertyId: string, status = "all") =>
+    [...root, "tenants", propertyId, status] as const,
+  stayRegistrations: [...root, "stayRegistrations"] as const,
+  stayRegistrationsByProperty: (
+    propertyId: string,
+    tenantId = "all",
+    roomId = "all"
+  ) => [...root, "stayRegistrations", propertyId, tenantId, roomId] as const,
   maintenance: [...root, "maintenance"] as const,
   diningEvents: [...root, "diningEvents"] as const,
   staff: [...root, "staff"] as const,

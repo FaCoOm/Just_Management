@@ -6,8 +6,14 @@ import type {
   Guest,
   Property,
   PropertyMetrics,
+  StayRegistration,
+  Tenant,
+  TenantStatus,
+  IdDocumentType,
   Room,
   GuestRequest,
+  GuestRequestPriority,
+  GuestRequestStatus,
   MaintenanceIssue,
   OccupancySeriesPoint,
   Reservation,
@@ -23,6 +29,58 @@ export interface MaintenanceCreateInput {
   property_id: string;
   room_id?: string | null;
 }
+
+export interface TenantCreateInput {
+  property_id: string;
+  name: string;
+  email?: string | null;
+  phone?: string | null;
+  id_document_type: IdDocumentType;
+  id_document_number: string;
+  nationality?: string | null;
+  lease_start: string;
+  lease_end: string;
+  monthly_rent: number;
+  deposit_amount?: number | null;
+  emergency_contact_name?: string | null;
+  emergency_contact_phone?: string | null;
+  notes?: string | null;
+  status?: TenantStatus;
+  is_vip?: boolean;
+}
+
+export interface TenantUpdateInput extends Partial<TenantCreateInput> {}
+
+export interface StayRegistrationCreateInput {
+  property_id: string;
+  tenant_id?: string | null;
+  room_id?: string | null;
+  guest_name: string;
+  guest_count: number;
+  registration_date: string;
+  registration_number?: string | null;
+  drive_folder_id?: string | null;
+  drive_folder_status?: import("@/types/database").DriveFolderStatus;
+  notes?: string | null;
+}
+
+export interface StayRegistrationUpdateInput extends Partial<StayRegistrationCreateInput> {}
+
+export interface GuestRequestCreateInput {
+  guest_id: string;
+  reservation_id?: string | null;
+  property_id?: string | null;
+  room_id: string;
+  request_type: string;
+  notes: string;
+  is_completed: boolean;
+  status?: GuestRequestStatus;
+  priority?: GuestRequestPriority;
+  assigned_to?: string | null;
+  description?: string | null;
+}
+
+export interface GuestRequestUpdateInput extends Partial<GuestRequestCreateInput> {}
 
 export interface ExternalAccount {
   id: string;
@@ -322,6 +380,30 @@ export interface ReservationRepository extends Repository<Reservation> {
 // Guest request repository
 export interface GuestRequestRepository extends Repository<GuestRequest> {
   getByPropertyId(propertyId: string): Promise<GuestRequest[]>;
+  create(input: GuestRequestCreateInput): Promise<GuestRequest>;
+  update(id: string, input: GuestRequestUpdateInput): Promise<GuestRequest>;
+  transitionStatus(
+    id: string,
+    status: GuestRequestStatus,
+    assigned_to?: string | null
+  ): Promise<GuestRequest>;
+  delete(id: string): Promise<void>;
+}
+
+export interface TenantRepository {
+  getById(id: string): Promise<Tenant | null>;
+  getAll(propertyId: string, filters?: { status?: TenantStatus }): Promise<Tenant[]>;
+  create(input: TenantCreateInput): Promise<Tenant>;
+  update(id: string, input: TenantUpdateInput): Promise<Tenant>;
+  delete(id: string): Promise<void>;
+}
+
+export interface StayRegistrationRepository {
+  getById(id: string): Promise<StayRegistration | null>;
+  getAll(propertyId: string, filters?: { tenant_id?: string | null; room_id?: string | null }): Promise<StayRegistration[]>;
+  create(input: StayRegistrationCreateInput): Promise<StayRegistration>;
+  update(id: string, input: StayRegistrationUpdateInput): Promise<StayRegistration>;
+  delete(id: string): Promise<void>;
 }
 
 // Maintenance issue repository
@@ -370,6 +452,8 @@ export interface RepositoryFactory {
   rooms: RoomRepository;
   reservations: ReservationRepository;
   guestRequests: GuestRequestRepository;
+  tenantRepository: TenantRepository;
+  stayRegistrationRepository: StayRegistrationRepository;
   maintenance: MaintenanceRepository;
   stats: StatsRepository;
   channels: ChannelRepository;

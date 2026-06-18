@@ -8,6 +8,8 @@ import type {
   RoomRepository,
   ReservationRepository,
   GuestRequestRepository,
+  TenantRepository,
+  StayRegistrationRepository,
   MaintenanceRepository,
   ChannelRepository,
   DiningEventRepository,
@@ -94,6 +96,20 @@ async function patchJson<T>(path: string, body: unknown): Promise<T> {
     throw new Error(JSON.stringify(data));
   }
   return data;
+}
+
+async function deleteJson<T>(path: string): Promise<T> {
+  const res = await apiFetch(apiUrl(path), { method: "DELETE" });
+  if (!res.ok) {
+    throw new Error(`Request failed (${res.status}) for ${path}`);
+  }
+
+  if (res.status === 204) {
+    return undefined as T;
+  }
+
+  const text = await res.text();
+  return text ? JSON.parse(text) as T : undefined as T;
 }
 
 async function postForm<T>(path: string, body: FormData): Promise<T> {
@@ -187,6 +203,63 @@ const guestRequestRepo: GuestRequestRepository = {
   },
   async getByPropertyId(propertyId) {
     return getJson(`/api/guest-requests?property_id=${propertyId}`);
+  },
+  async create(input) {
+    return postJson("/api/guest-requests", input);
+  },
+  async update(id, input) {
+    return putJson(`/api/guest-requests/${id}`, input);
+  },
+  async transitionStatus(id, status, assigned_to) {
+    return patchJson(`/api/guest-requests/${id}/status`, { status, assigned_to });
+  },
+  async delete(id) {
+    await deleteJson(`/api/guest-requests/${id}`);
+  },
+};
+
+const tenantRepo: TenantRepository = {
+  async getAll(propertyId, filters) {
+    return getJson(withQuery("/api/tenants", {
+      property_id: propertyId,
+      status: filters?.status,
+    }));
+  },
+  async getById(id) {
+    const res = await apiFetch(apiUrl(`/api/tenants/${id}`));
+    return res.ok ? res.json() : null;
+  },
+  async create(input) {
+    return postJson("/api/tenants", input);
+  },
+  async update(id, input) {
+    return putJson(`/api/tenants/${id}`, input);
+  },
+  async delete(id) {
+    await deleteJson(`/api/tenants/${id}`);
+  },
+};
+
+const stayRegistrationRepo: StayRegistrationRepository = {
+  async getAll(propertyId, filters) {
+    return getJson(withQuery("/api/stay-registrations", {
+      property_id: propertyId,
+      tenant_id: filters?.tenant_id ?? undefined,
+      room_id: filters?.room_id ?? undefined,
+    }));
+  },
+  async getById(id) {
+    const res = await apiFetch(apiUrl(`/api/stay-registrations/${id}`));
+    return res.ok ? res.json() : null;
+  },
+  async create(input) {
+    return postJson("/api/stay-registrations", input);
+  },
+  async update(id, input) {
+    return putJson(`/api/stay-registrations/${id}`, input);
+  },
+  async delete(id) {
+    await deleteJson(`/api/stay-registrations/${id}`);
   },
 };
 
@@ -350,6 +423,8 @@ export const createRestRepositories = (): RepositoryFactory => ({
   rooms: roomRepo,
   reservations: reservationRepo,
   guestRequests: guestRequestRepo,
+  tenantRepository: tenantRepo,
+  stayRegistrationRepository: stayRegistrationRepo,
   maintenance: maintenanceRepo,
   stats: statsRepo,
   channels: channelRepo,

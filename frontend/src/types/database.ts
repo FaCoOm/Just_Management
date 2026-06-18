@@ -127,7 +127,61 @@ export interface GuestRequest {
   request_type: string;
   notes: string;
   is_completed: boolean;
+  status?: GuestRequestStatus;
+  priority?: GuestRequestPriority;
+  assigned_to?: string | null;
+  description?: string | null;
   created_at: string;
+  updated_at?: string;
+  completed_at?: string | null;
+}
+
+export type GuestRequestStatus = "open" | "assigned" | "in_progress" | "fulfilled" | "closed" | "reopened";
+export type GuestRequestPriority = "low" | "medium" | "high" | "urgent";
+export type DriveFolderStatus = "pending" | "created" | "failed";
+export type TenantStatus = "active" | "inactive" | "archived";
+export type IdDocumentType = "passport" | "national_id" | "drivers_license" | "other";
+
+export interface Tenant {
+  id: string;
+  property_id: string;
+  property?: Property;
+  name: string;
+  email?: string | null;
+  phone?: string | null;
+  id_document_type: IdDocumentType;
+  id_document_number: string;
+  nationality?: string | null;
+  lease_start: string;
+  lease_end: string;
+  monthly_rent: number;
+  deposit_amount?: number | null;
+  emergency_contact_name?: string | null;
+  emergency_contact_phone?: string | null;
+  notes?: string | null;
+  status: TenantStatus;
+  is_vip?: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface StayRegistration {
+  id: string;
+  property_id: string;
+  property?: Property;
+  tenant_id?: string | null;
+  tenant?: Tenant;
+  room_id?: string | null;
+  room?: Room;
+  guest_name: string;
+  guest_count: number;
+  registration_date: string;
+  registration_number?: string | null;
+  drive_folder_id?: string | null;
+  drive_folder_status: DriveFolderStatus;
+  notes?: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 export type Severity = "Low" | "Medium" | "High" | "Critical";
