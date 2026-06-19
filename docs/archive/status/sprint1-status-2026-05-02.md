@@ -1,3 +1,8 @@
+> **Historical. Not current runtime truth.** This sprint status is from 2026-05-02 and reflects a retired architectural phase. The current system uses REST repositories + Express + Prisma + Azure PostgreSQL.
+
+
+---
+
 # Sprint 1 Status — 2026-05-02
 
 ## What exists

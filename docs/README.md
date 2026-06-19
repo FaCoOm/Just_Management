@@ -1,72 +1,168 @@
 # 🗂️ Just Management - Documentation Center
 
-Welcome to the consolidated Documentation Center for **Just Management** (Hospitality Operations Dashboard). Current architecture is React + REST repositories + Express + Prisma + Azure PostgreSQL. Older Track A/Track B documents are historical references unless a current guide says otherwise.
+Welcome to the consolidated Documentation Center for **Just Management** (Hospitality Operations Dashboard). Current architecture is React + REST repositories + Express + Prisma + Azure PostgreSQL.
+
+This directory enforces a **purpose-based taxonomy**. Historical (Track A / Supabase-era) docs are preserved but clearly marked. Do not treat archive as current runtime truth.
 
 ---
 
-## 🧭 Documentation Portal
+## 🧭 Quick Start
 
-Use the directories and files mapped below to navigate the project's design and technical specifications.
+| I want to... | Go to |
+| :--- | :--- |
+| Understand the system | `docs/architecture/` |
+| Run the app locally | `docs/guides/local-development/` |
+| Deploy to production | `docs/guides/deployment/` |
+| Read or write a plan | `docs/plans/` |
+| Check QA reports | `docs/reports/qa/` |
+| Find historical decisions | `docs/archive/` |
 
-### 🏛️ Core Architecture & Design Specs
+---
 
-| Document | Description | Target Audience |
+## 📚 Directory Map
+
+### 🏛️ `architecture/` — Systems & Decisions
+
+Current canonical specs only. Historical architecture archived.
+
+| File | Description |
+| :--- | :--- |
+| `system-overview.md` | High-level system architecture |
+| `api-architecture.md` | Express API routing, Prisma, backend design |
+| `operations-pipeline.md` | Domain ops/state-machine reference |
+| `ingestion-sync-reference.md` | Ingestion operational reference |
+| `patterns/` | Architecture patterns analysis |
+
+---
+
+### 🎨 `design/` — Visual System
+
+| File | Description |
+| :--- | :--- |
+| `design-system.md` | Design tokens, HSL colors, typography |
+
+---
+
+### 📖 `guides/` — How-to, Runbooks & Tooling
+
+**`deployment/`**
+| File | Description |
+| :--- | :--- |
+| `hostinger-deployment-plan.md` | Deployment plan and phases |
+| `hostinger-backend-frontend.md` | Deployment guide |
+| `hostinger-env-variables.md` | Env variable matrix |
+| `cors-allowed-origins.md` | CORS configuration |
+
+**`local-development/`**
+| File | Description |
+| :--- | :--- |
+| `local-setup.md` | Local setup steps |
+| `env-variables.md` | Local env variables |
+| `unified-run-and-build.md` | Dev/build commands |
+| `project-structure.md` | Monorepo structure |
+
+**`ingestion/'**
+| File | Description |
+| :--- | :--- |
+| `ingestion-setup.md` | Ingestion setup and user stories |
+| `withone-google-sheets.md` | WithOne Sheets integration |
+
+**`tooling/`**
+| File | Description |
+| :--- | :--- |
+| `opencode-skill-enforcement.md` | AI agent usage rules |
+| `kaggle-mcp-setup.md` | Kaggle MCP setup |
+| `npm-ebusy-opencode-resolution.md` | npm troubleshooting |
+| `one-cli-windows-init-failure.md` | One CLI Windows bug |
+
+---
+
+### 🗺️ `plans/' — Active PRDs & Backlog
+
+| Directory | Contents |
+| :--- | :--- |
+| `active/` | Current implementation plans |
+| `archive/' | Superseded plans (e.g., Supabase-era) |
+
+---
+
+### 📊 `reports/' — Completed Work, Handoffs & Verification
+
+| Directory | Purpose |
+| :--- | :--- |
+| `implementation/` | Feature dashboards, sync reports |
+| `qa/' | Dated QA verification reports |
+| `performance/' | Performance findings |
+| `troubleshooting/' | Frontend fixes, API reconfigurations |
+
+---
+
+### 🔬 `analysis/' — Research & Architecture Analysis
+
+* `ai-tooling/' — AI agent usage, token optimization, platform analysis
+* Other architectural analyses in `analysis/' root (migrated incrementally). |
+
+---
+
+### 📌 `reference/' — External Data & Exports
+
+* `external-exports/' — Notion, Kaggle, etc.
+* `database/' — DB source mappings, raw exports |
+
+---
+
+### 🏛️ `adr/' — Architecture Decision Records
+
+---
+
+### 🚫 `archive/' — Historical / Superseded
+
+| Directory | Contents |
+| :--- | :--- |
+| `implementation/' | Old static/Supabase implementations |
+| `plans/' | Retired roadmaps |
+| `status/' | Historical sprint statuses |
+| `sensitive-redacted/' | Documents with redacted credentials |
+
+> All archived files include a `> Historical. Not current runtime truth.` banner.
+
+---
+
+## 🗄️ Pre-existing Directories (Historical)
+
+These directories still contain files from earlier project phases and will be gradually consolidated:
+
+| Directory | Contents | Future |
 | :--- | :--- | :--- |
-| [ARCHITECTURE.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/ARCHITECTURE.md) | High-level system architecture, technology stacks, data access contracts, and environment. | Developers & Architects |
-| [API_ARCHITECTURE_GUIDE.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/API_ARCHITECTURE_GUIDE.md) | Elaborates on Express API routing, Prisma interactions, and backend design details. | Backend Developers |
-| [DESIGN.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/DESIGN.md) | Visual design tokens, HSL colors (Harbor/Brass), typography, and component rules. | Frontend Developers & UI Designers |
-| [IMPLEMENTATION.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/IMPLEMENTATION.md) | Initial implementation details and historical architecture context. | Developers |
-| [implementation-notes.html](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/implementation-notes.html) | Direct HTML logs detailing architectural transitions. | Developers |
+| guidelines/ | Build execution guidelines | Review and move |
+| implementation/ | Session handoffs | Move to `reports/implementation/` |
+| qa/, qa-testing/ | Test plans and walkthroughs | Move to `reports/qa/' or `archive/' |
+| database_design/, db_design/ | Raw CSVs, schema refs | Consider `reference/database/' |
+| superpowers/ | Plans and specs | Consider `plans/' or `reports/' |
 
 ---
 
-### 📊 Project Status & Sprints
+## 🏗️ Allocation Rules
 
-| Document | Description | Directory |
-| :--- | :--- | :--- |
-| [status.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/status.md) | High-level summary of the overall project status. | `docs/` |
-| [NEXT_STEPS.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/NEXT_STEPS.md) | Upcoming backlog, user feedback loop, and critical tasks. | `docs/` |
-| [SPRINT1_STATUS.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/SPRINT1_STATUS.md) | Review of Sprint 1 goals, completed items, and remaining items. | `docs/` |
-| [Scrum Backlog & Sprints.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/plans/Scrum%20Backlog%20%26%20Sprints.md) | Detailed Scrum items, backlog priorities, and sprint timeline. | `docs/plans/` |
+**Never put new documents in `docs/' root.** Use this table:
 
----
+| Document Type | Destination |
+| :--- | :--- |
+| Architecture / API spec | `architecture/' |
+| Design / UI spec | `design/' |
+| How-to, runbook, tooling | `guides/<topic>/' |
+| Active PRD, backlog | `plans/active/' |
+| Completed report / handoff | `reports/<category>/' |
+| Research / AI analysis | `analysis/<subtopic>/' |
+| External data / exports | `reference/<category>/' |
+| Historical / retired | `archive/' |
 
-### 🗺️ Project Directories & Folders
-
-#### 📋 1. [plans/](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/plans) — Product Requirements & Technical Plans
-*   [Dual-Architecture PRD.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/plans/Dual-Architecture%20PRD.md) — Historical PRD for the retired dual-architecture switching plan.
-*   [m-management-ingestion-pipeline-implementation-plan.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/plans/m-management-ingestion-pipeline-implementation-plan.md) — Plan for spreadsheets normalizer and ingest pipeline.
-*   [track-b-technical-validation-plan.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/plans/track-b-technical-validation-plan.md) — Historical/current-runtime technical verification plan.
-*   [manual-reservation-creation-2026-05-26.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/plans/manual-reservation-creation-2026-05-26.md) — Backend and frontend execution plans.
-*   [qa-testing-stack-implementation-2026-06-09.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/plans/qa-testing-stack-implementation-2026-06-09.md) — Playwright e2e + axe-core + Lighthouse CI + GitHub Actions, with Browserbase Browse CLI local-mode exploratory QA path.
-
-#### 🧠 2. [analysis/](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/analysis) — Architectural & Cost Optimization Reports
-*   [token-cost-optimization-report.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/analysis/token-cost-optimization-report.md) — Token-efficient guidelines for agent context.
-*   [current-orchestration-efficiency-guide.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/analysis/current-orchestration-efficiency-guide.md) — Multi-agent workflow telemetry and efficiency patterns.
-*   [omo-context-architecture-guide.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/analysis/omo-context-architecture-guide.md) — Guide on Context management, prompts, and agent behaviors.
-*   [frontend-pages-reference.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/analysis/frontend-pages-reference.md) — Stakeholder-friendly page inventory with user stories and Mermaid sequence diagrams for every routed frontend page.
-
-#### 💾 3. [database_design/](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/database_design) & [db_design/](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/db_design) — Schemas & Raw Source Mappings
-*   [database-implementation-overview.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/db_design/database-implementation-overview.md) — Database design models, constraints, and tables.
-*   [schema-and-listing-sync-audit.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/db_design/schema-and-listing-sync-audit.md) — Database state validation and classification auditing.
-*   [listings.csv](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/database_design/listings.csv) & [reservations.csv](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/database_design/reservations.csv) — Sample raw CSV files for ingestion testing.
-*   [db-schema-airbnb.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/database_design/db-schema-airbnb.md) — Reference-only PostgreSQL schema structures.
-
-#### ⚙️ 4. [implementation/](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/implementation) & [guidelines/](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/guidelines) — Dev Guidelines & Session Logs
-*   [opencode-skill-enforcement-guide.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/opencode-skill-enforcement-guide.md) — Custom skill loading and verification criteria.
-*   [low-token-continuation-handoff-2026-05-26.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/implementation/low-token-continuation-handoff-2026-05-26.md) — Continuation state handoff report.
-*   [manual-reservation-effort-and-token-cost-2026-05-26.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/implementation/manual-reservation-effort-and-token-cost-2026-05-26.md) — Token analysis and implementation cost telemetry.
-
-#### 💡 5. [resources/](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/resources) — Developer Support & Telemetry Reports
-Contains 16 detailed developer guides, reports, and troubleshooting references:
-*   [BACKEND_ANALYSIS.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/resources/BACKEND_ANALYSIS.md) — Deep Express backend structure and endpoint logic analysis.
-*   [agent_input_context_mechanics.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/resources/agent_input_context_mechanics.md) — Deep-dive into AI agent context size optimization.
-*   [ai_usage_efficiency_report.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/resources/ai_usage_efficiency_report.md) — Efficiency recommendations for AI model execution.
-*   [antigravity-vs-cursor-insights-2026.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/resources/antigravity-vs-cursor-insights-2026.md) — Platform comparison notes on developer workspace integration.
-*   [local_setup_guide.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/resources/local_setup_guide.md) — Step-by-step local development setup for React/Express/Prisma.
-*   [performance_profiling_report.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/resources/performance_profiling_report.md) — Performance profiles and bundle-size analysis.
+Naming: **lower-kebab-case**.md`. Avoid: spaces, CamelCase, underscores, generic names.
 
 ---
 
-> [!TIP]
-> Keep this folder tidy! When creating a new design schema or technical plan, place it in the appropriate `docs/` subfolder, and remember to update this `README.md` to keep our documentation easily navigable.
+## ✅ Status
+
+- **Last reorganization**: 2026-06-19
+- **Structure version**: 2.0
+- **Runtime**: REST repositories + Express + Prisma + Azure PostgreSQL

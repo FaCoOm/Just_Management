@@ -1,0 +1,12 @@
+{
+  "id": "T-c1c5a90f-53ba-48a0-9acb-22989df4cc0f",
+  "subject": "Plan atomic commits",
+  "description": "Detect commit style and split changed files into atomic commit groups.",
+  "status": "completed",
+  "activeForm": "Planning atomic commits",
+  "blocks": [],
+  "blockedBy": [
+    "T-1b41ecd6-23a8-4c86-a0fd-ee07287cf63a"
+  ],
+  "threadID": "ses_122c56b51ffeImtbP840Jn6mbg"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "T-377f25bb-c7f5-41db-9f29-9b485b1eb76c",
+  "subject": "Audit operations pipeline current state",
+  "description": "Inspect repo for already-completed operations pipeline work against tasks.md/design_plan.md.",
+  "status": "completed",
+  "activeForm": "Auditing operations pipeline state",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "note": "Resumed after compaction; reconstructing operations pipeline state; ULW note C:\\Users\\FATE_C~1\\AppData\\Local\\Temp\\ulw-20260619-120615.49a6cb.md",
+    "result": "Audit recovered operations pipeline state; backend/frontend missing repo gaps identified; verification note at C:\\Users\\FATE_C~1\\AppData\\Local\\Temp\\ulw-20260619-120615.49a6cb.md"
+  },
+  "threadID": "ses_1229fa060ffe8Me6fJKKUBPiR1"
+}

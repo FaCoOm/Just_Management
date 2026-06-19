@@ -1,3 +1,8 @@
+> **Historical. Not current runtime truth.** This roadmap reflects a Supabase-centric future that was retired. The current system uses REST repositories + Express + Prisma + Azure PostgreSQL.
+
+
+---
+
 # Next Steps for Latte Lounge Dashboard
 
 ## Phase 1: Data Integration (Recommended)

@@ -1,0 +1,10 @@
+{
+  "id": "T-1b41ecd6-23a8-4c86-a0fd-ee07287cf63a",
+  "subject": "Inspect git state",
+  "description": "Gather status, diffs, recent history, branch/upstream context before committing.",
+  "status": "completed",
+  "activeForm": "Inspecting git state",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_122c56b51ffeImtbP840Jn6mbg"
+}

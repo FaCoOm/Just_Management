@@ -1,0 +1,17 @@
+{
+  "id": "T-dcffdb5c-88c1-4c54-8e63-207b69a1e0e2",
+  "subject": "Create operations task analysis",
+  "description": "Create a pre-implementation analysis document from tasks.md summarizing planned changes, dependency waves, schema additions, API/frontend impacts, verification gates, and database schema preview before implementation.",
+  "status": "completed",
+  "activeForm": "Creating pre-implementation analysis",
+  "blocks": [],
+  "blockedBy": [],
+  "owner": "Hephaestus",
+  "metadata": {
+    "scope": "docs only",
+    "source": "tasks.md/design_plan.md"
+  },
+  "repoURL": "",
+  "parentID": "",
+  "threadID": "ses_122a056c2ffevhEFBGuD5MZmbv"
+}

@@ -1,0 +1,13 @@
+{
+  "id": "T-72e99e15-9c7b-4e52-8121-c86b5d39d797",
+  "subject": "Patch missing operations pipeline gaps",
+  "description": "Implement missing schema/backend/frontend/doc/test gaps discovered from audit.",
+  "status": "in_progress",
+  "activeForm": "Patching operations pipeline gaps",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "result": "Patched operations pipeline schema/backend/frontend repository gaps and tests; final review pending."
+  },
+  "threadID": "ses_1229fa060ffe8Me6fJKKUBPiR1"
+}

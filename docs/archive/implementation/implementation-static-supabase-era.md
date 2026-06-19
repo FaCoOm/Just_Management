@@ -1,3 +1,8 @@
+> **Historical. Not current runtime truth.** This document describes a retired architecture (static data with optional Supabase). The current system uses REST repositories + Express + Prisma + Azure PostgreSQL.
+
+
+---
+
 # Latte Lounge Executive Multi-Property Portfolio Dashboard
 ## Implementation Summary
 

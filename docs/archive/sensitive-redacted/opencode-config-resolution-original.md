@@ -1,3 +1,6 @@
+> **Security Warning:**文件中包含未redacted的敏感凭证。** Do not share this file. The credential inside should be treated as compromised and rotated immediately.
+
+
 # Troubleshooting Summary: Opencode Configuration Fix for One MCP
 
 ## 1. Issue Description

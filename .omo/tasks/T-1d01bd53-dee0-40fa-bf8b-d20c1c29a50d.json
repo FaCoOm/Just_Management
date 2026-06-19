@@ -1,0 +1,12 @@
+{
+  "id": "T-1d01bd53-dee0-40fa-bf8b-d20c1c29a50d",
+  "subject": "Commit and verify",
+  "description": "Stage intended files, create commits, confirm clean worktree/history.",
+  "status": "completed",
+  "activeForm": "Committing and verifying",
+  "blocks": [],
+  "blockedBy": [
+    "T-c1c5a90f-53ba-48a0-9acb-22989df4cc0f"
+  ],
+  "threadID": "ses_122c56b51ffeImtbP840Jn6mbg"
+}
