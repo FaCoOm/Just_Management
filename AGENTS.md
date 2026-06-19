@@ -19,14 +19,14 @@ Before substantial work:
 **Branch:** main
 
 ## OVERVIEW
-Hospitality operations dashboard for 8 Vietnamese properties. Track B runtime: React 19 + TypeScript + Vite 7 frontend, TanStack Query/Router, Tailwind CSS v4/shadcn UI, Express + Prisma backend, Azure PostgreSQL.
+Hospitality operations dashboard for 8 Vietnamese properties. Current REST runtime: React 19 + TypeScript + Vite 7 frontend, TanStack Query/Router, Tailwind CSS v4/shadcn UI, Express + Prisma backend, Azure PostgreSQL.
 
 ## STRUCTURE
 ```text
 Just_Management/
 ├── frontend/                  # React 19 + Vite 7 workspace; routes, components, hooks, repositories
 ├── backend/                   # Express API, Prisma schema/migrations, ingestion, integrations
-├── backend/prisma/            # Canonical Track B Azure PostgreSQL schema and migration history
+├── backend/prisma/            # Canonical Azure PostgreSQL schema and migration history
 ├── backend/src/ingest/        # Spreadsheet/provider ingest pipeline (parser → normalizer → services)
 ├── backend/src/integrations/  # Provider seam: WithOne, Google Drive/Gmail/Sheets
 ├── docs/                      # Analysis, plans, qa, db_design — verify against code first
@@ -41,11 +41,11 @@ Just_Management/
 - `frontend/src/components/dashboard/dashboard-page.tsx` assembles main dashboard panels.
 - `frontend/src/hooks/use-dashboard-data.ts` is the dashboard data contract; it calls `createRestRepositories()`.
 - `frontend/src/hooks/use-page-data.ts` supplies reservations, guests, rooms, and maintenance pages.
-- `frontend/src/lib/repositories/index.ts` exports Track B REST repositories.
+- `frontend/src/lib/repositories/index.ts` exports current REST repositories.
 - `backend/src/index.ts` registers middleware, dashboard summary, list/detail routes, and calls `registerIngestRoutes`, `registerOneRoutes`, `registerTaxExportRoutes`.
 - `backend/src/ingest/routes.ts` registers `/api/ingest/*`; `backend/src/routes/one.ts` registers `/api/one/*`; `backend/src/tax-export/routes.ts` registers tax-export endpoints.
 - `backend/src/ingest/watchers/folder.ts` is the folder-watch ingest entry; `backend/src/dashboard/occupancy.ts` derives occupancy metrics.
-- `backend/prisma/schema.prisma` is the canonical Track B schema source.
+- `backend/prisma/schema.prisma` is the canonical Azure PostgreSQL schema source.
 
 ## WHERE TO LOOK
 | Task | Location | Notes |
@@ -60,7 +60,7 @@ Just_Management/
 | Backend API contract | `backend/src/index.ts` | Response shapes must satisfy repository types. |
 | Ingestion flow | `backend/src/ingest/` | Parser/normalizer/routes/services split. |
 | Prisma schema | `backend/prisma/schema.prisma` | Edit before migrations. |
-| Azure-safe migrations | `backend/prisma/migrations/` | Deployable Track B history. |
+| Azure-safe migrations | `backend/prisma/migrations/` | Deployable Prisma/Azure history. |
 | Theme tokens/global styles | `frontend/src/index.css` | Harbor/Brass + typography tokens. |
 
 ## CODE MAP
@@ -76,7 +76,7 @@ Just_Management/
 | `schema.prisma` | Prisma schema | `backend/prisma/schema.prisma` | Azure PostgreSQL model truth. |
 
 ## CONVENTIONS
-- Track B-only current code path: frontend calls REST repositories; no Supabase runtime adapter exists in `frontend/src/lib/repositories/`.
+- Current code path: frontend calls REST repositories; no Supabase runtime adapter exists in `frontend/src/lib/repositories/`.
 - Booking source of truth is `reservations`; `guests` is legacy compatibility for guest-labeled UI.
 - Frontend business/data logic belongs in hooks or repositories, not presentation panels or UI primitives.
 - Backend owns Prisma access; frontend owns repository interfaces and REST calls only.
@@ -146,6 +146,6 @@ npm run verify:all
 - `frontend/src/lib/repositories/AGENTS.md` — frontend repository contract rules.
 
 ## NOTES
-- README still describes old dual Track A/B switching; current code path is Track B REST-only.
+- Older docs may describe retired Track A/B switching; current code path is REST/Prisma/Azure only.
 - `.omo/`, `.sisyphus/`, `.playwright-mcp/`, `.idea/`, and `.agent/` are tooling/state unless task explicitly targets agent config.
 - Do not read content from `.understand-anything/`, `resources/`, or `logs.txt`. They are gitignored local-only agent scratch and research caches; treat them as opaque and never quote, summarize, or condition decisions on their content.
