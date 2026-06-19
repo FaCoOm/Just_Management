@@ -14,8 +14,8 @@ import {
 function makeGuestRequest(overrides: Partial<GuestRequestRecord> = {}): GuestRequestRecord {
   return {
     id: "request-1",
-    guest_id: "guest-1",
-    room_id: "room-1",
+    guest_id: null,
+    room_id: null,
     request_type: "towels",
     notes: "",
     description: "Need extra towels",
@@ -26,7 +26,7 @@ function makeGuestRequest(overrides: Partial<GuestRequestRecord> = {}): GuestReq
     created_at: new Date("2026-06-18T01:00:00.000Z"),
     updated_at: new Date("2026-06-18T01:00:00.000Z"),
     completed_at: null,
-    reservation_id: null,
+    reservation_id: "reservation-1",
     property_id: "property-1",
     ...overrides,
   };
@@ -104,9 +104,7 @@ function createPrismaMock(options: {
 
 describe("createRequest", () => {
   const validInput = {
-    guest_id: "guest-1",
-    room_id: "room-1",
-    property_id: "property-1",
+    reservation_id: "reservation-1",
     request_type: "towels",
     description: "Need extra towels",
     priority: "high",
@@ -119,18 +117,22 @@ describe("createRequest", () => {
     assert.equal(result.status, 201);
     assert.equal(result.body.status, "open");
     assert.equal(result.body.is_completed, false);
+    assert.equal(result.body.guest_id, null);
+    assert.equal(result.body.room_id, null);
+    assert.equal(result.body.reservation_id, "reservation-1");
+    assert.equal(result.body.property_id, "property-1");
   });
 
   it("returns 400 when required fields are missing", async () => {
     const { prisma } = createPrismaMock();
-    const result = await createRequest(prisma, { guest_id: "guest-1" });
+    const result = await createRequest(prisma, { request_type: "towels" });
     assert.equal(result.status, 400);
     assert.ok(Array.isArray(result.body.errors));
   });
 
   it("returns 404 when guest is missing", async () => {
     const { prisma } = createPrismaMock({ guestExists: false });
-    const result = await createRequest(prisma, validInput);
+    const result = await createRequest(prisma, { ...validInput, guest_id: "missing" });
     assert.equal(result.status, 404);
   });
 });
@@ -189,11 +191,18 @@ describe("guest request CRUD", () => {
 describe("guest request status transitions", () => {
   const validCases: Array<{ from: GuestRequestRecord["status"]; to: GuestRequestRecord["status"]; assigned_to?: string | null; expectedCompleted: boolean }> = [
     { from: "open", to: "assigned", assigned_to: "staff-1", expectedCompleted: false },
+    { from: "open", to: "in_progress", assigned_to: "staff-1", expectedCompleted: false },
+    { from: "open", to: "closed", assigned_to: null, expectedCompleted: true },
     { from: "assigned", to: "in_progress", assigned_to: "staff-1", expectedCompleted: false },
+    { from: "assigned", to: "closed", assigned_to: "staff-1", expectedCompleted: true },
     { from: "in_progress", to: "fulfilled", assigned_to: "staff-1", expectedCompleted: true },
+    { from: "in_progress", to: "closed", assigned_to: "staff-1", expectedCompleted: true },
     { from: "fulfilled", to: "closed", assigned_to: "staff-1", expectedCompleted: true },
+    { from: "fulfilled", to: "reopened", assigned_to: "staff-1", expectedCompleted: false },
     { from: "closed", to: "reopened", assigned_to: "staff-1", expectedCompleted: false },
     { from: "reopened", to: "assigned", assigned_to: "staff-2", expectedCompleted: false },
+    { from: "reopened", to: "in_progress", assigned_to: "staff-2", expectedCompleted: false },
+    { from: "reopened", to: "closed", assigned_to: "staff-2", expectedCompleted: true },
   ];
 
   for (const testCase of validCases) {

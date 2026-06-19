@@ -18,8 +18,8 @@ function makeGuestRequest(
 ): GuestRequestRecord {
   return {
     id: "request-1",
-    guest_id: "guest-1",
-    room_id: "room-1",
+    guest_id: null,
+    room_id: null,
     request_type: "towels",
     notes: "Initial notes",
     description: "Need extra towels",
@@ -30,7 +30,7 @@ function makeGuestRequest(
     created_at: new Date("2026-06-18T01:00:00.000Z"),
     updated_at: new Date("2026-06-18T01:00:00.000Z"),
     completed_at: null,
-    reservation_id: null,
+    reservation_id: "reservation-1",
     property_id: "property-1",
     ...overrides,
   };
@@ -192,9 +192,7 @@ describe("Guest Request E2E Lifecycle — valid transitions", () => {
       try {
         // Create the request
         const createRes = await ts.request("POST", "/api/guest-requests", {
-          guest_id: "guest-1",
-          room_id: "room-1",
-          property_id: "property-1",
+          reservation_id: "reservation-1",
           request_type: "towels",
           priority: "medium",
         });
@@ -251,16 +249,14 @@ describe("Guest Request E2E Lifecycle — valid transitions", () => {
 // ---------------------------------------------------------------------------
 
 describe("Guest Request E2E Lifecycle — invalid transitions", () => {
-  it("rejects Open → Closed with 422", async () => {
-    const { prisma } = createPrismaMock(
-      createPrismaMock({ request: makeGuestRequest({ status: "open" }) }).prisma,
-    );
-    const ts = await startTestServer(prisma);
-    try {
-      const res = await ts.request("PATCH", "/api/guest-requests/request-1", {
-        status: "closed",
-        assigned_to: "staff-1",
-      });
+    it("rejects Open → Fulfilled with 422", async () => {
+      const { prisma } = createPrismaMock({ request: makeGuestRequest({ status: "open" }) });
+      const ts = await startTestServer(prisma);
+      try {
+        const res = await ts.request("PATCH", "/api/guest-requests/request-1", {
+          status: "fulfilled",
+          assigned_to: "staff-1",
+        });
       assert.equal(res.status, 422);
       const body = res.body as { error: string };
       assert.equal(body.error, "Invalid state transition");
@@ -269,12 +265,10 @@ describe("Guest Request E2E Lifecycle — invalid transitions", () => {
     }
   });
 
-  it("rejects Fulfilled → In_Progress with 422", async () => {
-    const { prisma } = createPrismaMock(
-      createPrismaMock({
+    it("rejects Fulfilled → In_Progress with 422", async () => {
+      const { prisma } = createPrismaMock({
         request: makeGuestRequest({ status: "fulfilled", assigned_to: "staff-1", is_completed: true }),
-      }).prisma,
-    );
+      });
     const ts = await startTestServer(prisma);
     try {
       const res = await ts.request("PATCH", "/api/guest-requests/request-1", {
@@ -289,17 +283,15 @@ describe("Guest Request E2E Lifecycle — invalid transitions", () => {
     }
   });
 
-  it("rejects Closed → Fulfilled with 422", async () => {
-    const { prisma } = createPrismaMock(
-      createPrismaMock({
+    it("rejects Closed → Fulfilled with 422", async () => {
+      const { prisma } = createPrismaMock({
         request: makeGuestRequest({
           status: "closed",
           assigned_to: "staff-1",
           is_completed: true,
           completed_at: new Date("2026-06-18T02:00:00.000Z"),
         }),
-      }).prisma,
-    );
+      });
     const ts = await startTestServer(prisma);
     try {
       const res = await ts.request("PATCH", "/api/guest-requests/request-1", {

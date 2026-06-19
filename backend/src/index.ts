@@ -19,6 +19,11 @@ import { applyRoomStatusUpdate } from "./room-status";
 import { registerTenantRoutes } from "./routes/tenants";
 import { registerStayRegistrationRoutes } from "./routes/stay-registrations";
 import { registerGuestRequestRoutes } from "./routes/guest-requests";
+import { registerStayExperienceRoutes } from "./routes/stay-experiences";
+import { registerCheckInOutRoutes } from "./routes/check-in-out";
+import { registerFolioRoutes } from "./routes/folios";
+import { createDiningEvent } from "./services/dining-event-service";
+import { createStaff } from "./services/staff-service";
 import path from "node:path";
 
 const app = express();
@@ -99,6 +104,9 @@ registerTaxExportRoutes(app, prisma);
 registerTenantRoutes(app, prisma);
 registerStayRegistrationRoutes(app, prisma);
 registerGuestRequestRoutes(app, prisma);
+registerStayExperienceRoutes(app, prisma);
+registerCheckInOutRoutes(app, prisma);
+registerFolioRoutes(app, prisma);
 
 function getVietnamToday() {
   const parts = new Intl.DateTimeFormat("en-CA", {
@@ -1193,6 +1201,15 @@ app.get("/api/dining-events", asyncHandler(async (req, res) => {
   })));
 }));
 
+app.post("/api/dining-events", asyncHandler(async (req, res) => {
+  setNoStore(res);
+  const body = req.body && typeof req.body === "object" && !Array.isArray(req.body)
+    ? req.body as Record<string, unknown>
+    : {};
+  const result = await createDiningEvent(prisma, body);
+  res.status(result.status).json(result.body);
+}));
+
 app.get("/api/staff", asyncHandler(async (_req, res) => {
   setNoStore(res);
   const staff = await prisma.staff_members.findMany({
@@ -1209,6 +1226,15 @@ app.get("/api/staff", asyncHandler(async (_req, res) => {
   });
 
   res.json(staff);
+}));
+
+app.post("/api/staff", asyncHandler(async (req, res) => {
+  setNoStore(res);
+  const body = req.body && typeof req.body === "object" && !Array.isArray(req.body)
+    ? req.body as Record<string, unknown>
+    : {};
+  const result = await createStaff(prisma, body);
+  res.status(result.status).json(result.body);
 }));
 
 app.get("/api/security/audit", asyncHandler(async (req, res) => {

@@ -38,8 +38,8 @@ describe("guest request Prisma schema", () => {
     const block = modelBlock("guest_requests");
 
     assertField(block, /id\s+String\s+@id @default\(uuid\(\)\) @db\.Uuid/);
-    assertField(block, /guest_id\s+String\s+@db\.Uuid/);
-    assertField(block, /room_id\s+String\s+@db\.Uuid/);
+    assertField(block, /guest_id\s+String\?\s+@db\.Uuid/);
+    assertField(block, /room_id\s+String\?\s+@db\.Uuid/);
     assertField(block, /request_type\s+String/);
     assertField(block, /notes\s+String\s+@default\(""\)/);
     assertField(block, /description\s+String\?/);
@@ -58,10 +58,10 @@ describe("guest request Prisma schema", () => {
     const block = modelBlock("guest_requests");
 
     assertField(block, /is_completed\s+Boolean\s+@default\(false\)/);
-    assertField(block, /guest\s+guests\s+@relation\(fields: \[guest_id\], references: \[id\], onDelete: Restrict\)/);
+    assertField(block, /guest\s+guests\?\s+@relation\(fields: \[guest_id\], references: \[id\], onDelete: SetNull\)/);
     assertField(block, /property\s+properties\?\s+@relation\(fields: \[property_id\], references: \[id\], onDelete: SetNull\)/);
     assertField(block, /reservation\s+reservations\?\s+@relation\(fields: \[reservation_id\], references: \[id\], onDelete: SetNull\)/);
-    assertField(block, /room\s+rooms\s+@relation\(fields: \[room_id\], references: \[id\], onDelete: Restrict\)/);
+    assertField(block, /room\s+rooms\?\s+@relation\(fields: \[room_id\], references: \[id\], onDelete: SetNull\)/);
     assertField(block, /@@index\(\[guest_id\]\)/);
     assertField(block, /@@index\(\[property_id\]\)/);
     assertField(block, /@@index\(\[status\]\)/);

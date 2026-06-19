@@ -3,8 +3,8 @@ export type GuestRequestPriority = "low" | "medium" | "high" | "urgent";
 
 export type GuestRequestRecord = {
   id: string;
-  guest_id: string;
-  room_id: string;
+  guest_id: string | null;
+  room_id: string | null;
   request_type: string;
   notes: string;
   description: string | null;
@@ -51,17 +51,17 @@ type ServiceCreated = { status: 201; body: GuestRequestRecord };
 type ServiceOk = { status: 200; body: GuestRequestRecord };
 type ServiceList = { status: 200; body: GuestRequestRecord[] };
 
-const REQUIRED_CREATE_FIELDS = ["guest_id", "room_id", "request_type"] as const;
+const REQUIRED_CREATE_FIELDS = ["reservation_id", "request_type"] as const;
 const VALID_STATUSES = new Set<GuestRequestStatus>(["open", "assigned", "in_progress", "fulfilled", "closed", "reopened"]);
 const VALID_PRIORITIES = new Set<GuestRequestPriority>(["low", "medium", "high", "urgent"]);
 const COMPLETED_STATUSES = new Set<GuestRequestStatus>(["fulfilled", "closed"]);
 const ALLOWED_TRANSITIONS: Record<GuestRequestStatus, GuestRequestStatus[]> = {
-  open: ["assigned"],
-  assigned: ["in_progress"],
-  in_progress: ["fulfilled"],
-  fulfilled: ["closed"],
+  open: ["assigned", "in_progress", "closed"],
+  assigned: ["in_progress", "closed"],
+  in_progress: ["fulfilled", "closed"],
+  fulfilled: ["closed", "reopened"],
   closed: ["reopened"],
-  reopened: ["assigned"],
+  reopened: ["assigned", "in_progress", "closed"],
 };
 const UPDATABLE_FIELDS = new Set(["request_type", "notes", "description", "priority", "assigned_to", "reservation_id", "property_id"]);
 
@@ -120,25 +120,27 @@ export async function createRequest(
     return { status: 400, body: { error: "Invalid guest request input", errors } };
   }
 
-  const guest = await prisma.guests.findUnique({ where: { id: String(input.guest_id) } });
-  if (!guest) return { status: 404, body: { error: "Guest not found" } };
+  if (input.guest_id !== undefined && input.guest_id !== null && String(input.guest_id).trim() !== "") {
+    const guest = await prisma.guests.findUnique({ where: { id: String(input.guest_id) } });
+    if (!guest) return { status: 404, body: { error: "Guest not found", errors: [{ field: "guest_id", message: "Guest not found" }] } };
+  }
 
-  const room = await prisma.rooms.findUnique({ where: { id: String(input.room_id) } });
-  if (!room) return { status: 404, body: { error: "Room not found" } };
+  if (input.room_id !== undefined && input.room_id !== null && String(input.room_id).trim() !== "") {
+    const room = await prisma.rooms.findUnique({ where: { id: String(input.room_id) } });
+    if (!room) return { status: 404, body: { error: "Room not found", errors: [{ field: "room_id", message: "Room not found" }] } };
+  }
 
   if (input.property_id !== undefined && input.property_id !== null) {
     const property = await prisma.properties.findUnique({ where: { id: String(input.property_id) } });
     if (!property) return { status: 404, body: { error: "Property not found" } };
   }
 
-  if (input.reservation_id !== undefined && input.reservation_id !== null) {
-    const reservation = await prisma.reservations.findUnique({ where: { id: String(input.reservation_id) } });
-    if (!reservation) return { status: 404, body: { error: "Reservation not found" } };
-  }
+  const reservation = await prisma.reservations.findUnique({ where: { id: String(input.reservation_id) } });
+  if (!reservation) return { status: 404, body: { error: "Reservation not found", errors: [{ field: "reservation_id", message: "Reservation not found" }] } };
 
   const data: Record<string, unknown> = {
-    guest_id: String(input.guest_id),
-    room_id: String(input.room_id),
+    guest_id: input.guest_id === undefined || input.guest_id === null || String(input.guest_id).trim() === "" ? null : String(input.guest_id),
+    room_id: input.room_id === undefined || input.room_id === null || String(input.room_id).trim() === "" ? null : String(input.room_id),
     request_type: String(input.request_type),
     notes: input.notes === undefined || input.notes === null ? "" : String(input.notes),
     status: "open",
@@ -149,8 +151,8 @@ export async function createRequest(
 
   if (input.description !== undefined) data.description = input.description === null ? null : String(input.description);
   if (input.assigned_to !== undefined) data.assigned_to = input.assigned_to === null ? null : String(input.assigned_to);
-  if (input.reservation_id !== undefined) data.reservation_id = input.reservation_id === null ? null : String(input.reservation_id);
-  if (input.property_id !== undefined) data.property_id = input.property_id === null ? null : String(input.property_id);
+  data.reservation_id = String(input.reservation_id);
+  data.property_id = input.property_id === undefined || input.property_id === null ? reservation.property_id ?? null : String(input.property_id);
 
   const request = await prisma.guest_requests.create({ data });
   return { status: 201, body: request };

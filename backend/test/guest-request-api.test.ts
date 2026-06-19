@@ -18,8 +18,8 @@ function makeGuestRequest(
 ): GuestRequestRecord {
   return {
     id: "request-1",
-    guest_id: "guest-1",
-    room_id: "room-1",
+    guest_id: null,
+    room_id: null,
     request_type: "towels",
     notes: "Initial notes",
     description: "Need extra towels",
@@ -30,7 +30,7 @@ function makeGuestRequest(
     created_at: new Date("2026-06-18T01:00:00.000Z"),
     updated_at: new Date("2026-06-18T01:00:00.000Z"),
     completed_at: null,
-    reservation_id: null,
+    reservation_id: "reservation-1",
     property_id: "property-1",
     ...overrides,
   };
@@ -172,9 +172,7 @@ describe("POST /api/guest-requests", () => {
   it("returns 201 with open status and is_completed false for valid input", async () => {
     ts = await startTestServer(createPrismaMock().prisma);
     const validInput = {
-      guest_id: "guest-1",
-      room_id: "room-1",
-      property_id: "property-1",
+      reservation_id: "reservation-1",
       request_type: "towels",
       description: "Need extra towels",
       priority: "high",
@@ -182,24 +180,32 @@ describe("POST /api/guest-requests", () => {
     const res = await ts.request("POST", "/api/guest-requests", validInput);
 
     assert.equal(res.status, 201);
-    const body = res.body as {
-      id: string;
-      status: string;
+      const body = res.body as {
+        id: string;
+        guest_id: string | null;
+        room_id: string | null;
+        reservation_id: string;
+        property_id: string;
+        status: string;
       is_completed: boolean;
       completed_at: string | null;
       priority: string;
     };
     assert.ok(body.id);
-    assert.equal(body.status, "open");
-    assert.equal(body.is_completed, false);
-    assert.equal(body.completed_at, null);
-    assert.equal(body.priority, "high");
+      assert.equal(body.status, "open");
+      assert.equal(body.is_completed, false);
+      assert.equal(body.completed_at, null);
+      assert.equal(body.priority, "high");
+      assert.equal(body.guest_id, null);
+      assert.equal(body.room_id, null);
+      assert.equal(body.reservation_id, "reservation-1");
+      assert.equal(body.property_id, "property-1");
   });
 
   it("returns 400 when required fields are missing", async () => {
     ts = await startTestServer(createPrismaMock().prisma);
     const res = await ts.request("POST", "/api/guest-requests", {
-      guest_id: "guest-1",
+      request_type: "towels",
     });
 
     assert.equal(res.status, 400);
@@ -212,8 +218,8 @@ describe("POST /api/guest-requests", () => {
   it("returns 400 for invalid priority", async () => {
     ts = await startTestServer(createPrismaMock().prisma);
     const res = await ts.request("POST", "/api/guest-requests", {
+      reservation_id: "reservation-1",
       guest_id: "guest-1",
-      room_id: "room-1",
       request_type: "towels",
       priority: "bogus",
     });
@@ -224,8 +230,8 @@ describe("POST /api/guest-requests", () => {
   it("returns 404 when guest is missing", async () => {
     ts = await startTestServer(createPrismaMock({ guestExists: false }).prisma);
     const res = await ts.request("POST", "/api/guest-requests", {
+      reservation_id: "reservation-1",
       guest_id: "missing",
-      room_id: "room-1",
       request_type: "towels",
     });
 
@@ -235,7 +241,7 @@ describe("POST /api/guest-requests", () => {
   it("returns 404 when room is missing", async () => {
     ts = await startTestServer(createPrismaMock({ roomExists: false }).prisma);
     const res = await ts.request("POST", "/api/guest-requests", {
-      guest_id: "guest-1",
+      reservation_id: "reservation-1",
       room_id: "missing",
       request_type: "towels",
     });
@@ -246,8 +252,7 @@ describe("POST /api/guest-requests", () => {
   it("returns 404 when property is missing", async () => {
     ts = await startTestServer(createPrismaMock({ propertyExists: false }).prisma);
     const res = await ts.request("POST", "/api/guest-requests", {
-      guest_id: "guest-1",
-      room_id: "room-1",
+      reservation_id: "reservation-1",
       property_id: "missing",
       request_type: "towels",
     });
@@ -258,8 +263,6 @@ describe("POST /api/guest-requests", () => {
   it("returns 404 when reservation is missing", async () => {
     ts = await startTestServer(createPrismaMock({ reservationExists: false }).prisma);
     const res = await ts.request("POST", "/api/guest-requests", {
-      guest_id: "guest-1",
-      room_id: "room-1",
       reservation_id: "missing",
       request_type: "towels",
     });
@@ -417,11 +420,18 @@ describe("PATCH /api/guest-requests/:id (state transitions)", () => {
     expectedCompleted: boolean;
   }> = [
     { from: "open", to: "assigned", assignedTo: "staff-1", expectedCompleted: false },
+    { from: "open", to: "in_progress", assignedTo: "staff-1", expectedCompleted: false },
+    { from: "open", to: "closed", assignedTo: "staff-1", expectedCompleted: true },
     { from: "assigned", to: "in_progress", assignedTo: "staff-1", expectedCompleted: false },
+    { from: "assigned", to: "closed", assignedTo: "staff-1", expectedCompleted: true },
     { from: "in_progress", to: "fulfilled", assignedTo: "staff-1", expectedCompleted: true },
+    { from: "in_progress", to: "closed", assignedTo: "staff-1", expectedCompleted: true },
     { from: "fulfilled", to: "closed", assignedTo: "staff-1", expectedCompleted: true },
+    { from: "fulfilled", to: "reopened", assignedTo: "staff-1", expectedCompleted: false },
     { from: "closed", to: "reopened", assignedTo: "staff-1", expectedCompleted: false },
     { from: "reopened", to: "assigned", assignedTo: "staff-2", expectedCompleted: false },
+    { from: "reopened", to: "in_progress", assignedTo: "staff-2", expectedCompleted: false },
+    { from: "reopened", to: "closed", assignedTo: "staff-2", expectedCompleted: true },
   ];
 
   for (const tc of validTransitions) {

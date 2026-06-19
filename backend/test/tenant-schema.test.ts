@@ -110,12 +110,14 @@ describe("tenant stay registration Prisma schema", () => {
     assertField(guestRequests, /created_at\s+DateTime\s+@default\(now\(\)\) @db\.Timestamptz\(6\)/);
     assertField(guestRequests, /updated_at\s+DateTime\s+@default\(now\(\)\) @updatedAt @db\.Timestamptz\(6\)/);
     assertField(guestRequests, /completed_at\s+DateTime\? @db\.Timestamptz\(6\)/);
+    assertField(guestRequests, /guest_id\s+String\?\s+@db\.Uuid/);
+    assertField(guestRequests, /room_id\s+String\?\s+@db\.Uuid/);
     assertField(guestRequests, /reservation_id\s+String\?\s+@db\.Uuid/);
     assertField(guestRequests, /property_id\s+String\?\s+@db\.Uuid/);
-    assertField(guestRequests, /guest\s+guests\s+@relation\(fields: \[guest_id\], references: \[id\], onDelete: Restrict\)/);
+    assertField(guestRequests, /guest\s+guests\?\s+@relation\(fields: \[guest_id\], references: \[id\], onDelete: SetNull\)/);
     assertField(guestRequests, /property\s+properties\?\s+@relation\(fields: \[property_id\], references: \[id\], onDelete: SetNull\)/);
     assertField(guestRequests, /reservation\s+reservations\?\s+@relation\(fields: \[reservation_id\], references: \[id\], onDelete: SetNull\)/);
-    assertField(guestRequests, /room\s+rooms\s+@relation\(fields: \[room_id\], references: \[id\], onDelete: Restrict\)/);
+    assertField(guestRequests, /room\s+rooms\?\s+@relation\(fields: \[room_id\], references: \[id\], onDelete: SetNull\)/);
     assertField(guestRequests, /@@index\(\[guest_id\]\)/);
     assertField(guestRequests, /@@index\(\[property_id\]\)/);
     assertField(guestRequests, /@@index\(\[status\]\)/);
