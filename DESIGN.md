@@ -2,7 +2,7 @@
 
 ## Overview
 
-Just Management is a hospitality operations dashboard for eight Vietnamese properties. UI must feel like a calm digital concierge: operationally dense, fast to scan, and refined enough for boutique-hotel management. Stack: React 19, TypeScript, Vite, Tailwind CSS v4, shadcn/ui, Radix UI primitives, Lucide React, Recharts, TanStack Router, Track B REST repositories, Express, Prisma, Azure PostgreSQL.
+Just Management is a hospitality operations dashboard for eight Vietnamese properties. UI must feel like a calm digital concierge: operationally dense, fast to scan, and refined enough for boutique-hotel management. Stack: React 19, TypeScript, Vite, Tailwind CSS v4, shadcn/ui, Radix UI primitives, Lucide React, Recharts, TanStack Router, REST repositories, Express, Prisma, Azure PostgreSQL.
 
 Design direction: harbor-blue operational confidence, brass hospitality warmth, clear white surfaces, compact data density, and editorial headings. Use structure, spacing, and tonal layering before decoration.
 
@@ -28,7 +28,7 @@ Avoid generic SaaS purple gradients, decorative noise, heavy shadows, and arbitr
 | Icons | Lucide React |
 | Charts | Recharts through shadcn chart wrappers |
 | Routing | TanStack Router |
-| Data | Track B REST repositories backed by Express + Prisma + Azure PostgreSQL |
+| Data | REST repositories backed by Express + Prisma + Azure PostgreSQL |
 | Fonts | `Newsreader` headings, `Plus Jakarta Sans` body and data |
 
 ## Typography
