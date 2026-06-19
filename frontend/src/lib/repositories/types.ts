@@ -1,5 +1,5 @@
 /**
- * Repository types for the Track B REST/Prisma abstraction.
+ * Repository types for the current REST/Prisma abstraction.
  */
 
 import type {
@@ -445,7 +445,7 @@ export interface DashboardRepository {
   getSummary(date: string, days?: number, propertyId?: string): Promise<DashboardSummary>;
 }
 
-// Repository factory - Track B uses the REST API backend
+// Repository factory for the current REST API backend
 export interface RepositoryFactory {
   dashboard: DashboardRepository;
   properties: PropertyRepository;

@@ -14,8 +14,7 @@ export default defineConfig({
   },
   server: {
     allowedHosts: ["host.docker.internal", "localhost", "127.0.0.1"],
-    // In Track B mode, proxy /api calls to the Express backend.
-    // Set VITE_TRACK=B in .env to use the REST API backend instead of Supabase.
+    // Proxy current REST API calls to the Express backend during local dev.
     proxy: {
       "/api": {
         target: "http://localhost:3001",

@@ -1,5 +1,5 @@
 /**
- * REST API implementation of repository interfaces (Track B).
+ * REST API implementation of repository interfaces for the current runtime.
  * Calls the Express/Prisma backend instead of Supabase.
  */
 import type {
@@ -416,7 +416,7 @@ const statsRepo: StatsRepository = {
   },
 };
 
-// Repository factory for Track B (REST API)
+// Repository factory for the current REST API runtime
 export const createRestRepositories = (): RepositoryFactory => ({
   dashboard: dashboardRepo,
   properties: propertyRepo,
