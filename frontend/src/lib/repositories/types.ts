@@ -20,6 +20,14 @@ import type {
   ReservationCreateInput,
   ReservationStatus,
   RoomStatus,
+  StayExperience,
+  StayExperienceCreateInput,
+  StayExperienceStayType,
+  StayExperienceUpdateInput,
+  Folio,
+  FolioLineItemInput,
+  FolioPaymentInput,
+  CheckInOutResult,
 } from "@/types/database";
 
 export interface MaintenanceCreateInput {
@@ -67,13 +75,13 @@ export interface StayRegistrationCreateInput {
 export interface StayRegistrationUpdateInput extends Partial<StayRegistrationCreateInput> {}
 
 export interface GuestRequestCreateInput {
-  guest_id: string;
-  reservation_id?: string | null;
+  guest_id?: string | null;
+  reservation_id: string;
   property_id?: string | null;
-  room_id: string;
+  room_id?: string | null;
   request_type: string;
-  notes: string;
-  is_completed: boolean;
+  notes?: string;
+  is_completed?: boolean;
   status?: GuestRequestStatus;
   priority?: GuestRequestPriority;
   assigned_to?: string | null;
@@ -124,6 +132,8 @@ export interface DiningEventBooking {
   notes: string;
 }
 
+export type DiningEventCreateInput = Omit<DiningEventBooking, "id">;
+
 export type StaffRole = "admin" | "manager" | "accountant" | "staff";
 export type StaffStatus = "active" | "inactive";
 
@@ -136,6 +146,8 @@ export interface StaffMember {
   status: StaffStatus;
   last_active_at: string | null;
 }
+
+export type StaffCreateInput = Omit<StaffMember, "id" | "last_active_at">;
 
 export type AuditSeverity = "info" | "warning" | "critical";
 
@@ -305,10 +317,12 @@ export interface ChannelRepository {
 export interface DiningEventRepository {
   getAll(): Promise<DiningEventBooking[]>;
   getByPropertyId(propertyId: string): Promise<DiningEventBooking[]>;
+  create(input: DiningEventCreateInput): Promise<DiningEventBooking>;
 }
 
 export interface StaffRepository {
   getAll(): Promise<StaffMember[]>;
+  create(input: StaffCreateInput): Promise<StaffMember>;
 }
 
 export interface SecurityAuditRepository {
@@ -406,6 +420,27 @@ export interface StayRegistrationRepository {
   delete(id: string): Promise<void>;
 }
 
+export interface StayExperienceRepository {
+  getAll(propertyId?: string, filters?: { reservation_id?: string; stay_type?: StayExperienceStayType }): Promise<StayExperience[]>;
+  getById(id: string): Promise<StayExperience | null>;
+  create(input: StayExperienceCreateInput): Promise<StayExperience>;
+  update(id: string, input: StayExperienceUpdateInput): Promise<StayExperience>;
+  delete(id: string): Promise<void>;
+}
+
+export interface FolioRepository {
+  getById(id: string): Promise<Folio | null>;
+  getByReservationId(reservationId: string): Promise<Folio | null>;
+  getByPropertyId(propertyId: string): Promise<Folio[]>;
+  addLineItem(folioId: string, input: FolioLineItemInput): Promise<Folio>;
+  recordPayment(folioId: string, input: FolioPaymentInput): Promise<Folio>;
+}
+
+export interface CheckInOutRepository {
+  checkIn(reservationId: string): Promise<CheckInOutResult>;
+  checkOut(reservationId: string): Promise<CheckInOutResult>;
+}
+
 // Maintenance issue repository
 export interface MaintenanceRepository extends Repository<MaintenanceIssue> {
   create(input: MaintenanceCreateInput): Promise<MaintenanceIssue>;
@@ -454,6 +489,9 @@ export interface RepositoryFactory {
   guestRequests: GuestRequestRepository;
   tenantRepository: TenantRepository;
   stayRegistrationRepository: StayRegistrationRepository;
+  stayExperiences: StayExperienceRepository;
+  folios: FolioRepository;
+  checkInOut: CheckInOutRepository;
   maintenance: MaintenanceRepository;
   stats: StatsRepository;
   channels: ChannelRepository;

@@ -84,6 +84,9 @@ describe("guest, tenant, and stay registration repositories", () => {
       guestRequests,
       tenantRepository,
       stayRegistrationRepository,
+      stayExperiences: {} as RepositoryFactory["stayExperiences"],
+      folios: {} as RepositoryFactory["folios"],
+      checkInOut: {} as RepositoryFactory["checkInOut"],
       maintenance: {} as RepositoryFactory["maintenance"],
       stats: {} as RepositoryFactory["stats"],
       channels: {} as RepositoryFactory["channels"],
@@ -113,6 +116,7 @@ describe("guest, tenant, and stay registration repositories", () => {
     expect(repos.stayRegistrationRepository).toBeDefined();
 
     await repos.guestRequests.create({
+      reservation_id: "reservation-1",
       guest_id: "guest-1",
       room_id: "room-1",
       request_type: "Towel",
@@ -135,7 +139,7 @@ describe("guest, tenant, and stay registration repositories", () => {
 
     expect(fetchMock).toHaveBeenCalledWith(
       expect.stringContaining("/api/guest-requests/guest-request-1"),
-      expect.objectContaining({ method: "PUT" })
+      expect.objectContaining({ method: "PATCH" })
     );
 
     await repos.guestRequests.transitionStatus("guest-request-1", "assigned", "user-1");

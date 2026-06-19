@@ -120,10 +120,10 @@ export type Guest = DashboardGuest;
 
 export interface GuestRequest {
   id: string;
-  guest_id: string;
+  guest_id: string | null;
   reservation_id: string | null;
   property_id: string | null;
-  room_id: string;
+  room_id: string | null;
   request_type: string;
   notes: string;
   is_completed: boolean;
@@ -212,4 +212,94 @@ export interface OccupancySeriesPoint {
   occupied: number;
   available: number;
   totalRooms: number;
+}
+
+export type StayExperienceStayType = "short_term" | "long_term";
+
+export interface StayExperience {
+  id: string;
+  reservation_id: string;
+  channel_id: string | null;
+  external_ref_id: string | null;
+  platform_reference: string | null;
+  stay_type: StayExperienceStayType | null;
+  experience_notes: string;
+  guest_request_content: string;
+  created_at: string;
+  updated_at: string;
+  reservation?: Reservation;
+}
+
+export interface StayExperienceCreateInput {
+  reservation_id: string;
+  channel_id?: string | null;
+  external_ref_id?: string | null;
+  platform_reference?: string | null;
+  stay_type?: StayExperienceStayType | null;
+  experience_notes?: string;
+  guest_request_content?: string;
+}
+
+export interface StayExperienceUpdateInput extends Partial<StayExperienceCreateInput> {}
+
+export type FolioStatus = "open" | "finalized" | "settled";
+export type FolioLineItemKind = "charge" | "credit";
+
+export interface FolioLineItem {
+  id: string;
+  folio_id: string;
+  description: string;
+  kind: FolioLineItemKind;
+  quantity: number;
+  unit_amount: number;
+  line_total: number;
+  tax_rate: number;
+  source: string;
+  created_at: string;
+}
+
+export interface FolioPayment {
+  id: string;
+  folio_id: string;
+  method: string;
+  amount: number;
+  reference: string | null;
+  received_at: string;
+  created_at: string;
+}
+
+export interface Folio {
+  id: string;
+  reservation_id: string;
+  property_id: string;
+  status: FolioStatus;
+  currency: string;
+  subtotal_amount: number;
+  paid_amount: number;
+  balance_amount: number;
+  opened_at: string;
+  finalized_at: string | null;
+  settled_at: string | null;
+  line_items?: FolioLineItem[];
+  payments?: FolioPayment[];
+}
+
+export interface FolioLineItemInput {
+  description: string;
+  kind: FolioLineItemKind;
+  quantity: number;
+  unit_amount: number;
+  tax_rate?: number;
+  source?: string;
+}
+
+export interface FolioPaymentInput {
+  method: string;
+  amount: number;
+  reference?: string | null;
+}
+
+export interface CheckInOutResult {
+  reservation: Reservation;
+  folio: Folio;
 }

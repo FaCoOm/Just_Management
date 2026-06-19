@@ -71,6 +71,15 @@ describe("createRestRepositories guest/tenant adapters", () => {
     expect(repos.stayRegistrationRepository.create).toBeTypeOf("function");
     expect(repos.stayRegistrationRepository.update).toBeTypeOf("function");
     expect(repos.stayRegistrationRepository.delete).toBeTypeOf("function");
+    expect(repos.stayExperiences.getAll).toBeTypeOf("function");
+    expect(repos.stayExperiences.create).toBeTypeOf("function");
+    expect(repos.folios.getByReservationId).toBeTypeOf("function");
+    expect(repos.folios.addLineItem).toBeTypeOf("function");
+    expect(repos.folios.recordPayment).toBeTypeOf("function");
+    expect(repos.checkInOut.checkIn).toBeTypeOf("function");
+    expect(repos.checkInOut.checkOut).toBeTypeOf("function");
+    expect(repos.diningEvents.create).toBeTypeOf("function");
+    expect(repos.staff.create).toBeTypeOf("function");
   });
 
   it("builds guest request lifecycle REST calls", async () => {
@@ -114,7 +123,7 @@ describe("createRestRepositories guest/tenant adapters", () => {
 
     const [updateInput, updateInit] = getCall(fetchMock, 1);
     expect(getPath(updateInput).pathname).toBe("/api/guest-requests/guest-request-1");
-    expect(updateInit?.method).toBe("PUT");
+    expect(updateInit?.method).toBe("PATCH");
     expect(updateInit?.body).toBe(JSON.stringify(updatePayload));
 
     const [statusInput, statusInit] = getCall(fetchMock, 2);
@@ -125,6 +134,104 @@ describe("createRestRepositories guest/tenant adapters", () => {
     const [deleteInput, deleteInit] = getCall(fetchMock, 3);
     expect(getPath(deleteInput).pathname).toBe("/api/guest-requests/guest-request-1");
     expect(deleteInit?.method).toBe("DELETE");
+  });
+
+  it("builds operations pipeline REST calls", async () => {
+    const fetchMock = createFetchStub([
+      createJsonResponse([{ id: "stay-experience-1" }]),
+      createJsonResponse({ id: "stay-experience-1" }),
+      createJsonResponse({ id: "folio-1" }),
+      createJsonResponse({ id: "folio-1" }),
+      createJsonResponse({ id: "folio-1" }),
+      createJsonResponse({ reservation: { id: "reservation-1" }, folio: { id: "folio-1" } }),
+      createJsonResponse({ reservation: { id: "reservation-1" }, folio: { id: "folio-1" } }),
+      createJsonResponse({ id: "event-1" }),
+      createJsonResponse({ id: "staff-1" }),
+    ]);
+
+    const repos = createRestRepositories();
+    const stayPayload = {
+      reservation_id: "reservation-1",
+      stay_type: "short_term" as const,
+      experience_notes: "Quiet stay",
+      guest_request_content: "Extra towel",
+    };
+    const lineItemPayload = { description: "Room charge", kind: "charge" as const, quantity: 2, unit_amount: 100 };
+    const paymentPayload = { method: "Cash", amount: 200, reference: "receipt-1" };
+    const diningPayload = {
+      title: "Dinner",
+      type: "dinner" as const,
+      venue: "Rooftop",
+      date: "2026-06-19",
+      start_time: "18:00",
+      end_time: "20:00",
+      guest_count: 4,
+      guest_name: "Guest A",
+      property_id: "property-1",
+      status: "confirmed" as const,
+      notes: "Window table",
+    };
+    const staffPayload = {
+      name: "Staff A",
+      email: "staff@example.com",
+      role: "staff" as const,
+      property_ids: ["property-1"],
+      status: "active" as const,
+    };
+
+    await repos.stayExperiences.getAll("property-1", { stay_type: "short_term" });
+    await repos.stayExperiences.create(stayPayload);
+    await repos.folios.getByReservationId("reservation-1");
+    await repos.folios.addLineItem("folio-1", lineItemPayload);
+    await repos.folios.recordPayment("folio-1", paymentPayload);
+    await repos.checkInOut.checkIn("reservation-1");
+    await repos.checkInOut.checkOut("reservation-1");
+    await repos.diningEvents.create(diningPayload);
+    await repos.staff.create(staffPayload);
+
+    const [stayListInput] = getCall(fetchMock, 0);
+    const stayListUrl = getPath(stayListInput);
+    expect(stayListUrl.pathname).toBe("/api/stay-experiences");
+    expect(stayListUrl.searchParams.get("property_id")).toBe("property-1");
+    expect(stayListUrl.searchParams.get("stay_type")).toBe("short_term");
+
+    const [stayCreateInput, stayCreateInit] = getCall(fetchMock, 1);
+    expect(getPath(stayCreateInput).pathname).toBe("/api/stay-experiences");
+    expect(stayCreateInit?.method).toBe("POST");
+    expect(stayCreateInit?.body).toBe(JSON.stringify(stayPayload));
+
+    const [folioInput] = getCall(fetchMock, 2);
+    const folioUrl = getPath(folioInput);
+    expect(folioUrl.pathname).toBe("/api/folios");
+    expect(folioUrl.searchParams.get("reservation_id")).toBe("reservation-1");
+
+    const [lineItemInput, lineItemInit] = getCall(fetchMock, 3);
+    expect(getPath(lineItemInput).pathname).toBe("/api/folios/folio-1/line-items");
+    expect(lineItemInit?.method).toBe("POST");
+    expect(lineItemInit?.body).toBe(JSON.stringify(lineItemPayload));
+
+    const [paymentInput, paymentInit] = getCall(fetchMock, 4);
+    expect(getPath(paymentInput).pathname).toBe("/api/folios/folio-1/payments");
+    expect(paymentInit?.method).toBe("POST");
+    expect(paymentInit?.body).toBe(JSON.stringify(paymentPayload));
+
+    const [checkInInput, checkInInit] = getCall(fetchMock, 5);
+    expect(getPath(checkInInput).pathname).toBe("/api/reservations/reservation-1/check-in");
+    expect(checkInInit?.method).toBe("POST");
+
+    const [checkOutInput, checkOutInit] = getCall(fetchMock, 6);
+    expect(getPath(checkOutInput).pathname).toBe("/api/reservations/reservation-1/check-out");
+    expect(checkOutInit?.method).toBe("POST");
+
+    const [diningInput, diningInit] = getCall(fetchMock, 7);
+    expect(getPath(diningInput).pathname).toBe("/api/dining-events");
+    expect(diningInit?.method).toBe("POST");
+    expect(diningInit?.body).toBe(JSON.stringify(diningPayload));
+
+    const [staffInput, staffInit] = getCall(fetchMock, 8);
+    expect(getPath(staffInput).pathname).toBe("/api/staff");
+    expect(staffInit?.method).toBe("POST");
+    expect(staffInit?.body).toBe(JSON.stringify(staffPayload));
   });
 
   it("builds tenant repository REST calls", async () => {
