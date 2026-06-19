@@ -2,7 +2,7 @@
 
 **Last Updated**: 2026-06-12
 **Branch**: `main`
-**Base**: Track B (Azure PostgreSQL / Express / Prisma)
+**Base**: Current REST runtime (Azure PostgreSQL / Express / Prisma)
 
 ---
 
@@ -12,11 +12,11 @@ Complete every sidebar-promised dashboard page, add same-day checkout Tax-Export
 
 ## Constraints & Preferences
 
-- Track B uses Azure PostgreSQL Flexible Server (`webdbmujo.postgres.database.azure.com`)
+- Current runtime uses Azure PostgreSQL Flexible Server (`webdbmujo.postgres.database.azure.com`)
 - `supabase/migrations/` files are schema-intent reference only; do NOT deploy to Azure
 - Prisma migrations are the canonical Azure deployment path
 - No Supabase RLS (anon, authenticated roles) in Azure migration SQL
-- Frontend must support env-based switching between Track A (Supabase) and Track B (REST API)
+- Frontend uses REST repositories against the Express API; Track A/Supabase switching is historical only
 - DESIGN.md is the primary design system (Harbor-blue + brass hospitality theme)
 - Tax-Export outputs `.xlsx` files following user-provided Vietnamese tax invoice template
 - Pages first, tests afterward (per user decision)
@@ -41,12 +41,12 @@ Complete every sidebar-promised dashboard page, add same-day checkout Tax-Export
 2. Room Types (`/rooms/types`) — room type cards with occupancy bars, property filter
 3. Availability (`/rooms/availability`) — 14-day date grid, arriving/occupied/departing/vacant, week navigation
 4. Housekeeping (`/housekeeping`) — cleanliness board (dirty/cleaning/inspected/ready), checkout-today badges
-5. Dining & Events (`/dining-events`) — event schedule cards, type badges, venue info, Track B REST/Prisma data
-6. Rate Manager (`/rate-manager`) — rate calendar by room type/date, weekend surcharge, Track B REST/Prisma data
+5. Dining & Events (`/dining-events`) — event schedule cards, type badges, venue info, REST/Prisma data
+6. Rate Manager (`/rate-manager`) — rate calendar by room type/date, weekend surcharge, REST/Prisma data
 7. Billing & Invoices (`/billing`) — TanStack Table with search, status/property filters, pagination
 8. Channel Distribution (`/channels`) — channel cards with external account status (real API data)
-9. Staff & Roles (`/staff`) — staff directory with role badges, search, role filter, Track B REST/Prisma data
-10. Security & Access (`/security`) — audit log with severity filtering, Track B REST/Prisma data
+9. Staff & Roles (`/staff`) — staff directory with role badges, search, role filter, REST/Prisma data
+10. Security & Access (`/security`) — audit log with severity filtering, REST/Prisma data
 11. VIP Guests (`/guests/vip`) — VIP-filtered guest table with pagination
 
 **Sidebar & Routing (2026-05-29)**
@@ -76,7 +76,7 @@ Complete every sidebar-promised dashboard page, add same-day checkout Tax-Export
 ### Completed Since 2026-05-29
 
 - Frontend repository contracts expanded; app-level raw REST calls consolidated behind `src/lib/repositories/rest-repositories.ts`.
-- Dining & Events, Staff & Roles, Security & Access, and Rate Manager now read Track B REST/Prisma endpoints instead of frontend-generated mock/static data.
+- Dining & Events, Staff & Roles, Security & Access, and Rate Manager now read REST/Prisma endpoints instead of frontend-generated mock/static data.
 - Added Prisma migration `20260609000000_add_ops_page_data` for page-specific operational tables and deployed it to Azure PostgreSQL on 2026-06-09 after approval.
 - Removed room passcodes from public room DTOs and confirmed `/api/rooms` response does not expose `passcode`.
 - Added frontend tests for repository-backed page data and ingest repository endpoints.
@@ -120,7 +120,7 @@ Complete every sidebar-promised dashboard page, add same-day checkout Tax-Export
 ## Key Decisions
 
 - Prisma is the canonical schema source for Azure; `supabase/migrations/` are reference-only
-- `VITE_TRACK=B` env var controls factory selection in the frontend repository layer
+- Frontend repository layer uses `createRestRepositories()` directly
 - Vite dev proxy handles `/api` → Express backend
 - Tax-Export outputs `.xlsx` (user-uploaded template) rather than Google Sheets write (for now)
 - Auth (Clerk/Auth0) deferred

@@ -30,7 +30,7 @@
 
 ## 2. Will the Program Function as Intended?
 
-Mostly yes for the current Track B dashboard read path, assuming the DB contains expected data.
+Mostly yes for the current REST/Prisma dashboard read path, assuming the DB contains expected data.
 
 ### Evidence
 
@@ -42,18 +42,17 @@ Mostly yes for the current Track B dashboard read path, assuming the DB contains
 | | rooms | `backend/src/index.ts:283–288` |
 | | maintenance | `backend/src/index.ts:294–304` |
 | | guest requests | `backend/src/index.ts:326–337` |
-| Frontend repository | REST-only Track B exports | `src/lib/repositories/index.ts:5–6` |
+| Frontend repository | REST-only exports | `src/lib/repositories/index.ts:5–6` |
 | | REST base API URL | `src/lib/repositories/rest-repositories.ts:21–24` |
 | Dashboard hook | Always uses `createRestRepositories()` | `src/hooks/use-dashboard-data.ts:109–111` |
 | Dashboard queries | properties, rooms, reservations, guest requests, maintenance, arrivals, departures | `src/hooks/use-dashboard-data.ts:111–142` |
 
 ### Risk
 
-- README still claims an env-based Track A/Track B switch exists, but the current code does **not** implement that switch — it always uses REST:
-  - README claim: `README.md:158–160`
-  - Actual behavior: `src/hooks/use-dashboard-data.ts:109–111`
+- Earlier README versions claimed an env-based Track A/Track B switch existed, but the current code uses REST repositories directly:
+  - Current behavior: `src/hooks/use-dashboard-data.ts`
 
-**Verdict:** Track B path can work, but README is stale about switching.
+**Verdict:** The current REST/Prisma path can work; active README guidance now matches that runtime.
 
 ---
 

@@ -2,19 +2,19 @@
 
 ## What exists
 
-### Schema (Track A — Supabase)
-- `supabase/migrations/` — 7 SQL reference files (schema intent only for Track B)
+### Historical Supabase Schema Reference
+- `supabase/migrations/` — 7 SQL reference files (schema intent only; not the active runtime)
 - 14 PostgreSQL tables across reservation core, provider edge, operations, and import/backfill
 
-### Schema (Track B — Azure PostgreSQL)
-- `backend/prisma/schema.prisma` — 14-model schema mirroring Track A contract
+### Current Schema (Azure PostgreSQL)
+- `backend/prisma/schema.prisma` — 14-model canonical Azure PostgreSQL schema
 - `backend/prisma/migrations/20260502000000_init_track_b/migration.sql` — Azure-ready initial migration
   - Includes `CREATE EXTENSION pgcrypto`, `set_updated_at_timestamp()` trigger, triggers for all 9 tables with `updated_at`
   - No Supabase RLS — uses standard PostgreSQL; Azure deployment path is `npx prisma migrate deploy`
 
 ### DB Deployment
 
-Track B deploys to Azure PostgreSQL via Prisma migrations:
+The current runtime deploys to Azure PostgreSQL via Prisma migrations:
 
 ```bash
 cd backend

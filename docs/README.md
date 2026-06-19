@@ -1,6 +1,6 @@
 # 🗂️ Just Management - Documentation Center
 
-Welcome to the consolidated Documentation Center for **Just Management** (Hospitality Operations Dashboard). This folder serves as the single source of truth for all architectural decisions, design tokens, ingestion pipelines, database structures, project status, sprint plans, and developer resources.
+Welcome to the consolidated Documentation Center for **Just Management** (Hospitality Operations Dashboard). Current architecture is React + REST repositories + Express + Prisma + Azure PostgreSQL. Older Track A/Track B documents are historical references unless a current guide says otherwise.
 
 ---
 
@@ -34,9 +34,9 @@ Use the directories and files mapped below to navigate the project's design and 
 ### 🗺️ Project Directories & Folders
 
 #### 📋 1. [plans/](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/plans) — Product Requirements & Technical Plans
-*   [Dual-Architecture PRD.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/plans/Dual-Architecture%20PRD.md) — Product Requirements Document (PRD) detailing dual-architecture switching.
+*   [Dual-Architecture PRD.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/plans/Dual-Architecture%20PRD.md) — Historical PRD for the retired dual-architecture switching plan.
 *   [m-management-ingestion-pipeline-implementation-plan.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/plans/m-management-ingestion-pipeline-implementation-plan.md) — Plan for spreadsheets normalizer and ingest pipeline.
-*   [track-b-technical-validation-plan.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/plans/track-b-technical-validation-plan.md) — Technical verification and integration validation plans.
+*   [track-b-technical-validation-plan.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/plans/track-b-technical-validation-plan.md) — Historical/current-runtime technical verification plan.
 *   [manual-reservation-creation-2026-05-26.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/plans/manual-reservation-creation-2026-05-26.md) — Backend and frontend execution plans.
 *   [qa-testing-stack-implementation-2026-06-09.md](file:///c:/Users/Fate_Conqueror/GitHub/Just_Management/docs/plans/qa-testing-stack-implementation-2026-06-09.md) — Playwright e2e + axe-core + Lighthouse CI + GitHub Actions, with Browserbase Browse CLI local-mode exploratory QA path.
 
