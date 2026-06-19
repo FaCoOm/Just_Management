@@ -1,296 +1,200 @@
-# API & Architecture Guide (Track A + Track B)
+# API & Architecture Guide (Current REST Runtime)
 
-This guide describes how the webapp is structured end-to-end, how the frontend talks to the backend, and how the Track B Express/Prisma API is implemented.
+This guide describes the current Just Management webapp runtime: React + REST repositories on the frontend, Express routes on the backend, Prisma for data access, and Azure PostgreSQL as the database target.
 
-> Scope: This repo supports **two data tracks**:
-> - **Track A**: Frontend reads Supabase directly.
-> - **Track B**: Frontend calls an Express REST API; the backend uses Prisma against **Azure PostgreSQL Flexible Server**.
+> Historical note: earlier docs used Track A for direct Supabase and Track B for REST/Prisma/Azure. The active repo is now REST/Prisma/Azure-only. Supabase SQL remains reference-only schema context.
 
 ---
 
 ## 1) High-level architecture
 
-### 1.1 Two-track data architecture
-
-The UI is shared. Only the data access implementation changes.
-
-```/dev/null/architecture.txt#L1-17
+```text
 React (Vite) Frontend
-  |
-  |  chooses repository factory via VITE_TRACK
-  |
-  +--> Track A (default / VITE_TRACK=A)
-  |      createSupabaseRepositories()
-  |      -> @supabase/supabase-js -> Supabase Postgres
-  |
-  +--> Track B (VITE_TRACK=B)
-         createRestRepositories()
-         -> fetch(/api/...) -> Express backend
-         -> Prisma Client -> Azure PostgreSQL Flexible Server
+  -> createRestRepositories()
+  -> fetch(/api/...)
+  -> Express backend
+  -> Prisma Client
+  -> Azure PostgreSQL Flexible Server
 ```
 
-### 1.2 Real entry points (frontend)
+### 1.1 Real entry points
 
-Per `AGENTS.md`, the real frontend entry points are:
-
-- `src/main.tsx` mounts `App` inside theme providers.
-- `src/App.tsx` renders the shell (`SidebarProvider` + `AppSidebar`) and swaps pages.
-- `src/components/dashboard/dashboard-page.tsx` is the main feature assembly point.
-- `src/hooks/use-dashboard-data.ts` is the current “data contract” for the dashboard.
+- `frontend/src/main.tsx` mounts React, TanStack Query, theme provider, and TanStack Router.
+- `frontend/src/router.tsx` defines the lazy route tree.
+- `frontend/src/components/dashboard/dashboard-page.tsx` assembles dashboard panels.
+- `frontend/src/hooks/use-dashboard-data.ts` is the dashboard data contract and calls `createRestRepositories()`.
+- `frontend/src/lib/repositories/rest-repositories.ts` constructs API requests.
+- `backend/src/index.ts` registers Express middleware, routes, dashboard summary, stats, ingestion, One, and tax-export endpoints.
+- `backend/prisma/schema.prisma` is the canonical schema source.
 
 ---
 
-## 2) Frontend: data flow & repository layer
+## 2) Frontend data flow
 
 ### 2.1 Repository abstraction
 
-The repo defines interfaces in `src/lib/repositories/types.ts` and provides two implementations:
+The frontend defines repository contracts in `frontend/src/lib/repositories/types.ts` and implements them in `frontend/src/lib/repositories/rest-repositories.ts`.
 
-- `src/lib/repositories/supabase-repositories.ts` (Track A)
-- `src/lib/repositories/rest-repositories.ts` (Track B)
+Hooks and pages consume repository interfaces only. They do not call `fetch` directly and do not import backend or Prisma internals.
 
-The dashboard (and other pages) call **only the interfaces**, not Supabase or fetch directly.
+### 2.2 REST client behavior
 
-### 2.2 Factory selection (Track A vs Track B)
+`frontend/src/lib/repositories/rest-repositories.ts`:
 
-The selection logic is in `src/hooks/use-dashboard-data.ts`:
+- Reads `VITE_TRACK_B_API_URL` as an optional backend origin.
+- Uses same-origin paths when that value is empty.
+- Calls API routes such as `/api/properties`, `/api/rooms`, `/api/reservations`, `/api/dashboard/summary`.
+- Throws on non-2xx responses.
 
-- If `import.meta.env.VITE_TRACK === "B"` → use REST.
-- Otherwise → use Supabase.
+### 2.3 Development proxy
 
-This makes switching environments a deployment-time concern, not a code change.
+`frontend/vite.config.ts` proxies `/api/*` to `http://localhost:3001` during local development.
 
-### 2.3 Track B REST client behavior
-
-In `src/lib/repositories/rest-repositories.ts`:
-
-- `VITE_TRACK_B_API_URL` provides the backend base URL.
-- If unset, it defaults to `http://localhost:3001`.
-- Each repository method calls an API route (`/api/properties`, `/api/rooms`, etc.) and returns JSON.
-
-**Development proxy**: `vite.config.ts` proxies browser calls from Vite to the backend:
-
-- Browser calls: `GET /api/...` (same origin as Vite)
-- Vite proxies to: `http://localhost:3001/api/...`
-
-This avoids CORS issues during local development.
+This keeps browser calls same-origin under Vite while the backend runs separately.
 
 ### 2.4 Dashboard contract
 
-`useDashboardData()` loads:
+`useDashboardData()` loads the dashboard summary through `repos.dashboard.getSummary(today, 30)` and returns:
 
-- `properties` via `repos.properties.getAll()`
-- `rooms` via `repos.rooms.getAll()`
-- `reservations` via `repos.reservations.getAll()`
-- `requests` via `repos.guestRequests.getAll()`
-- `maintenance` via `repos.maintenance.getAll()`
+- `properties`
+- `rooms`
+- `reservations`
+- `guests` compatibility view
+- `requests`
+- `maintenance`
+- `metrics`
+- `todayArrivals`
+- `todayDepartures`
+- `todayCheckouts`
+- `totals`
+- `occupancySeries`
 
-Then it derives:
-
-- `guests` (compatibility view) from `reservations`
-- `metrics` per property
-- `totals` across properties
-
-Important: The dashboard UI still consumes a `Guest`-shaped model for some panels, but that model is now derived from `reservations` for both tracks.
+Important: `reservations` is the booking source of truth. `guests` remains a compatibility shape for older guest-labeled UI.
 
 ---
 
-## 3) Backend (Track B): Express + Prisma implementation
+## 3) Backend: Express + Prisma
 
 ### 3.1 Backend entry point
 
-- Backend server: `backend/src/index.ts`
-- Tech: Express, CORS, JSON middleware, Prisma Client
+- Server: `backend/src/index.ts`
+- Tech: Express, CORS, JSON middleware, compression, Prisma Client
+- Startup warms Prisma with `$connect()` and `SELECT 1` before logging readiness.
 
-Core initialization:
+### 3.2 Database connectivity
 
-- `const prisma = new PrismaClient();`
-- `app.use(cors());`
-- `app.use(express.json());`
+Prisma reads the connection string from `DATABASE_URL` in `backend/.env`:
 
-### 3.2 Database connectivity (Azure)
+```text
+postgresql://USER:PASSWORD@HOST.postgres.database.azure.com:5432/m_management?sslmode=require
+```
 
-Prisma reads the connection string from:
-
-- `backend/prisma/schema.prisma` → `datasource db { url = env("DATABASE_URL") }`
-
-So the backend’s runtime DB is controlled by:
-
-- `backend/.env` → `DATABASE_URL=postgresql://...` (Azure PostgreSQL Flexible Server)
-
-Supabase migrations under `supabase/migrations/` are **reference-only** and must not be applied to Azure.
+`supabase/migrations/` files are reference-only and must not be applied to Azure.
 
 ### 3.3 API design
 
-Current API is read-only (GET endpoints). It returns raw Prisma model rows.
+Routes parse query/body values in the backend, call Prisma, and return frontend DTOs aligned with `frontend/src/lib/repositories/types.ts`.
 
-#### Common query patterns
+Common route groups:
 
-Endpoints use `req.query` to build a Prisma `where` filter. Current code uses `any` for the filter.
-
-Example (reservations):
-- Optional filters:
-  - `property_id`
-  - `status`
-  - `start_date`, `end_date`
-
-Then:
-- `prisma.reservations.findMany({ where, orderBy: { check_in_date: "asc" } })`
-
-### 3.4 Implemented endpoints (current)
-
-#### Health
-- `GET /health`
-  - Returns `{ status: "ok", track: "B" }`
-
-#### Properties
-- `GET /api/properties`
-  - Returns all properties ordered by name.
-
-#### Rooms
-- `GET /api/rooms?property_id=...`
-  - Optional filter by `property_id`.
-
-#### Reservations
-- `GET /api/reservations`
-  - Optional query params: `property_id`, `status`, `start_date`, `end_date`.
-  - Date-range filtering currently sets:
-    - `check_in_date >= new Date(start_date)`
-    - `check_out_date <= new Date(end_date)`
-
-- `GET /api/reservations/:id`
-  - Returns a single reservation and includes:
-    - `reservation_external_refs`
-    - `reservation_room_allocations`
-
-#### Maintenance
-- `GET /api/maintenance?property_id=...&status=...`
-  - Filters by property and/or status.
-
-#### Guest requests
-- `GET /api/guest-requests?property_id=...&guest_id=...&reservation_id=...`
-  - Filters by the provided fields.
-
-#### Guests (legacy)
-- `GET /api/guests?property_id=...&room_id=...`
-  - Exists for legacy compatibility; dashboard is primarily driven from `reservations`.
-
-#### Channels & External Accounts
-- `GET /api/channels`
-  - Includes nested `external_accounts`.
-
-- `GET /api/external-accounts?channel_id=...`
-  - Optional filter by `channel_id`.
-
-### 3.5 Backend implementation notes (current state)
-
-#### Error handling
-Most endpoints do not currently have try/catch blocks. If Prisma throws (e.g., connection error), Express will return a generic 500 and log the error.
-
-Only `/api/reservations/:id` explicitly returns 404 when no row is found.
-
-#### Validation
-There is no request validation (Zod, yup, etc.) yet. Query parameters are treated as strings and inserted into `where` filters.
-
-#### Types
-`where` filters are typed as `any`. This is acceptable for scaffolding but makes the API easier to break as it evolves.
-
-#### Security
-- CORS is enabled globally with default settings.
-- Auth is deferred to Sprint 2.
+- Dashboard summary and occupancy stats
+- Properties, rooms, reservations, guest requests, guests, maintenance
+- Dining events, rates, staff, security audits
+- Channels and external accounts
+- Ingestion and provider sync
+- One/WithOne integrations
+- Tax export preview, run, review, download
 
 ---
 
-## 4) Database schema & migrations (Track B)
+## 4) Database schema and migrations
 
-### 4.1 Canonical migration path
-
-For Azure, the canonical schema is:
+Canonical Azure schema path:
 
 - `backend/prisma/schema.prisma`
-- generated Prisma migration SQL under `backend/prisma/migrations/*/migration.sql`
+- `backend/prisma/migrations/*/migration.sql`
 
-A migration guard exists:
+Migration guard:
 
 - `backend/scripts/verify-azure-migration.mjs`
 
-It ensures:
-- No Supabase-only RLS/roles appear in migration SQL.
-- Required patterns exist (pgcrypto, `set_updated_at_timestamp()` trigger function).
-
-### 4.2 Tables in the init migration
-
-The init migration creates 15 tables mirroring Track A’s balanced-core v1 schema:
-
-- `properties`, `rooms`, `reservations`, ...
-- provider/channel mapping tables
-- import staging and legacy backfill bridges
+It checks that deployable migrations avoid Supabase-only roles/RLS and include required PostgreSQL features such as `pgcrypto` and the update-timestamp trigger function.
 
 ---
 
 ## 5) Environment configuration
 
-### 5.1 Frontend env vars (Vite)
+### Frontend env vars
 
-Defined in `src/env.d.ts`:
+Defined in `frontend/src/env.d.ts` and root `.env.example`:
 
-- `VITE_TRACK`: `"A"` or `"B"`
-- `VITE_TRACK_B_API_URL`: backend base URL for Track B
-- `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`: Track A only
+- `VITE_TRACK_B_API_URL`: optional backend base URL. Empty means same-origin/proxied API calls.
+- `VITE_ONE_AUTH_TOKEN_URL`: backend route for WithOne Connect AuthKit tokens.
 
-### 5.2 Backend env vars
+### Backend env vars
 
-- `DATABASE_URL`: Azure PostgreSQL connection string
-- `PORT`: server port (defaults to 3001)
-
----
-
-## 6) Practical “how to run” (Track B)
-
-### 6.1 Backend
-
-1. Set `backend/.env` with `DATABASE_URL` for Azure.
-2. Deploy schema:
-   - `npm run db:verify:migration`
-   - `npm run db:deploy`
-3. Start API:
-   - `npm run dev`
-
-### 6.2 Frontend
-
-1. Set `.env` with:
-   - `VITE_TRACK=B`
-2. Run:
-   - `npm run dev`
-
-Vite proxy forwards `/api` calls to the backend in dev.
+- `DATABASE_URL`: Azure PostgreSQL connection string.
+- `PORT`: server port, default `3001`.
+- `ALLOWED_ORIGINS`: optional comma-separated CORS allowlist.
+- `ONE_CONNECTION_KEY`, `ONE_SECRET_KEY`, `ONE_WEBHOOK_SECRET`: WithOne integration values.
 
 ---
 
-## 7) Suggested improvements (next hardening steps)
+## 6) How to run
 
-These are not required for Sprint 1 scaffolding, but will matter as Track B grows:
+### Backend
 
-1. **Add structured error handling** (try/catch + consistent error payloads).
-2. **Add request validation** for query params.
-3. **Add pagination** for list endpoints.
-4. **Normalize date filtering** for `@db.Date` fields.
-5. **Add auth middleware** (Sprint 2: Clerk/Auth0) and restrict CORS.
-6. **Introduce service layer** so endpoints aren’t direct Prisma calls.
+```bash
+cd backend
+npm install
+npm run db:generate
+npm run db:validate
+npm run db:verify:migration
+npm run dev
+```
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Vite proxies `/api` calls to the backend in dev.
 
 ---
 
-## Appendix A: API endpoints quick reference
+## 7) API endpoints quick reference
 
 | Method | Endpoint | Query Params | Purpose |
 |---|---|---|---|
-| GET | `/health` | — | Health check |
-| GET | `/api/properties` | — | Properties |
+| GET | `/health` | - | Health check |
+| GET | `/api/dashboard/summary` | `date`, `days`, `property_id` | Dashboard aggregate payload |
+| GET | `/api/stats/occupancy` | `days`, `end_date`, `property_id` | Occupancy series |
+| GET | `/api/properties` | - | Properties |
 | GET | `/api/rooms` | `property_id` | Rooms |
+| PATCH | `/api/rooms/:id/status` | - | Room status update |
 | GET | `/api/reservations` | `property_id`, `status`, `start_date`, `end_date` | Reservations |
-| GET | `/api/reservations/:id` | — | Reservation details |
+| POST | `/api/reservations` | - | Create reservation |
+| GET | `/api/reservations/:id` | - | Reservation details |
 | GET | `/api/maintenance` | `property_id`, `status` | Maintenance issues |
+| POST | `/api/maintenance` | - | Create maintenance issue |
 | GET | `/api/guest-requests` | `property_id`, `guest_id`, `reservation_id` | Guest requests |
 | GET | `/api/guests` | `property_id`, `room_id` | Legacy guests |
-| GET | `/api/channels` | — | Channels + accounts |
+| GET | `/api/channels` | - | Channels + accounts |
 | GET | `/api/external-accounts` | `channel_id` | External accounts |
+| GET | `/api/integrations/status` | - | WithOne status |
+| GET/POST | `/api/ingest/*` | varies | Ingestion operations |
+| GET/POST/PATCH | `/api/tax-export/*` | varies | Tax export operations |
+
+---
+
+## 8) Historical terminology
+
+| Old term | Current meaning |
+|---|---|
+| Track A | Historical direct-Supabase approach; reference only. |
+| Track B | Former name for the REST/Prisma/Azure implementation; now the active runtime. |
+| `VITE_TRACK` | Retired switch. Current frontend uses REST repositories directly. |
+| `supabase/migrations/` | Schema-intent reference; not an Azure deployment path. |
