@@ -1,7 +1,7 @@
 {
-  "name": "m-management-track-b",
+  "name": "m-management-backend",
   "version": "1.0.0",
-  "description": "Track B: Azure/Node/Prisma backend for M_Management",
+  "description": "Express/Prisma/Azure backend for Just Management",
   "engines": {
     "node": "22.x",
     "npm": ">=10"
