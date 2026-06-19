@@ -87,6 +87,7 @@ export interface TaxExportItemPreview {
   confirmation_code: string | null;
   status: string;
   needs_review_reason: string | null;
+  folio_line_item_id?: string | null;
 }
 
 export interface TaxExportRunResult {
@@ -265,7 +266,7 @@ export async function previewTaxExport(
   const dateKey = checkoutDate || getVietnamToday();
   const settings = await getOrCreateSettings(prisma);
 
-  const where: any = {
+  const where: Prisma.reservationsWhereInput = {
     check_out_date: toDateOnly(dateKey),
     status: { notIn: ["cancelled", "no_show"] },
   };
@@ -277,6 +278,11 @@ export async function previewTaxExport(
     include: {
       property: { select: { name: true } },
       reservation_external_refs: { select: { confirmation_code: true } },
+      folio: {
+        include: {
+          line_items: { orderBy: { created_at: "asc" } },
+        },
+      },
     },
     orderBy: { check_in_date: "asc" },
   });
@@ -288,21 +294,53 @@ export async function previewTaxExport(
   });
   let nextInvoiceNum = lastItem ? parseInt(lastItem.invoice_number, 10) + 1 : 1;
 
-  const items: TaxExportItemPreview[] = reservations.map((res) => {
+  const items: TaxExportItemPreview[] = reservations.flatMap((res) => {
     const checkIn = toDateKey(res.check_in_date);
     const checkOut = toDateKey(res.check_out_date);
     const nights = daysBetween(checkIn, checkOut);
     const confirmationCode = res.reservation_external_refs?.[0]?.confirmation_code ?? null;
+    const serviceDesc = settings.service_name_template
+      .replace("{check_in}", formatVietnameseDate(checkIn))
+      .replace("{check_out}", formatVietnameseDate(checkOut));
+
+    if (res.folio?.status === "finalized" || res.folio?.status === "settled") {
+      const folioItems: TaxExportItemPreview[] = res.folio.line_items.map((lineItem) => {
+        const totalAmount = lineItem.kind === "credit" ? -lineItem.line_total : lineItem.line_total;
+        const vatRate = lineItem.tax_rate ?? settings.default_vat_rate;
+        const vatAmount = Math.round(totalAmount * vatRate / 100);
+        const isLineTotalConsistent = lineItem.line_total === lineItem.quantity * lineItem.unit_amount;
+
+        return {
+          invoice_number: String(nextInvoiceNum++),
+          invoice_date: formatVietnameseDate(dateKey),
+          buyer_label: settings.default_buyer_label,
+          payment_method: settings.default_payment_method,
+          service_description: lineItem.description || serviceDesc,
+          unit: settings.default_unit,
+          quantity: lineItem.quantity,
+          unit_price: lineItem.unit_amount,
+          total_amount: totalAmount,
+          vat_rate: vatRate,
+          vat_amount: vatAmount,
+          guest_name: res.guest_name,
+          property_name: res.property?.name ?? "",
+          check_in_date: checkIn,
+          check_out_date: checkOut,
+          reservation_id: res.id,
+          confirmation_code: confirmationCode,
+          status: isLineTotalConsistent ? "exported" : "needs_review",
+          needs_review_reason: isLineTotalConsistent ? null : "Folio line total does not match quantity × unit price",
+          folio_line_item_id: lineItem.id,
+        };
+      });
+      return folioItems;
+    }
 
     // Estimate unit price from operational notes or use a default
     const priceMatch = res.operational_notes.match(/nightly_rate=(\d+)/);
     const unitPrice = priceMatch ? parseFloat(priceMatch[1]) : 0;
     const totalAmount = unitPrice * nights;
     const vatAmount = Math.round(totalAmount * settings.default_vat_rate / 100);
-
-    const serviceDesc = settings.service_name_template
-      .replace("{check_in}", formatVietnameseDate(checkIn))
-      .replace("{check_out}", formatVietnameseDate(checkOut));
 
     let status = "exported";
     let needsReviewReason: string | null = null;
@@ -311,7 +349,7 @@ export async function previewTaxExport(
       needsReviewReason = "Unit price not found in reservation data";
     }
 
-    return {
+    const fallbackItem: TaxExportItemPreview = {
       invoice_number: String(nextInvoiceNum++),
       invoice_date: formatVietnameseDate(dateKey),
       buyer_label: settings.default_buyer_label,
@@ -324,14 +362,16 @@ export async function previewTaxExport(
       vat_rate: settings.default_vat_rate,
       vat_amount: vatAmount,
       guest_name: res.guest_name,
-      property_name: (res as any).property?.name ?? "",
+      property_name: res.property?.name ?? "",
       check_in_date: checkIn,
       check_out_date: checkOut,
       reservation_id: res.id,
       confirmation_code: confirmationCode,
       status,
       needs_review_reason: needsReviewReason,
+      folio_line_item_id: null,
     };
+    return [fallbackItem];
   });
 
   return { items, checkoutDate: dateKey };
@@ -373,7 +413,7 @@ export async function runTaxExport(
       }
 
       // Find checkout reservations for the dateKey
-      const whereClause: any = {
+      const whereClause: Prisma.reservationsWhereInput = {
         check_out_date: toDateOnly(dateKey),
         status: { notIn: ["cancelled", "no_show"] },
       };
@@ -503,6 +543,7 @@ export async function runTaxExport(
               check_in_date: item.check_in_date,
               check_out_date: item.check_out_date,
               confirmation_code: item.confirmation_code,
+              folio_line_item_id: item.folio_line_item_id ?? null,
             })),
           });
         }
