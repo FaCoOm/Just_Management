@@ -1,49 +1,41 @@
 # Operations Pipeline
 
-## Purpose
+The operations pipeline is the REST/Prisma/Azure path for reservation-linked stay records, guest requests, check-in/out, folios, dining events, staff creation, and tax export. The frontend continues to use `createRestRepositories()` only; Prisma access stays behind Express services and routes.
 
-The operations pipeline connects reservation-led hotel operations to real REST mutations. `reservations` remain the booking source of truth; `guests` and `stay_registrations` remain compatibility/tenant surfaces.
+## API surface
 
-## Data Flow
-
-1. Stay records read `stay_experiences` joined to `reservations`, split by `short_term` and `long_term`.
-2. Guest requests are anchored by `reservation_id`; `guest_id` and `room_id` are optional compatibility links.
-3. Check-in creates or reuses one `folio` for the reservation, then moves the reservation to `checked_in`.
-4. Check-out finalizes the folio, moves the reservation to `checked_out`, then emits `checkout.completed` for housekeeping room-status work.
-5. Folio line items and payments update persisted subtotal, paid, and balance amounts.
-6. Dining events and staff use create endpoints backed by service-level validation.
-7. Tax export can link to `folio_line_items` while retaining reservation-derived fallback behavior.
-
-## API Surface
-
-| Method | Path | Purpose |
+| Domain | Endpoint | Purpose |
 |---|---|---|
-| `POST` | `/api/stay-experiences` | Create reservation-linked stay record |
-| `GET` | `/api/stay-experiences` | List by property, reservation, or stay type |
-| `GET` | `/api/stay-experiences/:id` | Read one stay record |
-| `PATCH` | `/api/stay-experiences/:id` | Partially update stay record |
-| `DELETE` | `/api/stay-experiences/:id` | Delete stay record |
-| `POST` | `/api/reservations/:id/check-in` | Create/reuse folio and check in |
-| `POST` | `/api/reservations/:id/check-out` | Finalize folio and check out |
-| `GET` | `/api/folios` | List folios by reservation/property |
-| `GET` | `/api/folios/:id` | Read folio with ledger |
-| `POST` | `/api/folios/:id/line-items` | Add charge/credit |
-| `POST` | `/api/folios/:id/payments` | Record payment |
-| `POST` | `/api/dining-events` | Create dining/event booking |
-| `POST` | `/api/staff` | Create staff member |
+| Stay experiences | `POST /api/stay-experiences` | Create a reservation-linked stay-experience record after validating `reservation_id`. |
+| Stay experiences | `GET /api/stay-experiences` | List by `property_id`, `reservation_id`, or `stay_type`. |
+| Stay experiences | `GET /api/stay-experiences/:id` | Read one stay-experience record. |
+| Stay experiences | `PATCH /api/stay-experiences/:id` | Partially update stay experience metadata/content. |
+| Stay experiences | `DELETE /api/stay-experiences/:id` | Delete a stay-experience record. |
+| Guest requests | `POST /api/guest-requests` | Create reservation-anchored request; `guest_id` and `room_id` are optional. |
+| Guest requests | `PATCH /api/guest-requests/:id` | Update request fields through the REST repository contract. |
+| Guest requests | `PATCH /api/guest-requests/:id/status` | Apply the allowed request status state machine. |
+| Guest requests | `DELETE /api/guest-requests/:id` | Delete a request. |
+| Check-in/out | `POST /api/reservations/:id/check-in` | Transition reservation to `checked_in`; create or reuse one folio. |
+| Check-in/out | `POST /api/reservations/:id/check-out` | Finalize folio, transition reservation to `checked_out`, emit housekeeping signal. |
+| Folios | `GET /api/folios` | List folios by `reservation_id` or `property_id`. |
+| Folios | `GET /api/folios/:id` | Read folio with line items and payments. |
+| Folios | `POST /api/folios/:id/line-items` | Post charge/credit and recompute persisted totals. |
+| Folios | `POST /api/folios/:id/payments` | Record payment, recompute totals, settle finalized zero-balance folios. |
+| Dining events | `POST /api/dining-events` | Create a dining/event booking after required-field validation. |
+| Staff | `POST /api/staff` | Create staff with role and `property_ids`. |
 
-## State Machines
+## Data flow
 
-Guest request transitions: `open → assigned | in_progress | closed`, `assigned → in_progress | closed`, `in_progress → fulfilled | closed`, `fulfilled → closed | reopened`, `closed → reopened`, `reopened → assigned | in_progress | closed`.
+Stay experiences are stored in `stay_experiences`, linked to `reservations`, and optionally linked to `channels` and `reservation_external_refs`. The Stay Records UI reads them through `stayExperiences` REST repository methods and groups rows into `short_term` and `long_term` views without mutating legacy `stay_registrations`.
 
-Reservation operations: `pending/check_in_pending → checked_in`; `checked_in/check_out_pending → checked_out`. Check-out outside the checked-in lifecycle returns `409`.
+Guest requests now require `reservation_id` on create while keeping `guest_id` and `room_id` nullable. The request lifecycle accepts only these transitions: `open → assigned|in_progress|closed`, `assigned → in_progress|closed`, `in_progress → fulfilled|closed`, `fulfilled → closed|reopened`, `closed → reopened`, and `reopened → assigned|in_progress|closed`.
 
-Folio status: `open → finalized → settled`; payment to zero on a finalized folio settles it.
+Check-in validates the reservation, creates or reuses exactly one folio, then marks the reservation `checked_in`. Check-out is allowed only from `checked_in` or `check_out_pending`; it computes folio totals, finalizes the folio, marks the reservation `checked_out`, and emits `checkout.completed` for room/housekeeping follow-up.
+
+Folios are the billing source of truth. `computeBalance` derives `subtotal_amount = charges - credits`, `paid_amount = payments`, and `balance_amount = subtotal - paid`; finalized folios become `settled` when payment brings the balance to zero.
+
+Tax export now has an additive folio migration path: finalized or settled folios export from `folio_line_items` and stamp `folio_line_item_id`; reservations without folios keep the existing reservation-derived fallback.
 
 ## Verification
 
-Schema work: `cd backend && npm run db:generate && npm run db:validate && npm run db:verify:migration`.
-
-Backend work: `cd backend && npm run build` plus operations service tests.
-
-Frontend work: `npm run typecheck && npm run build` from the frontend workspace/root as configured.
+Correctness is covered by `backend/test/operations-pipeline-services.test.ts`, which contains 13 `fast-check` property tests matching `design_plan.md` Properties 1–13 with 100 generated runs each. Standard verification remains backend build/tests/schema checks plus frontend typecheck/tests/build.
