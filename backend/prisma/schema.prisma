@@ -1,6 +1,6 @@
-// Prisma schema mirroring Track A balanced-core v1 schema.
-// Track A SQL remains in supabase/migrations/*.sql.
-// Track B migrations are generated from this schema for Azure PostgreSQL.
+// Canonical Prisma schema for the current Azure PostgreSQL runtime.
+// Historical Supabase SQL remains in supabase/migrations/*.sql as reference-only schema context.
+// Deployable migrations are generated from this schema for Azure PostgreSQL.
 
 generator client {
   provider = "prisma-client-js"
@@ -234,6 +234,7 @@ model channels {
   external_accounts          external_accounts[]
   provider_reservation_import_rows provider_reservation_import_rows[]
   reservation_external_refs  reservation_external_refs[]
+  stay_experiences           stay_experiences[]
 }
 
 model external_accounts {
@@ -356,6 +357,7 @@ model reservations {
   provider_reservation_import_rows provider_reservation_import_rows[]
   reservation_external_refs     reservation_external_refs[]
   reservation_room_allocations  reservation_room_allocations[]
+  stay_experiences              stay_experiences[]
   tax_export_items              tax_export_items[]
 
   @@index([property_id, check_in_date, check_out_date])
@@ -388,11 +390,34 @@ model reservation_external_refs {
   channel          channels           @relation(fields: [channel_id], references: [id], onDelete: Restrict)
   external_account external_accounts? @relation(fields: [external_account_id, channel_id], references: [id, channel_id], onDelete: Restrict)
   channel_listing  channel_listings?  @relation(fields: [channel_listing_id, external_account_id], references: [id, external_account_id], onDelete: Restrict)
+  stay_experiences stay_experiences[]
 
   @@index([reservation_id])
   @@index([channel_listing_id])
   @@index([channel_id, external_account_id, provider_reservation_id], map: "refs_provider_res_idx")
   @@index([channel_id, external_account_id, confirmation_code], map: "refs_confirmation_idx")
+}
+
+model stay_experiences {
+  id                    String    @id @default(uuid()) @db.Uuid
+  reservation_id        String    @db.Uuid
+  channel_id            String?   @db.Uuid
+  external_ref_id       String?   @db.Uuid
+  platform_reference    String?
+  stay_type             StayType?
+  experience_notes      String    @default("")
+  guest_request_content String    @default("")
+  created_at            DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at            DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
+
+  reservation  reservations               @relation(fields: [reservation_id], references: [id], onDelete: Cascade)
+  channel      channels?                  @relation(fields: [channel_id], references: [id], onDelete: SetNull)
+  external_ref reservation_external_refs? @relation(fields: [external_ref_id], references: [id], onDelete: SetNull)
+
+  @@unique([reservation_id, platform_reference])
+  @@index([reservation_id])
+  @@index([channel_id])
+  @@index([stay_type])
 }
 
 model reservation_room_allocations {
