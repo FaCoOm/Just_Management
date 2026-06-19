@@ -19,7 +19,7 @@ export function RevenueOverview() {
         <div className="rounded-lg border border-dashed border-border bg-muted/20 p-4">
           <p className="text-sm font-medium">Revenue data not connected yet.</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Track B schema does not currently expose nightly rates, folios, or
+Current schema does not expose nightly rates, folios, or
             payout totals from Azure PostgreSQL. Fake revenue bars removed.
           </p>
         </div>
