@@ -1,7 +1,7 @@
 # Frontend Repository Contract Guide
 
 ## Scope
-- `frontend/src/lib/repositories/` is frontend data-access seam for Track B REST backend.
+- `frontend/src/lib/repositories/` is frontend data-access seam for the current REST backend.
 - Hooks and pages consume repository interfaces; only this folder constructs API requests.
 
 ## Files
@@ -25,7 +25,7 @@
 ## Anti-Patterns
 - Fetching directly from dashboard panels, page components, or hooks.
 - Adding a method to `rest-repositories.ts` without declaring it in `types.ts`.
-- Reintroducing Supabase runtime adapters in this Track B worktree.
+- Reintroducing Supabase runtime adapters in this REST-only worktree.
 - Returning backend-only fields just because Prisma exposes them.
 
 ## Verification

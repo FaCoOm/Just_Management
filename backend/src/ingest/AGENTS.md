@@ -1,8 +1,8 @@
 # Ingestion Pipeline Guide
 
 ## Scope
-- `backend/src/ingest/` owns Track B spreadsheet and provider ingestion.
-- Routes validate contracts; services reconcile provider data into Track B tables.
+- `backend/src/ingest/` owns spreadsheet and provider ingestion for the current runtime.
+- Routes validate contracts; services reconcile provider data into current Prisma tables.
 
 ## Layout
 - `contracts.ts` defines source accounts, source types, file limits, summaries, and validation error shapes.

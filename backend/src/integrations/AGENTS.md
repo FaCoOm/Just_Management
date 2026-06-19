@@ -1,7 +1,7 @@
 # Provider Integrations Guide
 
 ## Scope
-- `backend/src/integrations/` is the seam between Track B core and external providers (currently `@withone` + Google Drive/Gmail/Sheets).
+- `backend/src/integrations/` is the seam between the current REST/Prisma core and external providers (currently `@withone` + Google Drive/Gmail/Sheets).
 - Files here own provider auth, token refresh, webhook intake, and outbound API construction.
 
 ## Layout
