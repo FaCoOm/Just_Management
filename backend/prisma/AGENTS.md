@@ -1,7 +1,7 @@
 # Prisma Schema Guide
 
 ## Scope
-- `backend/prisma/` is canonical Track B schema and deployable Azure PostgreSQL migration history.
+- `backend/prisma/` is the canonical schema and deployable Azure PostgreSQL migration history.
 - `schema.prisma` describes current model truth; `migrations/` records deployable history.
 
 ## Source Of Truth
@@ -18,7 +18,7 @@
 5. Run `npm run db:verify:migration`.
 
 ## Rules
-- Preserve additive migration style during Track B transition.
+- Preserve additive migration style during the current REST/Prisma/Azure transition.
 - Do not drop `guests`, `legacy_guest_reservation_backfills`, or provider import tables without explicit approved plan.
 - Keep `reservations` as booking source of truth; `guests` remains compatibility surface.
 - Keep Azure SQL free of Supabase RLS syntax: `anon`, `authenticated`, `service_role`, `ENABLE ROW LEVEL SECURITY`.

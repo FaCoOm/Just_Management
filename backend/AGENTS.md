@@ -1,13 +1,13 @@
 # Backend Subsystem Guide
 
 ## Scope
-- `backend/` owns Track B Express API, Prisma access, ingestion routes, and backend verification scripts.
+- `backend/` owns the current Express API, Prisma access, ingestion routes, and backend verification scripts.
 - Frontend repository code consumes HTTP responses; it must not import Prisma or backend internals.
 
 ## Real Entry Points
 - `src/index.ts` registers middleware, health/API routes, dashboard summary, stats, and `registerIngestRoutes(app)`.
 - `src/ingest/routes.ts` owns `/api/ingest/*` request validation and upload handling.
-- `prisma/schema.prisma` is canonical Track B schema source.
+- `prisma/schema.prisma` is the canonical Azure PostgreSQL schema source.
 - `scripts/verify-azure-migration.mjs` and `scripts/verify-ingestion.ts` are backend guardrails.
 
 ## Where To Edit
