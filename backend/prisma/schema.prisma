@@ -52,6 +52,17 @@ enum GuestRequestPriority {
   urgent
 }
 
+enum FolioStatus {
+  open
+  finalized
+  settled
+}
+
+enum FolioLineItemKind {
+  charge
+  credit
+}
+
 model properties {
   id          String   @id @default(uuid()) @db.Uuid
   name        String
@@ -70,6 +81,7 @@ model properties {
   room_rates         room_rates[]
   tenants           tenants[]
   stay_registrations stay_registrations[]
+  folios            folios[]
 }
 
 model rooms {
@@ -176,8 +188,8 @@ model guests {
 
 model guest_requests {
   id             String   @id @default(uuid()) @db.Uuid
-  guest_id       String   @db.Uuid
-  room_id        String   @db.Uuid
+  guest_id       String?  @db.Uuid
+  room_id        String?  @db.Uuid
   request_type   String
   notes          String   @default("")
   description    String?
@@ -191,10 +203,10 @@ model guest_requests {
   reservation_id String?  @db.Uuid
   property_id    String?  @db.Uuid
 
-  guest       guests        @relation(fields: [guest_id], references: [id], onDelete: Restrict)
+  guest       guests?       @relation(fields: [guest_id], references: [id], onDelete: SetNull)
   property    properties?   @relation(fields: [property_id], references: [id], onDelete: SetNull)
   reservation reservations? @relation(fields: [reservation_id], references: [id], onDelete: SetNull)
-  room        rooms         @relation(fields: [room_id], references: [id], onDelete: Restrict)
+  room        rooms?        @relation(fields: [room_id], references: [id], onDelete: SetNull)
 
   @@index([guest_id])
   @@index([property_id])
@@ -359,6 +371,7 @@ model reservations {
   reservation_room_allocations  reservation_room_allocations[]
   stay_experiences              stay_experiences[]
   tax_export_items              tax_export_items[]
+  folio                         folios?
 
   @@index([property_id, check_in_date, check_out_date])
   @@index([status])
@@ -651,6 +664,7 @@ model tax_export_items {
   id                  String    @id @default(uuid()) @db.Uuid
   job_id              String    @db.Uuid
   reservation_id      String    @db.Uuid
+  folio_line_item_id  String?   @db.Uuid
   invoice_number      String
   invoice_date        String
   buyer_label         String    @default("Khách lẻ không lấy hóa đơn")
@@ -673,10 +687,69 @@ model tax_export_items {
 
   job         tax_export_jobs @relation(fields: [job_id], references: [id], onDelete: Cascade)
   reservation reservations    @relation(fields: [reservation_id], references: [id], onDelete: Restrict)
+  folio_line_item folio_line_items? @relation(fields: [folio_line_item_id], references: [id], onDelete: SetNull)
 
   @@index([job_id])
   @@index([reservation_id])
+  @@index([folio_line_item_id])
   @@index([status])
+}
+
+model folios {
+  id              String      @id @default(uuid()) @db.Uuid
+  reservation_id  String      @unique @db.Uuid
+  property_id     String      @db.Uuid
+  status          FolioStatus @default(open)
+  currency        String      @default("VND")
+  subtotal_amount Int         @default(0)
+  paid_amount     Int         @default(0)
+  balance_amount  Int         @default(0)
+  opened_at       DateTime    @default(now()) @db.Timestamptz(6)
+  finalized_at    DateTime?   @db.Timestamptz(6)
+  settled_at      DateTime?   @db.Timestamptz(6)
+  created_at      DateTime    @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime    @default(now()) @updatedAt @db.Timestamptz(6)
+
+  reservation reservations       @relation(fields: [reservation_id], references: [id], onDelete: Restrict)
+  property    properties         @relation(fields: [property_id], references: [id], onDelete: Restrict)
+  line_items  folio_line_items[]
+  payments    folio_payments[]
+
+  @@index([property_id])
+  @@index([status])
+}
+
+model folio_line_items {
+  id          String            @id @default(uuid()) @db.Uuid
+  folio_id    String            @db.Uuid
+  description String
+  kind        FolioLineItemKind @default(charge)
+  quantity    Int               @default(1)
+  unit_amount Int
+  line_total  Int
+  tax_rate    Int               @default(8)
+  source      String            @default("manual")
+  created_at  DateTime          @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime          @default(now()) @updatedAt @db.Timestamptz(6)
+
+  folio folios @relation(fields: [folio_id], references: [id], onDelete: Cascade)
+  tax_export_items tax_export_items[]
+
+  @@index([folio_id])
+}
+
+model folio_payments {
+  id          String   @id @default(uuid()) @db.Uuid
+  folio_id    String   @db.Uuid
+  method      String   @default("Chuyển khoản")
+  amount      Int
+  reference   String?
+  received_at DateTime @default(now()) @db.Timestamptz(6)
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+
+  folio folios @relation(fields: [folio_id], references: [id], onDelete: Cascade)
+
+  @@index([folio_id])
 }
 
 model dining_event_bookings {
