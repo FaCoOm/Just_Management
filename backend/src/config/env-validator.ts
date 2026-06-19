@@ -1,5 +1,5 @@
 /**
- * Just Management - Track B Environment Configuration Validator
+ * Just Management - Runtime Environment Configuration Validator
  * Verifies process.env at startup and prints a clear configuration diagnostic dashboard.
  */
 

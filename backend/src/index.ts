@@ -1324,7 +1324,7 @@ async function startServer() {
   }
 
   const server = app.listen(PORT, () => {
-    console.log(`Track B server running on port ${PORT}`);
+    console.log(`Just Management API server running on port ${PORT}`);
     startFolderWatcher();
   });
 
