@@ -3,15 +3,16 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { StayRecordsTab } from "../components/guests/stay-records-tab";
-import { useStayRegistrations, useTenants } from "../hooks/use-guests-tenants-data";
+import { useTenants } from "../hooks/use-guests-tenants-data";
+import { useStayRecordsData } from "../hooks/use-stay-records-data";
 
 vi.mock("@/hooks/use-guests-tenants-data", () => ({
   useTenants: vi.fn(),
-  useStayRegistrations: vi.fn(),
 }));
+vi.mock("@/hooks/use-stay-records-data", () => ({ useStayRecordsData: vi.fn() }));
 
 const useTenantsMock = vi.mocked(useTenants);
-const useStayRegistrationsMock = vi.mocked(useStayRegistrations);
+const useStayRecordsDataMock = vi.mocked(useStayRecordsData);
 
 function wrapper() {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
@@ -46,22 +47,43 @@ describe("StayRecordsTab file", () => {
       ],
       isLoading: false,
     } as never);
-    useStayRegistrationsMock.mockReturnValue({
-      data: [
+    useStayRecordsDataMock.mockReturnValue({
+      shortTerm: [
         {
           id: "stay-1",
-          property_id: "property-1",
-          tenant_id: "tenant-1",
-          guest_name: "Nguyen Hoa",
-          guest_count: 2,
-          registration_date: "2026-06-17",
-          drive_folder_status: "created",
-          drive_folder_id: "folder-123",
+          reservation_id: "reservation-1",
+          channel_id: null,
+          external_ref_id: null,
+          platform_reference: "platform-1",
+          stay_type: "short_term",
+          experience_notes: "Quiet stay",
+          guest_request_content: "Extra towels",
           created_at: "2026-06-17T00:00:00Z",
           updated_at: "2026-06-17T00:00:00Z",
+          reservation: {
+            id: "reservation-1",
+            property_id: "property-1",
+            primary_room_id: null,
+            status: "pending",
+            check_in_date: "2026-06-17",
+            check_out_date: "2026-06-18",
+            guest_name: "Nguyen Hoa",
+            guest_phone: null,
+            guest_email: null,
+            adult_count: 2,
+            child_count: 0,
+            infant_count: 0,
+            guest_count: 2,
+            operational_notes: "",
+            guest_notes: "",
+            created_at: "2026-06-17T00:00:00Z",
+            updated_at: "2026-06-17T00:00:00Z",
+          },
         },
       ],
-      isLoading: false,
+      longTerm: [],
+      reservations: [],
+      loading: false,
     } as never);
   });
 

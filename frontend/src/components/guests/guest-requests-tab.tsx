@@ -18,6 +18,7 @@ import type { GuestRequest, GuestRequestPriority, GuestRequestStatus } from "@/t
 
 type GuestRequestsTabProps = {
   propertyId: string;
+  reservationId?: string;
   guestId?: string;
   roomId?: string;
 };
@@ -82,7 +83,7 @@ function matchesSearch(request: GuestRequest, search: string) {
   return [request.description, request.request_type, request.notes].filter(Boolean).join(" ").toLowerCase().includes(value);
 }
 
-export function GuestRequestsTab({ propertyId, guestId, roomId }: GuestRequestsTabProps) {
+export function GuestRequestsTab({ propertyId, reservationId, guestId, roomId }: GuestRequestsTabProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState<GuestRequestStatus | "all">("all");
   const [priorityFilter, setPriorityFilter] = useState<GuestRequestPriority | "all">("all");
@@ -93,6 +94,7 @@ export function GuestRequestsTab({ propertyId, guestId, roomId }: GuestRequestsT
   const [description, setDescription] = useState("");
   const [assignedTo, setAssignedTo] = useState("");
   const [priority, setPriority] = useState<GuestRequestPriority>("medium");
+  const [reservationIdInput, setReservationIdInput] = useState(reservationId ?? "");
   const [guestIdInput, setGuestIdInput] = useState(guestId ?? "");
   const [roomIdInput, setRoomIdInput] = useState(roomId ?? "");
   const [assignDialogOpen, setAssignDialogOpen] = useState(false);
@@ -169,8 +171,9 @@ export function GuestRequestsTab({ propertyId, guestId, roomId }: GuestRequestsT
 
   async function onSubmit() {
     await createGuestRequest.mutateAsync({
-      guest_id: guestIdInput,
-      room_id: roomIdInput,
+      reservation_id: reservationIdInput,
+      guest_id: guestIdInput.trim() ? guestIdInput : null,
+      room_id: roomIdInput.trim() ? roomIdInput : null,
       property_id: propertyId,
       request_type: description,
       notes: description,
@@ -183,6 +186,7 @@ export function GuestRequestsTab({ propertyId, guestId, roomId }: GuestRequestsT
     setDialogOpen(false);
     setDescription("");
     setAssignedTo("");
+    if (!reservationId) setReservationIdInput("");
     if (!guestId) setGuestIdInput("");
     if (!roomId) setRoomIdInput("");
   }
@@ -208,6 +212,6 @@ export function GuestRequestsTab({ propertyId, guestId, roomId }: GuestRequestsT
       </CardContent>
     </Card>
     <Dialog open={assignDialogOpen} onOpenChange={setAssignDialogOpen}><DialogContent><DialogHeader><DialogTitle>Assign request</DialogTitle><DialogDescription>Enter an assignee before moving to Assigned.</DialogDescription></DialogHeader><div className="grid gap-2 py-2"><Label htmlFor="assign-to">Assigned To</Label><Input id="assign-to" value={assignValue} onChange={(e) => setAssignValue(e.target.value)} placeholder="Staff name / ID" /></div><DialogFooter><Button variant="outline" onClick={() => { setAssignDialogOpen(false); setAssignTargetId(null); }}>Cancel</Button><Button disabled={!assignValue.trim() || !assignTargetId} onClick={() => { if (!assignTargetId) return; transitionGuestRequest.mutate({ id: assignTargetId, status: "assigned", assigned_to: assignValue.trim() }); setAssignDialogOpen(false); setAssignTargetId(null); setAssignValue(""); }}>Assign</Button></DialogFooter></DialogContent></Dialog>
-    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}><DialogContent className="sm:max-w-xl"><DialogHeader><DialogTitle>New Request</DialogTitle><DialogDescription>Create a guest request for this property.</DialogDescription></DialogHeader><div className="grid gap-4 py-2"><div className="grid gap-2"><Label htmlFor="guest-id">Guest ID</Label><Input id="guest-id" value={guestIdInput} onChange={(e) => setGuestIdInput(e.target.value)} placeholder="guest-..." /></div><div className="grid gap-2"><Label htmlFor="room-id">Room ID</Label><Input id="room-id" value={roomIdInput} onChange={(e) => setRoomIdInput(e.target.value)} placeholder="room-..." /></div><div className="grid gap-2"><Label htmlFor="description">Description</Label><Textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Describe the request" /></div><div className="grid gap-2 sm:grid-cols-2"><div className="grid gap-2"><Label>Priority</Label><Select value={priority} onValueChange={(v) => setPriority(v as GuestRequestPriority)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="low">Low</SelectItem><SelectItem value="medium">Medium</SelectItem><SelectItem value="high">High</SelectItem><SelectItem value="urgent">Urgent</SelectItem></SelectContent></Select></div><div className="grid gap-2"><Label htmlFor="assigned-to">Assigned To</Label><Input id="assigned-to" value={assignedTo} onChange={(e) => setAssignedTo(e.target.value)} placeholder="Staff name / ID" /></div></div></div><DialogFooter><Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button><Button onClick={() => void onSubmit()} disabled={createGuestRequest.isPending || !description.trim() || !guestIdInput.trim() || !roomIdInput.trim()}>{createGuestRequest.isPending ? "Saving…" : "Create Request"}</Button></DialogFooter></DialogContent></Dialog>
+    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}><DialogContent className="sm:max-w-xl"><DialogHeader><DialogTitle>New Request</DialogTitle><DialogDescription>Create a reservation-linked request for this property.</DialogDescription></DialogHeader><div className="grid gap-4 py-2"><div className="grid gap-2"><Label htmlFor="reservation-id">Reservation ID</Label><Input id="reservation-id" value={reservationIdInput} onChange={(e) => setReservationIdInput(e.target.value)} placeholder="reservation-..." /></div><div className="grid gap-2"><Label htmlFor="guest-id">Guest ID</Label><Input id="guest-id" value={guestIdInput} onChange={(e) => setGuestIdInput(e.target.value)} placeholder="guest-..." /></div><div className="grid gap-2"><Label htmlFor="room-id">Room ID</Label><Input id="room-id" value={roomIdInput} onChange={(e) => setRoomIdInput(e.target.value)} placeholder="room-..." /></div><div className="grid gap-2"><Label htmlFor="description">Description</Label><Textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Describe the request" /></div><div className="grid gap-2 sm:grid-cols-2"><div className="grid gap-2"><Label>Priority</Label><Select value={priority} onValueChange={(v) => setPriority(v as GuestRequestPriority)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="low">Low</SelectItem><SelectItem value="medium">Medium</SelectItem><SelectItem value="high">High</SelectItem><SelectItem value="urgent">Urgent</SelectItem></SelectContent></Select></div><div className="grid gap-2"><Label htmlFor="assigned-to">Assigned To</Label><Input id="assigned-to" value={assignedTo} onChange={(e) => setAssignedTo(e.target.value)} placeholder="Staff name / ID" /></div></div></div><DialogFooter><Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button><Button onClick={() => void onSubmit()} disabled={createGuestRequest.isPending || !description.trim() || !reservationIdInput.trim()}>{createGuestRequest.isPending ? "Saving…" : "Create Request"}</Button></DialogFooter></DialogContent></Dialog>
   </div>;
 }

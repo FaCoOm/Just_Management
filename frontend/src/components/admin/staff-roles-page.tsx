@@ -4,13 +4,15 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useStaffPageData } from "@/hooks/use-page-data";
+import { useCreateStaff, useStaffPageData } from "@/hooks/use-page-data";
 import { UserCog, Shield, Users, Search, Plus, Building2 } from "lucide-react";
 
 const roleConfig: Record<string, { label: string; className: string }> = {
@@ -35,6 +37,11 @@ export function StaffRolesPage() {
   const { properties, staff, loading } = useStaffPageData();
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [role, setRole] = useState("staff");
+  const createStaff = useCreateStaff();
 
   const filtered = useMemo(() => staff.filter((s) => {
     const matchSearch = s.name.toLowerCase().includes(search.toLowerCase()) || s.email.toLowerCase().includes(search.toLowerCase());
@@ -52,7 +59,7 @@ export function StaffRolesPage() {
 
   return (
     <div className="flex h-full max-h-svh flex-col" data-testid="staff-roles-page">
-      <StaffHeader />
+      <StaffHeader onAddStaff={() => setDialogOpen(true)} />
       <div className="flex-1 overflow-y-auto">
         <div className="space-y-4 p-4">
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -147,11 +154,33 @@ export function StaffRolesPage() {
           </Card>
         </div>
       </div>
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Add Staff</DialogTitle></DialogHeader>
+          <div className="grid gap-3 py-2">
+            <div className="grid gap-1"><Label htmlFor="staff-name">Name</Label><Input id="staff-name" value={name} onChange={(event) => setName(event.target.value)} /></div>
+            <div className="grid gap-1"><Label htmlFor="staff-email">Email</Label><Input id="staff-email" value={email} onChange={(event) => setEmail(event.target.value)} /></div>
+            <div className="grid gap-1"><Label>Role</Label><Select value={role} onValueChange={setRole}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="admin">Admin</SelectItem><SelectItem value="manager">Manager</SelectItem><SelectItem value="accountant">Accountant</SelectItem><SelectItem value="staff">Staff</SelectItem></SelectContent></Select></div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
+            <Button disabled={!name || !email || createStaff.isPending} onClick={() => {
+              void createStaff.mutateAsync({
+                name,
+                email,
+                role: role === "admin" || role === "manager" || role === "accountant" ? role : "staff",
+                property_ids: properties.map((property) => property.id),
+                status: "active",
+              }).then(() => setDialogOpen(false));
+            }}>Add</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
 
-function StaffHeader() {
+function StaffHeader({ onAddStaff }: { onAddStaff?: () => void }) {
   return (
     <header className="flex h-14 items-center gap-3 border-b border-border bg-card px-4">
       <SidebarTrigger className="-ml-1" />
@@ -162,7 +191,7 @@ function StaffHeader() {
           <p className="text-xs text-muted-foreground">Team directory and permission management</p>
         </div>
       </div>
-      <Button size="sm" className="h-8 gap-1.5 text-xs bg-harbor text-harbor-foreground hover:bg-harbor-deep" data-testid="add-staff-btn">
+      <Button size="sm" className="h-8 gap-1.5 text-xs bg-harbor text-harbor-foreground hover:bg-harbor-deep" data-testid="add-staff-btn" onClick={onAddStaff}>
         <Plus className="h-3.5 w-3.5" />
         Add Staff
       </Button>

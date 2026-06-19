@@ -14,6 +14,8 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useReservationsPageData } from "@/hooks/use-page-data";
+import { useCheckInOut } from "@/hooks/use-check-in-out";
+import { useFolioData } from "@/hooks/use-folio-data";
 import { formatVietnamDate } from "@/lib/vietnam-time";
 import {
   LogIn,
@@ -73,7 +75,10 @@ function GuestCard({ guest, room, property, type }: {
   property: Property | undefined;
   type: "arrival" | "departure";
 }) {
+  const checkInOut = useCheckInOut();
+  const folio = useFolioData(guest.reservation_id);
   const initials = guest.guest_name.split(" ").map((n) => n[0]).join("").slice(0, 2);
+  const activeMutation = type === "arrival" ? checkInOut.checkIn : checkInOut.checkOut;
 
   return (
     <div
@@ -115,25 +120,32 @@ function GuestCard({ guest, room, property, type }: {
             {type === "arrival" ? formatVietnamDate(guest.eta ?? "") : formatVietnamDate(guest.etd ?? "")}
             {" · "}{guest.guest_count} {guest.guest_count === 1 ? "guest" : "guests"}
           </p>
+          <p className="text-[10px] text-muted-foreground mt-0.5">
+            Folio: {folio.data ? `${folio.data.status} · ${folio.data.balance_amount.toLocaleString("vi-VN")} VND` : "not opened"}
+          </p>
         </div>
       </div>
       <div>
         {type === "arrival" ? (
-          <Button
-            size="sm"
-            className="h-8 gap-1.5 text-xs bg-harbor text-harbor-foreground hover:bg-harbor-deep"
-            data-testid={`check-in-btn-${guest.id}`}
-          >
+            <Button
+              size="sm"
+              className="h-8 gap-1.5 text-xs bg-harbor text-harbor-foreground hover:bg-harbor-deep"
+              data-testid={`check-in-btn-${guest.id}`}
+              disabled={activeMutation.isPending}
+              onClick={() => activeMutation.mutate(guest.reservation_id)}
+            >
             <LogIn className="h-3.5 w-3.5" />
             Check In
           </Button>
         ) : (
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-8 gap-1.5 text-xs"
-            data-testid={`check-out-btn-${guest.id}`}
-          >
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8 gap-1.5 text-xs"
+              data-testid={`check-out-btn-${guest.id}`}
+              disabled={activeMutation.isPending}
+              onClick={() => activeMutation.mutate(guest.reservation_id)}
+            >
             <LogOut className="h-3.5 w-3.5" />
             Check Out
           </Button>

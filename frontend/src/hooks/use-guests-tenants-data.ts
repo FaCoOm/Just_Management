@@ -4,6 +4,7 @@ import { createRestRepositories } from "@/lib/repositories";
 import { dashboardKeys } from "@/lib/query-keys";
 import type {
   GuestRequestCreateInput,
+  GuestRequestUpdateInput,
   StayRegistrationCreateInput,
   TenantCreateInput,
 } from "@/lib/repositories";
@@ -140,4 +141,38 @@ export function useTransitionGuestRequest() {
       void queryClient.invalidateQueries({ queryKey: dashboardKeys.guestRequests });
     },
   });
+}
+
+export function useUpdateGuestRequest() {
+  const repos = useMemo(() => createRestRepositories(), []);
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, input }: { id: string; input: GuestRequestUpdateInput }) =>
+      repos.guestRequests.update(id, input),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: dashboardKeys.guestRequests });
+    },
+  });
+}
+
+export function useDeleteGuestRequest() {
+  const repos = useMemo(() => createRestRepositories(), []);
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => repos.guestRequests.delete(id),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: dashboardKeys.guestRequests });
+    },
+  });
+}
+
+export function useGuestRequestMutations() {
+  return {
+    create: useCreateGuestRequest(),
+    update: useUpdateGuestRequest(),
+    transition: useTransitionGuestRequest(),
+    delete: useDeleteGuestRequest(),
+  };
 }

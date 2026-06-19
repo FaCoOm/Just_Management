@@ -12,8 +12,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useStayRegistrations, useTenants } from "@/hooks/use-guests-tenants-data";
-import type { Tenant } from "@/types/database";
+import { useTenants } from "@/hooks/use-guests-tenants-data";
+import { useStayRecordsData } from "@/hooks/use-stay-records-data";
+import type { StayExperience, Tenant } from "@/types/database";
 
 type Mode = "short-term" | "long-term";
 type SortKey = "name" | "date" | "rent";
@@ -47,10 +48,10 @@ export function StayRecordsTab({ propertyId }: StayRecordsTabProps) {
   const [selectedTenant, setSelectedTenant] = useState<Tenant | null>(null);
 
   const tenantsQuery = useTenants(propertyId);
-  const staysQuery = useStayRegistrations(propertyId);
+  const stayRecords = useStayRecordsData(propertyId);
 
   const tenants = tenantsQuery.data ?? [];
-  const stayRegistrations = staysQuery.data ?? [];
+  const stayExperiences = mode === "short-term" ? stayRecords.shortTerm : stayRecords.longTerm;
 
   const normalizedSearch = search.trim().toLowerCase();
 
@@ -71,17 +72,17 @@ export function StayRecordsTab({ propertyId }: StayRecordsTabProps) {
   }, [tenants, normalizedSearch, sortDir, sortKey, vipOnly]);
 
   const filteredStays = useMemo(() => {
-    const base = stayRegistrations.filter((stay) => {
+    const base = stayExperiences.filter((stay) => {
       if (!normalizedSearch) return true;
-      return stay.guest_name.toLowerCase().includes(normalizedSearch);
+      return (stay.reservation?.guest_name ?? "").toLowerCase().includes(normalizedSearch);
     });
 
     return [...base].sort((a, b) => {
       const sign = sortDir === "asc" ? 1 : -1;
-      if (sortKey === "date") return a.registration_date.localeCompare(b.registration_date) * sign;
-      return a.guest_name.localeCompare(b.guest_name) * sign;
+      if (sortKey === "date") return a.created_at.localeCompare(b.created_at) * sign;
+      return (a.reservation?.guest_name ?? "").localeCompare(b.reservation?.guest_name ?? "") * sign;
     });
-  }, [normalizedSearch, sortDir, sortKey, stayRegistrations]);
+  }, [normalizedSearch, sortDir, sortKey, stayExperiences]);
 
   const toggleSort = (key: SortKey) => {
     if (sortKey === key) {
@@ -141,15 +142,15 @@ export function StayRecordsTab({ propertyId }: StayRecordsTabProps) {
               <TableRow>
                 <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">No short-term guests found</TableCell>
               </TableRow>
-            ) : filteredStays.map((stay) => (
+            ) : filteredStays.map((stay: StayExperience) => (
               <TableRow key={stay.id}>
-                <TableCell className="font-medium">{stay.guest_name}</TableCell>
-                <TableCell>{stay.property?.name ?? "—"}</TableCell>
-                <TableCell>{formatDate(stay.tenant?.lease_start ?? stay.registration_date)}</TableCell>
-                <TableCell>{formatDate(stay.tenant?.lease_end)}</TableCell>
-                <TableCell>{stay.guest_count}</TableCell>
-                <TableCell>{formatDate(stay.registration_date)}</TableCell>
-                <TableCell><Badge variant="outline">{stay.drive_folder_status}</Badge></TableCell>
+                <TableCell className="font-medium">{stay.reservation?.guest_name ?? "—"}</TableCell>
+                <TableCell>{stay.reservation?.property_id ?? propertyId}</TableCell>
+                <TableCell>{formatDate(stay.reservation?.check_in_date ?? stay.created_at)}</TableCell>
+                <TableCell>{formatDate(stay.reservation?.check_out_date)}</TableCell>
+                <TableCell>{stay.reservation?.guest_count ?? "—"}</TableCell>
+                <TableCell>{formatDate(stay.created_at)}</TableCell>
+                <TableCell><Badge variant="outline">{stay.stay_type ?? "—"}</Badge></TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -214,19 +215,19 @@ export function StayRecordsTab({ propertyId }: StayRecordsTabProps) {
               <div className="space-y-2">
                 <h3 className="text-sm font-medium">Stay registrations</h3>
                 <div className="space-y-2">
-                  {stayRegistrations.filter((stay) => stay.tenant_id === selectedTenant.id).length === 0 ? (
+                  {stayRecords.longTerm.length === 0 ? (
                     <p className="text-sm text-muted-foreground">No linked stay registrations</p>
-                  ) : stayRegistrations.filter((stay) => stay.tenant_id === selectedTenant.id).map((stay) => (
+                  ) : stayRecords.longTerm.map((stay) => (
                     <div key={stay.id} className="rounded-lg border border-border p-3 text-sm">
                       <div className="flex items-center justify-between gap-2">
-                        <span className="font-medium">{stay.guest_name}</span>
-                        <Badge variant="outline">{stay.drive_folder_status}</Badge>
+                        <span className="font-medium">{stay.reservation?.guest_name ?? selectedTenant.name}</span>
+                        <Badge variant="outline">{stay.stay_type ?? "long_term"}</Badge>
                       </div>
                       <div className="mt-2 grid gap-1 text-muted-foreground sm:grid-cols-2">
-                        <span>Property: {stay.property?.name ?? "—"}</span>
-                        <span>Guests: {stay.guest_count}</span>
-                        <span>Registration: {formatDate(stay.registration_date)}</span>
-                        <span>Folder: {stay.drive_folder_id ? "Linked" : "—"}</span>
+                        <span>Property: {stay.reservation?.property_id ?? propertyId}</span>
+                        <span>Guests: {stay.reservation?.guest_count ?? "—"}</span>
+                        <span>Check-in: {formatDate(stay.reservation?.check_in_date)}</span>
+                        <span>Reference: {stay.platform_reference ?? "—"}</span>
                       </div>
                     </div>
                   ))}

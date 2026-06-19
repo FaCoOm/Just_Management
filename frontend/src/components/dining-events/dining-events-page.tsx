@@ -4,6 +4,9 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -12,7 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useDiningEventsPageData } from "@/hooks/use-page-data";
+import { useCreateDiningEvent, useDiningEventsPageData } from "@/hooks/use-page-data";
 import {
   UtensilsCrossed,
   CalendarDays,
@@ -44,6 +47,12 @@ function DiningEventsSkeleton() {
 export function DiningEventsPage() {
   const { properties, events, loading } = useDiningEventsPageData();
   const [propertyFilter, setPropertyFilter] = useState<string>("all");
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [title, setTitle] = useState("");
+  const [venue, setVenue] = useState("");
+  const [guestName, setGuestName] = useState("");
+  const [guestCount, setGuestCount] = useState("1");
+  const createEvent = useCreateDiningEvent();
 
   const filtered = useMemo(() => {
     if (propertyFilter === "all") return events;
@@ -65,7 +74,7 @@ export function DiningEventsPage() {
 
   return (
     <div className="flex h-full max-h-svh flex-col" data-testid="dining-events-page">
-      <DiningEventsHeader propertyFilter={propertyFilter} setPropertyFilter={setPropertyFilter} properties={properties} />
+      <DiningEventsHeader propertyFilter={propertyFilter} setPropertyFilter={setPropertyFilter} properties={properties} onNewEvent={() => setDialogOpen(true)} />
       <div className="flex-1 overflow-y-auto">
         <div className="space-y-4 p-4">
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -141,14 +150,44 @@ export function DiningEventsPage() {
           )}
         </div>
       </div>
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>New Event</DialogTitle></DialogHeader>
+          <div className="grid gap-3 py-2">
+            <div className="grid gap-1"><Label htmlFor="event-title">Title</Label><Input id="event-title" value={title} onChange={(event) => setTitle(event.target.value)} /></div>
+            <div className="grid gap-1"><Label htmlFor="event-venue">Venue</Label><Input id="event-venue" value={venue} onChange={(event) => setVenue(event.target.value)} /></div>
+            <div className="grid gap-1"><Label htmlFor="event-guest">Guest name</Label><Input id="event-guest" value={guestName} onChange={(event) => setGuestName(event.target.value)} /></div>
+            <div className="grid gap-1"><Label htmlFor="event-count">Guest count</Label><Input id="event-count" value={guestCount} onChange={(event) => setGuestCount(event.target.value)} /></div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
+            <Button disabled={!title || !venue || !guestName || createEvent.isPending} onClick={() => {
+              void createEvent.mutateAsync({
+                title,
+                type: "event",
+                venue,
+                date: new Date().toISOString().slice(0, 10),
+                start_time: "18:00",
+                end_time: "20:00",
+                guest_count: Number.parseInt(guestCount, 10),
+                guest_name: guestName,
+                property_id: propertyFilter === "all" ? properties[0]?.id ?? "" : propertyFilter,
+                status: "pending",
+                notes: "",
+              }).then(() => setDialogOpen(false));
+            }}>Create</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
 
-function DiningEventsHeader({ propertyFilter, setPropertyFilter, properties }: {
+function DiningEventsHeader({ propertyFilter, setPropertyFilter, properties, onNewEvent }: {
   propertyFilter: string;
   setPropertyFilter: (v: string) => void;
   properties: Property[];
+  onNewEvent?: () => void;
 }) {
   return (
     <header className="flex h-14 items-center gap-3 border-b border-border bg-card px-4">
@@ -170,7 +209,7 @@ function DiningEventsHeader({ propertyFilter, setPropertyFilter, properties }: {
             {properties.map((p) => (<SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>))}
           </SelectContent>
         </Select>
-        <Button size="sm" className="h-8 gap-1.5 text-xs bg-harbor text-harbor-foreground hover:bg-harbor-deep" data-testid="new-event-btn">
+        <Button size="sm" className="h-8 gap-1.5 text-xs bg-harbor text-harbor-foreground hover:bg-harbor-deep" data-testid="new-event-btn" onClick={onNewEvent}>
           <Plus className="h-3.5 w-3.5" />
           New Event
         </Button>

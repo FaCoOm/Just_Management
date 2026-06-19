@@ -5,7 +5,7 @@ import { dashboardKeys } from "@/lib/query-keys";
 import { toDashboardGuest } from "@/hooks/use-dashboard-data";
 import { useVietnamClock } from "@/hooks/use-vietnam-clock";
 import type { Guest, MaintenanceIssue, Property, Reservation, Room, RoomStatus } from "@/types/database";
-import type { DiningEventBooking, RoomRate, SecurityAuditEntry, StaffMember } from "@/lib/repositories";
+import type { DiningEventBooking, DiningEventCreateInput, RoomRate, SecurityAuditEntry, StaffCreateInput, StaffMember } from "@/lib/repositories";
 
 const REFERENCE_STALE_TIME = 10 * 60_000;
 
@@ -165,6 +165,18 @@ export function useDiningEventsPageData(): DiningEventsPageData {
   };
 }
 
+export function useCreateDiningEvent() {
+  const repos = useMemo(() => createRestRepositories(), []);
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (input: DiningEventCreateInput) => repos.diningEvents.create(input),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: dashboardKeys.diningEvents });
+    },
+  });
+}
+
 export function useStaffPageData(): StaffPageData {
   const repos = useMemo(() => createRestRepositories(), []);
   const results = useQueries({
@@ -186,6 +198,18 @@ export function useStaffPageData(): StaffPageData {
     staff: (results[1].data ?? []) as StaffMember[],
     loading: results.some((result) => result.isPending),
   };
+}
+
+export function useCreateStaff() {
+  const repos = useMemo(() => createRestRepositories(), []);
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (input: StaffCreateInput) => repos.staff.create(input),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: dashboardKeys.staff });
+    },
+  });
 }
 
 export function useSecurityAuditPageData(): SecurityAuditPageData {
