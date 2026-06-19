@@ -1,7 +1,0 @@
-{
-  "error": {
-    "code": "23505",
-    "constraint": "external_accounts_unique_account_key_per_channel",
-    "message": "duplicate key value violates unique constraint \"external_accounts_unique_account_key_per_channel\""
-  }
-}
