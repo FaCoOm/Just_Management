@@ -11,6 +11,8 @@
 export interface AuthKitTokenRequest {
   identity: string;
   identityType?: "user" | "team" | "organization" | "project";
+  page?: string;
+  limit?: string;
 }
 
 export type AuthKitTokenResponse = Record<string, unknown>;
@@ -28,7 +30,11 @@ export async function issueAuthKitToken(req: AuthKitTokenRequest): Promise<AuthK
   const base = (process.env.ONE_API_BASE ?? "https://api.withone.ai/v1").replace(/\/+$/, "");
   const identityType = req.identityType ?? (process.env.ONE_AUTHKIT_DEFAULT_IDENTITY_TYPE as AuthKitTokenRequest["identityType"]) ?? "user";
 
-  const response = await fetch(`${base}/authkit/token`, {
+  const url = new URL(`${base}/authkit/token`);
+  if (req.page) url.searchParams.set("page", req.page);
+  if (req.limit) url.searchParams.set("limit", req.limit);
+
+  const response = await fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

@@ -74,7 +74,9 @@ export function registerOneRoutes(app: Express, prisma: PrismaClient): void {
         | "team"
         | "organization"
         | "project";
-      const token = await issueAuthKitToken({ identity: userId, identityType });
+      const page = typeof req.query.page === "string" ? req.query.page : undefined;
+      const limit = typeof req.query.limit === "string" ? req.query.limit : undefined;
+      const token = await issueAuthKitToken({ identity: userId, identityType, page, limit });
       res.status(200).json(token);
     } catch (err) {
       const message = err instanceof Error ? err.message : "auth-token issuance failed";
