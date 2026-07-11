@@ -13,9 +13,10 @@ export interface AuthKitTokenRequest {
   identityType?: "user" | "team" | "organization" | "project";
 }
 
-export interface AuthKitTokenResponse {
-  token: string;
-  expiresAt?: string;
+export type AuthKitTokenResponse = Record<string, unknown>;
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 export async function issueAuthKitToken(req: AuthKitTokenRequest): Promise<AuthKitTokenResponse> {
@@ -44,13 +45,10 @@ export async function issueAuthKitToken(req: AuthKitTokenRequest): Promise<AuthK
     throw new Error(`withone authkit token failed (${response.status}): ${text || response.statusText}`);
   }
 
-  const json = (await response.json()) as { token?: string; expires_at?: string; expiresAt?: string };
-  if (!json.token) {
-    throw new Error("withone authkit token response missing 'token' field");
+  const json: unknown = await response.json();
+  if (!isRecord(json)) {
+    throw new Error("withone authkit token response must be a JSON object");
   }
 
-  return {
-    token: json.token,
-    expiresAt: json.expires_at ?? json.expiresAt,
-  };
+  return json;
 }

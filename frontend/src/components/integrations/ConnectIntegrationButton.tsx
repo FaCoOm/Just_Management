@@ -12,12 +12,17 @@ const platformLabels: Record<string, string> = {
   gmail: "Gmail",
 };
 
+function absoluteTokenUrl(configuredUrl: string | undefined): string {
+  const candidate = configuredUrl ?? DEFAULT_TOKEN_URL;
+  return new URL(candidate, window.location.origin).toString();
+}
+
 export function ConnectIntegrationButton({ platform }: { platform: "google-sheets" | "google-drive" | "gmail" }) {
   const persist = usePersistConnection();
   const tokenUrl = import.meta.env.VITE_ONE_AUTH_TOKEN_URL as string | undefined;
   const { open } = useOneAuth({
     token: {
-      url: tokenUrl ?? DEFAULT_TOKEN_URL,
+      url: absoluteTokenUrl(tokenUrl),
       headers: { "x-user-id": USER_ID, "x-dev-token": DEV_TOKEN },
     },
     selectedConnection: platformLabels[platform],
