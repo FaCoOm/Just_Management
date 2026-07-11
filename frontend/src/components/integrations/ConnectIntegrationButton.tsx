@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { usePersistConnection } from "@/hooks/use-one-connections";
 
 const USER_ID = "dev-admin-1";
-const DEV_TOKEN = "dev-only-shared-secret";
 const DEFAULT_TOKEN_URL = "/api/one/auth-token";
 
 const platformLabels: Record<string, string> = {
@@ -17,13 +16,18 @@ function absoluteTokenUrl(configuredUrl: string | undefined): string {
   return new URL(candidate, window.location.origin).toString();
 }
 
+export function buildOneAuthHeaders(): Record<string, string> {
+  const token = import.meta.env.VITE_ONE_DEV_TOKEN as string | undefined;
+  return token ? { "x-user-id": USER_ID, "x-dev-token": token } : { "x-user-id": USER_ID };
+}
+
 export function ConnectIntegrationButton({ platform }: { platform: "google-sheets" | "google-drive" | "gmail" }) {
   const persist = usePersistConnection();
   const tokenUrl = import.meta.env.VITE_ONE_AUTH_TOKEN_URL as string | undefined;
   const { open } = useOneAuth({
     token: {
       url: absoluteTokenUrl(tokenUrl),
-      headers: { "x-user-id": USER_ID, "x-dev-token": DEV_TOKEN },
+      headers: buildOneAuthHeaders(),
     },
     selectedConnection: platformLabels[platform],
     appTheme: "light",
