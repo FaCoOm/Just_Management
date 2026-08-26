@@ -2,7 +2,6 @@ import { useOneAuth } from "@withone/auth";
 import { Button } from "@/components/ui/button";
 import { usePersistConnection } from "@/hooks/use-one-connections";
 
-const USER_ID = "dev-admin-1";
 const DEFAULT_TOKEN_URL = "/api/one/auth-token";
 
 const platformLabels: Record<string, string> = {
@@ -17,8 +16,7 @@ function absoluteTokenUrl(configuredUrl: string | undefined): string {
 }
 
 export function buildOneAuthHeaders(): Record<string, string> {
-  const token = import.meta.env.VITE_ONE_DEV_TOKEN as string | undefined;
-  return token ? { "x-user-id": USER_ID, "x-dev-token": token } : { "x-user-id": USER_ID };
+  return {};
 }
 
 export function ConnectIntegrationButton({ platform }: { platform: "google-sheets" | "google-drive" | "gmail" }) {
