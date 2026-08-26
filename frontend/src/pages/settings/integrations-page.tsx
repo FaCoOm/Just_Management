@@ -8,7 +8,13 @@ import { NativeSelect } from "@/components/ui/native-select";
 import { Switch } from "@/components/ui/switch";
 import { ConnectIntegrationButton } from "@/components/integrations/ConnectIntegrationButton";
 import { useIntegrationStatus } from "@/hooks/use-integration-status";
-import { useConnections, useDisconnect } from "@/hooks/use-one-connections";
+import {
+  useConnections,
+  useDisconnect,
+  useOperatorLogin,
+  useOperatorLogout,
+  useOperatorSession,
+} from "@/hooks/use-one-connections";
 import { type IngestSummaryResponse, usePipelineStatus } from "@/hooks/use-pipeline-status";
 
 const sourceAccounts = ["airbnb-main", "airbnb-ruby", "airbnb-manuka22"];
@@ -66,9 +72,13 @@ function getDisconnectErrorMessage(error: unknown) {
 }
 
 export function IntegrationsPage() {
+  const operatorSession = useOperatorSession();
+  const operatorLogin = useOperatorLogin();
+  const operatorLogout = useOperatorLogout();
+  const authenticated = operatorSession.data?.authenticated === true;
   const integrationStatus = useIntegrationStatus();
   const status = usePipelineStatus();
-  const connections = useConnections();
+  const connections = useConnections(authenticated);
   const disconnect = useDisconnect();
   const [uploadSummary, setUploadSummary] = useState<IngestSummaryResponse | null>(null);
   const [runSummary, setRunSummary] = useState<IngestSummaryResponse | null>(null);
@@ -80,6 +90,12 @@ export function IntegrationsPage() {
   const [runSourceAccount, setRunSourceAccount] = useState("airbnb-main");
   const [runDryRun, setRunDryRun] = useState(true);
   const [connectionKey, setConnectionKey] = useState("");
+  const [operatorPassword, setOperatorPassword] = useState("");
+
+  const onOperatorLogin = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    operatorLogin.mutate(operatorPassword, { onSuccess: () => setOperatorPassword("") });
+  };
 
   const providerState = integrationStatus.isLoading
     ? "checking"
@@ -138,6 +154,45 @@ export function IntegrationsPage() {
 
         <Card>
           <CardHeader>
+            <CardTitle>Operator Access</CardTitle>
+            <CardDescription>Authenticate before managing provider connections.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {operatorSession.isLoading ? (
+              <p className="text-sm text-muted-foreground">Checking operator session...</p>
+            ) : authenticated ? (
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <Badge>Authenticated</Badge>
+                  <p className="mt-2 text-sm text-muted-foreground">Connection controls are unlocked for this browser session.</p>
+                </div>
+                <Button variant="outline" disabled={operatorLogout.isPending} onClick={() => operatorLogout.mutate()}>
+                  {operatorLogout.isPending ? "Signing out..." : "Sign out"}
+                </Button>
+              </div>
+            ) : (
+              <form className="flex max-w-md flex-col gap-3 sm:flex-row sm:items-end" onSubmit={onOperatorLogin}>
+                <Label className="flex-1">
+                  Operator password
+                  <Input
+                    type="password"
+                    autoComplete="current-password"
+                    value={operatorPassword}
+                    onChange={(event) => setOperatorPassword(event.target.value)}
+                    required
+                  />
+                </Label>
+                <Button type="submit" disabled={operatorLogin.isPending}>
+                  {operatorLogin.isPending ? "Signing in..." : "Sign in"}
+                </Button>
+                {operatorLogin.isError ? <p className="text-sm text-destructive">Invalid operator password.</p> : null}
+              </form>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
             <CardTitle>Pipeline Status</CardTitle>
             <CardDescription>Safe connector readiness view. Secrets, private keys, and tokens are never exposed.</CardDescription>
           </CardHeader>
@@ -168,7 +223,7 @@ export function IntegrationsPage() {
           <Card>
             <CardHeader>
               <CardTitle>withone Connections</CardTitle>
-              <CardDescription>OAuth connections stored in One Vault and persisted by connection key.</CardDescription>
+              <CardDescription>Connection references saved by this app after WithOne OAuth completes.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="rounded-lg border bg-muted/30 p-3 text-sm">
@@ -184,11 +239,17 @@ export function IntegrationsPage() {
                   <p className="mt-2 text-xs text-destructive">{integrationStatus.data.error}</p>
                 ) : null}
               </div>
-              <div className="flex flex-wrap gap-3">
-                <ConnectIntegrationButton platform="google-sheets" />
-                <ConnectIntegrationButton platform="google-drive" />
-                <ConnectIntegrationButton platform="gmail" />
-              </div>
+              {authenticated ? (
+                <div className="flex flex-wrap gap-3">
+                  <ConnectIntegrationButton platform="google-sheets" />
+                  <ConnectIntegrationButton platform="google-drive" />
+                  <ConnectIntegrationButton platform="gmail" />
+                </div>
+              ) : (
+                <p className="rounded-lg border border-dashed p-3 text-sm text-muted-foreground">
+                  Sign in above to connect or disconnect provider accounts.
+                </p>
+              )}
               <div className="space-y-2">
                 {disconnect.isError ? (
                   <div className="rounded-lg border border-destructive/40 bg-destructive/5 p-3 text-sm text-destructive">
@@ -224,7 +285,7 @@ export function IntegrationsPage() {
                   </div>
                 ) : (
                   <p className="text-xs text-muted-foreground">
-                    Saved connection keys support operator-run email and Google Sheets ingestion without exposing provider secrets in this dashboard.
+                    App-saved connection keys support operator-run email and Google Sheets ingestion without exposing provider secrets in this dashboard.
                   </p>
                 )}
               </div>
