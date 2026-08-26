@@ -7,11 +7,35 @@ async function fetchConnections(): Promise<IntegrationConnection[]> {
   return repos.integrations.getConnections();
 }
 
-export function useConnections() {
+export function useOperatorSession() {
+  return useQuery({
+    queryKey: ["one", "operator-session"],
+    queryFn: () => repos.integrations.getOperatorSession(),
+  });
+}
+
+export function useOperatorLogin() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (password: string) => repos.integrations.loginOperator(password),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["one"] }),
+  });
+}
+
+export function useOperatorLogout() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => repos.integrations.logoutOperator(),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["one"] }),
+  });
+}
+
+export function useConnections(enabled = true) {
   return useQuery({
     queryKey: ["one", "connections"],
     queryFn: fetchConnections,
     staleTime: 30_000,
+    enabled,
   });
 }
 

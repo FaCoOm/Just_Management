@@ -424,16 +424,27 @@ const taxExportRepo: TaxExportRepository = {
   },
 };
 
-const DEV_USER_ID = "dev-admin-1";
-
-const integrationHeaders = { "x-user-id": DEV_USER_ID };
-
 const integrationRepo: IntegrationRepository = {
   async getStatus() {
     return getJson("/api/integrations/status");
   },
+  async getOperatorSession() {
+    return getJson("/api/one/operator-session");
+  },
+  async loginOperator(password) {
+    const res = await apiFetch(apiUrl("/api/one/operator-session"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password }),
+    });
+    if (!res.ok) throw new Error("Invalid operator password");
+  },
+  async logoutOperator() {
+    const res = await apiFetch(apiUrl("/api/one/operator-session"), { method: "DELETE" });
+    if (!res.ok) throw new Error(`Logout failed: ${res.status}`);
+  },
   async getConnections() {
-    const res = await apiFetch(apiUrl("/api/one/connections"), { headers: integrationHeaders });
+    const res = await apiFetch(apiUrl("/api/one/connections"));
     const data = await res.json() as { connections: Awaited<ReturnType<IntegrationRepository["getConnections"]>> };
     if (!res.ok) throw new Error(`Connections failed: ${res.status}`);
     return data.connections;
@@ -441,8 +452,8 @@ const integrationRepo: IntegrationRepository = {
   async persistConnection(payload) {
     const res = await apiFetch(apiUrl("/api/one/connections"), {
       method: "POST",
-      headers: { "Content-Type": "application/json", ...integrationHeaders },
-      body: JSON.stringify({ userId: DEV_USER_ID, identityType: "user", ...payload }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ identityType: "user", ...payload }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(`Persist connection failed: ${res.status}`);
@@ -451,7 +462,6 @@ const integrationRepo: IntegrationRepository = {
   async disconnect(connectionKey) {
     const res = await apiFetch(apiUrl(`/api/one/connections/${encodeURIComponent(connectionKey)}`), {
       method: "DELETE",
-      headers: integrationHeaders,
     });
     const data = await res.json();
     if (!res.ok) throw new Error(`Disconnect failed: ${res.status}`);

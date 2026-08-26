@@ -353,8 +353,15 @@ export interface IntegrationConnection {
   updated_at: string;
 }
 
+export interface OperatorSession {
+  authenticated: boolean;
+}
+
 export interface IntegrationRepository {
   getStatus(): Promise<IntegrationStatus>;
+  getOperatorSession(): Promise<OperatorSession>;
+  loginOperator(password: string): Promise<void>;
+  logoutOperator(): Promise<void>;
   getConnections(): Promise<IntegrationConnection[]>;
   persistConnection(payload: { platform: string; connectionKey: string; displayName?: string }): Promise<unknown>;
   disconnect(connectionKey: string): Promise<unknown>;
