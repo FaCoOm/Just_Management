@@ -4,8 +4,7 @@
  * Frontend AuthKit widget needs a short-lived token bound to the user's identity.
  * This module proxies POST /v1/authkit/token with our server secret.
  *
- * Until real auth lands (Sprint 2), the calling route gates this behind dev-mode
- * checks: NODE_ENV !== production AND a shared ONE_DEV_TOKEN.
+ * The calling route requires a signed operator session before issuing a token.
  */
 
 export interface AuthKitTokenRequest {

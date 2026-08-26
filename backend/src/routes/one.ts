@@ -11,6 +11,7 @@
 
 import express, { type Express, type NextFunction, type Request, type Response } from "express";
 import type { PrismaClient } from "@prisma/client";
+import { createHmac, timingSafeEqual } from "node:crypto";
 import { issueAuthKitToken } from "../integrations/one/auth-token";
 import { applyWebhookEvent, verifyWebhook, WebhookSignatureError } from "../integrations/one/webhooks";
 
@@ -22,23 +23,43 @@ const SUPPORTED_PLATFORMS = new Set([
   "notion",
 ]);
 
-function getUserId(req: Request): string | undefined {
-  const header = req.header("x-user-id");
-  if (header && header.trim().length > 0) {
-    return header.trim();
+const SESSION_COOKIE = "one_operator_session";
+const SESSION_DURATION_MS = 12 * 60 * 60 * 1000;
+
+function operatorIdentity(): string {
+  return process.env.ONE_OPERATOR_IDENTITY?.trim() || "operator";
+}
+
+function signSession(expiresAt: number): string | undefined {
+  const secret = process.env.ONE_SESSION_SECRET;
+  if (!secret) return undefined;
+  const payload = String(expiresAt);
+  const signature = createHmac("sha256", secret).update(payload).digest("base64url");
+  return `${payload}.${signature}`;
+}
+
+function hasOperatorSession(req: Request): boolean {
+  const cookie = req.header("cookie")
+    ?.split(";")
+    .map((part) => part.trim())
+    .find((part) => part.startsWith(`${SESSION_COOKIE}=`))
+    ?.slice(SESSION_COOKIE.length + 1);
+  if (!cookie) return false;
+  const separator = cookie.indexOf(".");
+  const expiresAt = Number(cookie.slice(0, separator));
+  const expected = signSession(expiresAt);
+  if (separator < 1 || !Number.isSafeInteger(expiresAt) || expiresAt <= Date.now() || !expected) return false;
+  const expectedBytes = Buffer.from(expected);
+  const cookieBytes = Buffer.from(cookie);
+  return expectedBytes.length === cookieBytes.length && timingSafeEqual(expectedBytes, cookieBytes);
+}
+
+function requireOperatorSession(req: Request, res: Response, next: NextFunction): void {
+  if (!hasOperatorSession(req)) {
+    res.status(401).json({ error: "operator session required" });
+    return;
   }
-  return undefined;
-}
-
-function isDevTokenAllowed(req: Request): boolean {
-  const expected = process.env.ONE_DEV_TOKEN;
-  if (!expected || expected.trim().length === 0) return false;
-  const provided = req.header("x-dev-token");
-  return provided === expected;
-}
-
-function isProduction(): boolean {
-  return process.env.NODE_ENV === "production";
+  next();
 }
 
 function isObject(value: unknown): value is Record<string, unknown> {
@@ -51,22 +72,52 @@ function getString(body: Record<string, unknown>, key: string): string | undefin
 }
 
 export function registerOneRoutes(app: Express, prisma: PrismaClient): void {
-  app.post("/api/one/auth-token", async (req: Request, res: Response) => {
-    if (isProduction() && !isDevTokenAllowed(req)) {
-      res.status(403).json({ error: "auth-token endpoint requires real auth (Sprint 2)" });
-      return;
-    }
-    if (!isProduction() && process.env.ONE_DEV_TOKEN && !isDevTokenAllowed(req)) {
-      res.status(403).json({ error: "missing or invalid x-dev-token header" });
-      return;
-    }
+  app.get("/api/one/operator-session", (req: Request, res: Response) => {
+    res.status(200).json({ authenticated: hasOperatorSession(req) });
+  });
 
+  app.post("/api/one/operator-session", (req: Request, res: Response) => {
     const body = isObject(req.body) ? req.body : {};
-    const userId = getString(body, "userId") ?? getUserId(req);
-    if (!userId) {
-      res.status(400).json({ error: "userId required (body.userId or x-user-id header)" });
+    const password = getString(body, "password");
+    const expected = process.env.ONE_OPERATOR_PASSWORD;
+    const sessionSecret = process.env.ONE_SESSION_SECRET;
+    if (!expected || !sessionSecret || !password) {
+      res.status(401).json({ error: "invalid operator credentials" });
       return;
     }
+    const expectedBytes = createHmac("sha256", sessionSecret).update(expected).digest();
+    const passwordBytes = createHmac("sha256", sessionSecret).update(password).digest();
+    if (!timingSafeEqual(expectedBytes, passwordBytes)) {
+      res.status(401).json({ error: "invalid operator credentials" });
+      return;
+    }
+    const value = signSession(Date.now() + SESSION_DURATION_MS);
+    if (!value) {
+      res.status(500).json({ error: "operator session unavailable" });
+      return;
+    }
+    res.cookie(SESSION_COOKIE, value, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: SESSION_DURATION_MS,
+      path: "/api/one",
+    });
+    res.sendStatus(204);
+  });
+
+  app.delete("/api/one/operator-session", (_req: Request, res: Response) => {
+    res.clearCookie(SESSION_COOKIE, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      path: "/api/one",
+    });
+    res.sendStatus(204);
+  });
+
+  app.post("/api/one/auth-token", requireOperatorSession, async (req: Request, res: Response) => {
+    const body = isObject(req.body) ? req.body : {};
 
     try {
       const identityType = (getString(body, "identityType") ?? process.env.ONE_AUTHKIT_DEFAULT_IDENTITY_TYPE ?? "user") as
@@ -76,7 +127,7 @@ export function registerOneRoutes(app: Express, prisma: PrismaClient): void {
         | "project";
       const page = typeof req.query.page === "string" ? req.query.page : undefined;
       const limit = typeof req.query.limit === "string" ? req.query.limit : undefined;
-      const token = await issueAuthKitToken({ identity: userId, identityType, page, limit });
+      const token = await issueAuthKitToken({ identity: operatorIdentity(), identityType, page, limit });
       res.status(200).json(token);
     } catch (err) {
       const message = err instanceof Error ? err.message : "auth-token issuance failed";
@@ -84,16 +135,9 @@ export function registerOneRoutes(app: Express, prisma: PrismaClient): void {
     }
   });
 
-  app.get("/api/one/connections", async (req: Request, res: Response) => {
-    const userId = getUserId(req);
-    if (isProduction() && !userId) {
-      res.status(401).json({ error: "x-user-id header required in production" });
-      return;
-    }
-
-    const where = userId ? { user_id: userId } : {};
+  app.get("/api/one/connections", requireOperatorSession, async (_req: Request, res: Response) => {
     const rows = await prisma.integration_connections.findMany({
-      where,
+      where: { user_id: operatorIdentity() },
       orderBy: { created_at: "desc" },
       select: {
         id: true,
@@ -112,18 +156,14 @@ export function registerOneRoutes(app: Express, prisma: PrismaClient): void {
     res.status(200).json({ connections: rows });
   });
 
-  app.post("/api/one/connections", async (req: Request, res: Response) => {
+  app.post("/api/one/connections", requireOperatorSession, async (req: Request, res: Response) => {
     const body = isObject(req.body) ? req.body : {};
-    const userId = getString(body, "userId") ?? getUserId(req);
+    const userId = operatorIdentity();
     const platform = getString(body, "platform");
     const connectionKey = getString(body, "connectionKey");
     const displayName = getString(body, "displayName");
     const identityType = getString(body, "identityType") ?? process.env.ONE_AUTHKIT_DEFAULT_IDENTITY_TYPE ?? "user";
 
-    if (!userId) {
-      res.status(400).json({ error: "userId required" });
-      return;
-    }
     if (!platform || !SUPPORTED_PLATFORMS.has(platform)) {
       res.status(400).json({ error: `platform must be one of: ${Array.from(SUPPORTED_PLATFORMS).join(", ")}` });
       return;
@@ -163,20 +203,16 @@ export function registerOneRoutes(app: Express, prisma: PrismaClient): void {
     }
   });
 
-  app.delete("/api/one/connections/:key", async (req: Request, res: Response) => {
-    const userId = getUserId(req);
+  app.delete("/api/one/connections/:key", requireOperatorSession, async (req: Request, res: Response) => {
+    const userId = operatorIdentity();
     const key = req.params.key;
-    if (isProduction() && !userId) {
-      res.status(401).json({ error: "x-user-id header required in production" });
-      return;
-    }
     if (!key) {
       res.status(400).json({ error: "connection key required" });
       return;
     }
 
     const result = await prisma.integration_connections.deleteMany({
-      where: userId ? { connection_key: key, user_id: userId } : { connection_key: key },
+      where: { connection_key: key, user_id: userId },
     });
     res.status(200).json({ deleted: result.count });
   });
