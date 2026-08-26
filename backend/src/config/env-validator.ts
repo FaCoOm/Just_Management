@@ -48,6 +48,12 @@ export function validateEnv(): EnvValidationReport {
   if (!process.env.ONE_WEBHOOK_SECRET || process.env.ONE_WEBHOOK_SECRET === "whsec_replace_me") {
     missingRecommended.push("ONE_WEBHOOK_SECRET");
   }
+  if (!process.env.ONE_OPERATOR_PASSWORD) {
+    missingRecommended.push("ONE_OPERATOR_PASSWORD");
+  }
+  if (!process.env.ONE_SESSION_SECRET) {
+    missingRecommended.push("ONE_SESSION_SECRET");
+  }
 
   // 3. Recommended Ingest Configuration (Google Services)
   const sheetsProvider = process.env.INGEST_SHEETS_PROVIDER || "withone";
