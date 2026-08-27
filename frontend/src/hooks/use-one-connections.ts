@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createRestRepositories, type IntegrationConnection } from "@/lib/repositories";
+import { createRestRepositories, type AuthGrant, type IntegrationConnection } from "@/lib/repositories";
 
 const repos = createRestRepositories();
 
@@ -11,6 +11,17 @@ export function useOperatorSession() {
   return useQuery({
     queryKey: ["one", "operator-session"],
     queryFn: () => repos.integrations.getOperatorSession(),
+  });
+}
+
+export function useAuthGrant(enabled = true) {
+  return useQuery<AuthGrant>({
+    queryKey: ["one", "auth-grant"],
+    queryFn: () => repos.integrations.mintAuthGrant(),
+    enabled,
+    staleTime: 4 * 60_000,
+    refetchOnWindowFocus: false,
+    retry: 0,
   });
 }
 

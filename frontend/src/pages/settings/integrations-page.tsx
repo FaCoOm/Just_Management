@@ -272,12 +272,12 @@ export function IntegrationsPage() {
                   <p className="mt-2 text-xs text-destructive">{integrationStatus.data.error}</p>
                 ) : null}
               </div>
-              <ConnectorAvailabilityList authenticated={authenticated} savedRows={connections.data ?? []} />
+<ConnectorAvailabilityList authenticated={authenticated} savedRows={connections.data ?? []} />
               {authenticated ? (
                 <div className="flex flex-wrap gap-3">
-                  <ConnectIntegrationButton platform="google-sheets" />
-                  <ConnectIntegrationButton platform="google-drive" />
-                  <ConnectIntegrationButton platform="gmail" />
+                  <ConnectIntegrationButton platform="google-sheets" authenticated={authenticated} />
+                  <ConnectIntegrationButton platform="google-drive" authenticated={authenticated} />
+                  <ConnectIntegrationButton platform="gmail" authenticated={authenticated} />
                 </div>
               ) : (
                 <p className="rounded-lg border border-dashed p-3 text-sm text-muted-foreground">

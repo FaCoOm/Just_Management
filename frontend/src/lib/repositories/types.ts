@@ -357,6 +357,21 @@ export interface OperatorSession {
   authenticated: boolean;
 }
 
+export interface AuthGrant {
+  grant: string;
+  expiresAt: number;
+}
+
+export interface IntegrationRepository {
+  getStatus(): Promise<IntegrationStatus>;
+  getOperatorSession(): Promise<OperatorSession>;
+  loginOperator(password: string): Promise<void>;
+  logoutOperator(): Promise<void>;
+  mintAuthGrant(): Promise<AuthGrant>;
+  getConnections(): Promise<IntegrationConnection[]>;
+  persistConnection(payload: { platform: string; connectionKey: string; displayName?: string }): Promise<unknown>;
+  disconnect(connectionKey: string): Promise<unknown>;
+}
 export interface IntegrationRepository {
   getStatus(): Promise<IntegrationStatus>;
   getOperatorSession(): Promise<OperatorSession>;
