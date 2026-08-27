@@ -69,6 +69,16 @@ app.use(
 
       callback(new Error("CORS origin not allowed"));
     },
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "x-one-grant",
+      "x-one-secret",
+      "x-one-connection-key",
+      "x-one-action-id",
+    ],
+    exposedHeaders: ["X-Response-Time"],
+    credentials: false,
   })
 );
 app.use(compression() as unknown as express.RequestHandler);
