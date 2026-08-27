@@ -71,6 +71,34 @@ function getDisconnectErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : "Disconnect failed. Try again.";
 }
 
+type ConnectorKey = "google-sheets" | "google-drive" | "gmail";
+const CONNECTORS: Array<{ key: ConnectorKey; label: string }> = [
+  { key: "google-sheets", label: "Google Sheets" },
+  { key: "google-drive", label: "Google Drive" },
+  { key: "gmail", label: "Gmail" },
+];
+function ConnectorAvailabilityList({ authenticated, savedRows }: { authenticated: boolean; savedRows: Array<{ platform: string; connection_key: string; status: string }> }) {
+  return (
+    <div className="rounded-lg border p-3 text-sm">
+      <div className="mb-2 text-xs uppercase tracking-wide text-muted-foreground">Available connectors</div>
+      <ul className="divide-y">
+        {CONNECTORS.map(({ key, label }) => {
+          const matches = savedRows.filter((row) => row.platform === key);
+          const validated = matches.length > 0 && matches.every((row) => row.status === "active");
+          return (
+            <li key={key} className="flex items-center justify-between gap-3 py-2">
+              <div>
+                <div className="font-medium">{label}</div>
+                <div className="text-xs text-muted-foreground">{matches.length === 0 ? "No saved connection" : `${matches.length} saved`}</div>
+              </div>
+              {authenticated && validated ? <Badge>Validated</Badge> : <Badge variant="outline">{authenticated ? "Not validated" : "Sign in to connect"}</Badge>}
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
 export function IntegrationsPage() {
   const operatorSession = useOperatorSession();
   const operatorLogin = useOperatorLogin();
@@ -239,6 +267,7 @@ export function IntegrationsPage() {
                   <p className="mt-2 text-xs text-destructive">{integrationStatus.data.error}</p>
                 ) : null}
               </div>
+              <ConnectorAvailabilityList authenticated={authenticated} savedRows={connections.data ?? []} />
               {authenticated ? (
                 <div className="flex flex-wrap gap-3">
                   <ConnectIntegrationButton platform="google-sheets" />
