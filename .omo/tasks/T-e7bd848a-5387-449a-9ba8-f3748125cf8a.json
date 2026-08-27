@@ -1,0 +1,16 @@
+{
+  "id": "T-e7bd848a-5387-449a-9ba8-f3748125cf8a",
+  "subject": "Sync project summary",
+  "description": "Store the verified project update summary in Supermemory after repo/artifact verification.",
+  "status": "completed",
+  "activeForm": "Syncing project summary",
+  "blocks": [],
+  "blockedBy": [
+    "T-60338c0b-b4ac-46e6-b8c6-c6f424f72b81"
+  ],
+  "metadata": {
+    "supermemoryId": "c8X5JMKxybpUnx3UKYZMfK",
+    "scope": "project"
+  },
+  "threadID": "ses_0d3f5381effekR1LrixPY6vjiW"
+}

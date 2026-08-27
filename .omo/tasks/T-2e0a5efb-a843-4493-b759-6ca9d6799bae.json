@@ -1,0 +1,10 @@
+{
+  "id": "T-2e0a5efb-a843-4493-b759-6ca9d6799bae",
+  "subject": "Patch minimal root cause",
+  "description": "Apply the smallest production change needed for the no-integrations AuthKit/config issue, if code change is required.",
+  "status": "completed",
+  "activeForm": "patched minimal AuthKit/config root cause",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_11bba77a8ffept3rVs3b5oxr7V"
+}

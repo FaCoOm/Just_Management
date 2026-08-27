@@ -1,0 +1,12 @@
+{
+  "id": "T-29b24c12-5cc0-4485-aa9e-19fdf38b2c21",
+  "subject": "Verify Drive integration",
+  "description": "Run focused tests, backend/frontend build, live API and browser QA; clean debug artifacts.",
+  "status": "pending",
+  "activeForm": "Verifying Drive integration",
+  "blocks": [],
+  "blockedBy": [
+    "T-67ec7a88-e3d3-4aa3-bf9f-ce21cc7f8a25"
+  ],
+  "threadID": "ses_fbfb0aa1affeFzcK1MbQ7O45m7"
+}

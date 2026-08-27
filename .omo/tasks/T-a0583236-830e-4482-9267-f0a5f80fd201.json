@@ -1,0 +1,10 @@
+{
+  "id": "T-a0583236-830e-4482-9267-f0a5f80fd201",
+  "subject": "Fix Drive connector visibility",
+  "description": "Implement the smallest root fix for Google Drive visibility and intended connection use cases.",
+  "status": "pending",
+  "activeForm": "Fixing Drive connector visibility",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_fbfb0aa1affeFzcK1MbQ7O45m7"
+}

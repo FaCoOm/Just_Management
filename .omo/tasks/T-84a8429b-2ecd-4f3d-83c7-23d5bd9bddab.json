@@ -1,0 +1,12 @@
+{
+  "id": "T-84a8429b-2ecd-4f3d-83c7-23d5bd9bddab",
+  "subject": "Verify real connect surface",
+  "description": "Run tests/build and real API/browser surface check; record remaining non-code blockers.",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "evidence": "prod endpoint 200 rows=0; CORS preflight now OK for manage.mujosaigon.com and auth.withone.ai"
+  },
+  "threadID": "ses_11bba77a8ffept3rVs3b5oxr7V"
+}

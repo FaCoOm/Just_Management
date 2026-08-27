@@ -1,0 +1,10 @@
+{
+  "id": "T-504a1b57-9686-46c9-b33a-f2a2a22bf435",
+  "subject": "Analyze docs reorganization",
+  "description": "Inventory docs root/resources, read permitted contents, classify files, flag duplicates/outdated docs, propose hierarchy and allocation rules. Do not modify files.",
+  "status": "completed",
+  "activeForm": "analyzing docs reorganization",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_1218c132cffebjCj1fJsxM5ILD"
+}

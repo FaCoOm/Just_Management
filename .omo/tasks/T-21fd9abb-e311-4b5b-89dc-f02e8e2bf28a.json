@@ -1,0 +1,14 @@
+{
+  "id": "T-21fd9abb-e311-4b5b-89dc-f02e8e2bf28a",
+  "subject": "Audit AGENTS hierarchy",
+  "description": "Inventory AGENTS.md files, sizes, overlap, and likely context impact before editing.",
+  "status": "completed",
+  "activeForm": "Auditing AGENTS hierarchy",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "agentsFiles": 10,
+    "finding": "root plus top-level guides duplicate most leaf rules; leaf guides add context whenever work enters narrow dirs"
+  },
+  "threadID": "ses_0d3f5381effekR1LrixPY6vjiW"
+}

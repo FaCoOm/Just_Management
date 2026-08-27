@@ -1,0 +1,14 @@
+{
+  "id": "T-2666fca5-ef8e-42b9-8fd0-3b76de45eeeb",
+  "subject": "Assess One Google connector state",
+  "description": "Inspect local integration code, deployed integrations page, and available One/Hostinger access to explain Google Drive/Sheets access and missing_path connector status.",
+  "status": "completed",
+  "activeForm": "assessing integration connector state",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "scope": "read-only assessment",
+    "findings": "One CLI has operational google-drive/google-sheets; deployed provider health connected; deployed persisted connections empty; built-in missing_path due missing /home/.../database_design; google-sheets not_configured due no service-account env readable and pipeline disabled."
+  },
+  "threadID": "ses_0d3f5381effekR1LrixPY6vjiW"
+}

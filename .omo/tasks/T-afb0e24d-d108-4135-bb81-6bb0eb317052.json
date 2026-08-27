@@ -1,0 +1,11 @@
+{
+  "id": "T-afb0e24d-d108-4135-bb81-6bb0eb317052",
+  "subject": "Trace current WithOne integration",
+  "description": "Map backend routes, frontend integration UI, environment/auth assumptions, tests, and current failure path.",
+  "status": "completed",
+  "activeForm": "Tracing current WithOne integration",
+  "blocks": [],
+  "blockedBy": [],
+  "owner": "Hephaestus",
+  "threadID": "ses_08d1176e3ffe4YeYZHM3isj5RM"
+}

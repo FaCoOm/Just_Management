@@ -1,0 +1,19 @@
+{
+  "id": "T-ae54f35c-4660-488d-8d7e-a718a4de19a7",
+  "subject": "Verify deployment behavior",
+  "description": "Run focused tests, diagnostics, build, and live/API surface checks for the fix.",
+  "status": "completed",
+  "activeForm": "verified AuthKit fix locally; deployment pending approval",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "backendTests": "23 files, 244 tests passed",
+    "frontendTests": "14 files, 40 tests passed",
+    "backendTsc": "npx tsc --noEmit --pretty false passed",
+    "frontendTypecheck": "npm run typecheck passed",
+    "frontendBuild": "npm run build passed",
+    "backendBuild": "blocked by local Prisma Windows DLL EPERM during prisma generate; tsc passed",
+    "reviewer": "oracle unconditional approve"
+  },
+  "threadID": "ses_11bba77a8ffept3rVs3b5oxr7V"
+}

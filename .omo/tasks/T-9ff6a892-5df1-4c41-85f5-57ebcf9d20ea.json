@@ -1,0 +1,16 @@
+{
+  "id": "T-9ff6a892-5df1-4c41-85f5-57ebcf9d20ea",
+  "subject": "Start localhost dev servers",
+  "description": "Run npm dev and verify frontend/backend respond locally.",
+  "status": "completed",
+  "activeForm": "Localhost verified",
+  "blocks": [],
+  "blockedBy": [
+    "T-c9c84215-ed94-4f0a-8019-e71c34f65299"
+  ],
+  "metadata": {
+    "frontend": "http://localhost:5173",
+    "backend": "http://localhost:3001"
+  },
+  "threadID": "ses_0b0e7c621ffexwZiscsgsQECdg"
+}

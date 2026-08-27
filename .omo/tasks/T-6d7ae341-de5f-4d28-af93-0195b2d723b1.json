@@ -1,0 +1,14 @@
+{
+  "id": "T-6d7ae341-de5f-4d28-af93-0195b2d723b1",
+  "subject": "Audit integrations UI gaps",
+  "description": "Trace anon+auth paths in integrations page; identify missing visibility for available connectors and validated account state.",
+  "status": "completed",
+  "activeForm": "Auditing integrations UI gaps",
+  "blocks": [],
+  "blockedBy": [],
+  "owner": "Sisyphus",
+  "metadata": {
+    "verify": "Code audit complete; anon path hides connectors + status, authed path hides validation state when 0 rows"
+  },
+  "threadID": "ses_fbfb0aa1affeFzcK1MbQ7O45m7"
+}

@@ -1,0 +1,10 @@
+{
+  "id": "T-f16a0949-28d5-4c1a-9fa3-02e29482d02d",
+  "subject": "Install opencode-supermemory",
+  "description": "Run the package installer, verify opencode config contains the plugin, then attempt/auth-guide connection verification.",
+  "status": "completed",
+  "activeForm": "Installing opencode-supermemory",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_0d296918bffe3Ks6WONMh2gd1m"
+}

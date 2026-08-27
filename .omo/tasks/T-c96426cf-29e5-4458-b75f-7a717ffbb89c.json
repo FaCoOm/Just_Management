@@ -1,0 +1,10 @@
+{
+  "id": "T-c96426cf-29e5-4458-b75f-7a717ffbb89c",
+  "subject": "Inspect hostinger runtime logs",
+  "description": "Read hostinger_logs.md; correlate with backend runtime to expose auth/connection health on the UI.",
+  "status": "pending",
+  "activeForm": "Inspecting hostinger runtime logs",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_fbfb0aa1affeFzcK1MbQ7O45m7"
+}

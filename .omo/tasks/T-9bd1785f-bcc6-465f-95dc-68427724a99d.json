@@ -1,0 +1,19 @@
+{
+  "id": "T-9bd1785f-bcc6-465f-95dc-68427724a99d",
+  "subject": "Fix operations implementation gaps",
+  "description": "Patch any repo-side gaps found in operations Prisma/backend/frontend implementation, preserving Track B REST-only architecture.",
+  "status": "completed",
+  "activeForm": "Fixing operations implementation gaps",
+  "blocks": [],
+  "blockedBy": [
+    "T-a40a6f43-4c68-4159-8a53-195ab523d49c"
+  ],
+  "owner": "Sisyphus",
+  "metadata": {
+    "scope": "operations-pipeline",
+    "phase": "migration-apply",
+    "note": "C:\\Users\\FATE_C~1\\AppData\\Local\\Temp\\opencode\\ulw-20260619-171234-943073516.md",
+    "result": "Applied 4 pending Azure Prisma migrations successfully; no source patch required."
+  },
+  "threadID": "ses_122a056c2ffevhEFBGuD5MZmbv"
+}

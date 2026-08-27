@@ -1,0 +1,9 @@
+{
+  "id": "T-a039b6b9-d01c-4be2-96b2-f4c220653a3e",
+  "subject": "Update config",
+  "description": "Update oh-my-opencode.json + supermemory.json to point compaction to supermemory",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_fbfac4c3dffeqphmA0v6nsdGad"
+}

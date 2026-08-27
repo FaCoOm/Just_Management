@@ -1,0 +1,15 @@
+{
+  "id": "T-6917b45a-5f54-4530-9001-fb1f7fc2221a",
+  "subject": "Verify WithOne authentication",
+  "description": "Run focused backend/frontend tests, builds, diagnostics, and inspect auth behavior evidence.",
+  "status": "completed",
+  "activeForm": "Verifying WithOne authentication",
+  "blocks": [],
+  "blockedBy": [],
+  "owner": "Sisyphus",
+  "metadata": {
+    "verify": "Focused tests and builds pass; diagnostics clean",
+    "result": "Backend 5/5 and build pass; frontend 1/1, typecheck, build pass; diagnostics clean"
+  },
+  "threadID": "ses_fbfb0aa1affeFzcK1MbQ7O45m7"
+}

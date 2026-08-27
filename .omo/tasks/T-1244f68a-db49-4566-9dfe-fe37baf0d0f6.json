@@ -1,0 +1,14 @@
+{
+  "id": "T-1244f68a-db49-4566-9dfe-fe37baf0d0f6",
+  "subject": "Fix integration access UI",
+  "description": "Implement smallest verified fix for stale access and connector discoverability.",
+  "status": "deleted",
+  "activeForm": "Fixing integration access UI",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "verify": "Targeted tests plus browser flow pass",
+    "reason": "Current request asks investigation and clarification; no explicit implementation authorization."
+  },
+  "threadID": "ses_fbfb0aa1affeFzcK1MbQ7O45m7"
+}

@@ -1,0 +1,15 @@
+{
+  "id": "T-f64d5f58-6464-45be-9283-391790469b0c",
+  "subject": "init-deep review",
+  "description": "Deduplicate, trim, validate generated hierarchy.",
+  "status": "pending",
+  "activeForm": "Reviewing AGENTS hierarchy",
+  "blocks": [],
+  "blockedBy": [
+    "T-54ee5969-2358-4f8a-ae52-7ea9af9ffea6"
+  ],
+  "metadata": {
+    "phase": "review"
+  },
+  "threadID": "ses_0d7433405ffeP3eGbTWUiIBzcZ"
+}

@@ -1,0 +1,15 @@
+{
+  "id": "T-fed2d72c-5f71-4870-b6c0-04f74b0d9240",
+  "subject": "Inspect One control capabilities",
+  "description": "Identify authenticated One CLI/MCP operations for project, environment, AuthKit activation, and connector management.",
+  "status": "completed",
+  "activeForm": "Inspected One control capabilities",
+  "blocks": [],
+  "blockedBy": [],
+  "owner": "Hephaestus",
+  "metadata": {
+    "scope": "read-only capability discovery",
+    "result": "One CLI has four live operational connections but current global key reports organization:null/project:null. No AuthKit activation action exists. Official management docs require dashboard toggles at project level."
+  },
+  "threadID": "ses_08d1176e3ffe4YeYZHM3isj5RM"
+}

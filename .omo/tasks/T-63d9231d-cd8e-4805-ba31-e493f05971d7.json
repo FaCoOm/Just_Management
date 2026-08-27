@@ -1,0 +1,12 @@
+{
+  "id": "T-63d9231d-cd8e-4805-ba31-e493f05971d7",
+  "subject": "Plan AGENTS revision",
+  "description": "Use plan agent to decide minimal safe AGENTS.md hierarchy revision.",
+  "status": "pending",
+  "activeForm": "Planning AGENTS revision",
+  "blocks": [],
+  "blockedBy": [
+    "T-21fd9abb-e311-4b5b-89dc-f02e8e2bf28a"
+  ],
+  "threadID": "ses_0d3f5381effekR1LrixPY6vjiW"
+}

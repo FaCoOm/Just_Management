@@ -1,0 +1,11 @@
+{
+  "id": "T-ac83e43f-ce46-4e9c-a3ca-f073dad2506c",
+  "subject": "Trace Drive integration flow",
+  "description": "Inspect frontend, backend, AuthKit configuration, hosted behavior; identify root cause.",
+  "status": "in_progress",
+  "activeForm": "Tracing Drive integration flow",
+  "blocks": [],
+  "blockedBy": [],
+  "owner": "Hephaestus",
+  "threadID": "ses_fbfb0aa1affeFzcK1MbQ7O45m7"
+}

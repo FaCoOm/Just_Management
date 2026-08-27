@@ -1,0 +1,12 @@
+{
+  "id": "T-8d2fce2a-c872-4d00-9fdb-7495479e4cf8",
+  "subject": "Verify AGENTS revision",
+  "description": "Verify changed markdown files and summarize final context/efficiency impact.",
+  "status": "pending",
+  "activeForm": "Verifying AGENTS revision",
+  "blocks": [],
+  "blockedBy": [
+    "T-a5e0e791-4bd8-4ce8-9cc9-8f68035ac1b7"
+  ],
+  "threadID": "ses_0d3f5381effekR1LrixPY6vjiW"
+}

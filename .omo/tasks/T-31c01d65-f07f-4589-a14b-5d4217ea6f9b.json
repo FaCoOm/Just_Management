@@ -1,0 +1,14 @@
+{
+  "id": "T-31c01d65-f07f-4589-a14b-5d4217ea6f9b",
+  "subject": "Create durable debug note",
+  "description": "Create ULW notepad and record scenarios/plan/findings.",
+  "status": "completed",
+  "activeForm": "creating durable debug note",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "kind": "ulw",
+    "note": "C:\\Users\\FATE_C~1\\AppData\\Local\\Temp\\ulw-20260711-133509-2757ed.md"
+  },
+  "threadID": "ses_11bba77a8ffept3rVs3b5oxr7V"
+}

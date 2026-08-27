@@ -1,0 +1,9 @@
+{
+  "id": "T-2905ca5b-3c70-4d39-aef4-c6759bf7f67f",
+  "subject": "Implement compaction in supermemory",
+  "description": "Implement compaction handler in supermemory-opencode (new hook + service wiring)",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_fbfac4c3dffeqphmA0v6nsdGad"
+}

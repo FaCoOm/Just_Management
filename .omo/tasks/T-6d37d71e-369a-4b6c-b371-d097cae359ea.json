@@ -1,0 +1,13 @@
+{
+  "id": "T-6d37d71e-369a-4b6c-b371-d097cae359ea",
+  "subject": "Trace connector visibility",
+  "description": "Inspect frontend rendering, operator session gating, AuthKit connector names, persisted connection response, and current status UI.",
+  "status": "pending",
+  "activeForm": "Tracing connector visibility",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "verify": "Root cause identified from current code and runtime evidence"
+  },
+  "threadID": "ses_fbfb0aa1affeFzcK1MbQ7O45m7"
+}

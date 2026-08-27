@@ -1,0 +1,10 @@
+{
+  "id": "T-cb715b24-7279-4ddf-80c1-7de982cafa93",
+  "subject": "Inspect git state",
+  "description": "Inspect branch, status, diff, and recent history before staging anything.",
+  "status": "completed",
+  "activeForm": "Inspected git state",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_11bba77a8ffept3rVs3b5oxr7V"
+}

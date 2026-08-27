@@ -1,0 +1,9 @@
+{
+  "id": "T-20d390b2-d2f8-4342-9839-0dd39c5d01e5",
+  "subject": "Prune repo tooling/state bloat",
+  "description": "Confirm repo tooling/state dirs safe to delete (gitignored, not runtime)",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_fbfac4c3dffeqphmA0v6nsdGad"
+}

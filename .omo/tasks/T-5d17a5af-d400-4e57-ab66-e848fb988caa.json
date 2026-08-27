@@ -1,0 +1,12 @@
+{
+  "id": "T-5d17a5af-d400-4e57-ab66-e848fb988caa",
+  "subject": "Identify AuthKit root cause",
+  "description": "Compare code, env, WithOne docs/API behavior, and local/prod responses to isolate dashboard/env/code cause.",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "evidence": "direct WithOne /authkit/token returns 200 rows=0 total=0 for user/team/organization/project using backend ONE_SECRET_KEY"
+  },
+  "threadID": "ses_11bba77a8ffept3rVs3b5oxr7V"
+}

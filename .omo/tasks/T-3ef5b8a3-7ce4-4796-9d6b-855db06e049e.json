@@ -1,0 +1,14 @@
+{
+  "id": "T-3ef5b8a3-7ce4-4796-9d6b-855db06e049e",
+  "subject": "Tag outdated/Superseded docs with historical banners",
+  "description": "Add '> Historical. Not current runtime truth.' to old docs in archive/",
+  "status": "completed",
+  "blocks": [
+    "T-4f12e8c5"
+  ],
+  "blockedBy": [
+    "T-b8b72df5",
+    "T-2e45c447"
+  ],
+  "threadID": "ses_12191ffd1ffeaopzdvlQ5JpBZn"
+}

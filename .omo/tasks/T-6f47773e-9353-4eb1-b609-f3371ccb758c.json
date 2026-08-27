@@ -1,0 +1,13 @@
+{
+  "id": "T-6f47773e-9353-4eb1-b609-f3371ccb758c",
+  "subject": "Resolve repo-owned config gaps",
+  "description": "Patch only repo/local env-owned AuthKit issues; no speculative dashboard changes.",
+  "status": "completed",
+  "activeForm": "resolving repo-owned config gaps",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "kind": "fix"
+  },
+  "threadID": "ses_11bba77a8ffept3rVs3b5oxr7V"
+}

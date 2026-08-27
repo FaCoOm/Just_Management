@@ -1,0 +1,14 @@
+{
+  "id": "T-ad264164-9fd9-41be-9f4d-c88e1c1b4c6f",
+  "subject": "Apply minimal fix if code-owned",
+  "description": "Only if root cause is code-owned, add failing test, patch minimal code, verify.",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": [
+    "T-placeholder"
+  ],
+  "metadata": {
+    "result": "no code-owned patch for rows=0; env/dashboard-owned"
+  },
+  "threadID": "ses_11bba77a8ffept3rVs3b5oxr7V"
+}

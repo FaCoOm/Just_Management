@@ -1,0 +1,10 @@
+{
+  "id": "T-e2067a06-0e5a-4374-b5ce-76104885d355",
+  "subject": "Assess One AuthKit failure",
+  "description": "Inspect current WithOne/AuthKit config, code paths, and documented deployment assumptions without reading logs.txt further.",
+  "status": "completed",
+  "activeForm": "assessed One/AuthKit failure",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_11bba77a8ffept3rVs3b5oxr7V"
+}

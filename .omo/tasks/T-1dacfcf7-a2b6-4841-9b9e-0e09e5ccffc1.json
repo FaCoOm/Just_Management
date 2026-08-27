@@ -1,0 +1,15 @@
+{
+  "id": "T-1dacfcf7-a2b6-4841-9b9e-0e09e5ccffc1",
+  "subject": "Move docs/ root files to new locations",
+  "description": "Relocate all root-level docs into architecture/, design/, guides/, plans/, reports/, archive/",
+  "status": "completed",
+  "blocks": [
+    "T-e8e2a51a",
+    "T-df7409d6",
+    "T-4f12e8c5"
+  ],
+  "blockedBy": [
+    "T-f6a2b1d4"
+  ],
+  "threadID": "ses_12191ffd1ffeaopzdvlQ5JpBZn"
+}
