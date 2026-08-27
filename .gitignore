@@ -20,6 +20,8 @@ backend/.env
 credentials.json
 .agents
 .codeboarding
+.kiro
+.emergent
 
 # Editor directories and files
 .vscode/*
@@ -36,6 +38,7 @@ credentials.json
 *.pem
 *.key
 .credentials
+.cursor
 
 # Scratch directories
 .scratch/
@@ -50,5 +53,4 @@ backend/imports/
 # Local-only agent scratch / research caches (do not read or commit)
 .understand-anything/
 /resources/
-logs.txt
 .firecrawl/

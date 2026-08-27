@@ -1,19 +1,5 @@
 # Ingestion Pipeline Guide
 
-## Scope
-- `backend/src/ingest/` owns spreadsheet and provider ingestion for the current runtime.
-- Routes validate contracts; services reconcile provider data into current Prisma tables.
-
-## Layout
-- `contracts.ts` defines source accounts, source types, file limits, summaries, and validation error shapes.
-- `parser.ts` parses internal names into deterministic property/room hints.
-- `normalizer.ts` converts spreadsheet rows into listing/reservation source rows.
-- `routes.ts` owns `/api/ingest/listings`, `/api/ingest/reservations`, `/api/ingest/google-sheets`, multipart parsing, and `dryRun` validation.
-- `services/listings.ts` syncs listing rows.
-- `services/reservations.ts` syncs reservation rows.
-- `services/sheets.ts` fetches Google Sheets data.
-- `watchers/folder.ts` watches `M_MANAGEMENT_IMPORT_ROOT/listings/inbox` and `M_MANAGEMENT_IMPORT_ROOT/reservations/inbox`; processed files move to `processed/` and failures move to `quarantine/` during `folder-watch` pipeline runs.
-
 ## Rules
 - `dryRun` is mandatory for ingest endpoints; reject missing or non-boolean values.
 - Normalize before writing. Parser ambiguity must dead-letter or skip, not create rooms/properties.
@@ -24,18 +10,3 @@
 - Use `watched_files.target_kind` for folder-watch routing. Do not infer target kind from filename prefixes.
 - `M_MANAGEMENT_WATCH_DIR` is a deprecated alias; prefer `M_MANAGEMENT_IMPORT_ROOT`.
 - Listing imports must not create inventory unless `M_MANAGEMENT_LISTINGS_CREATE_INVENTORY=true` is explicitly set for trusted seed flows.
-
-## Anti-Patterns
-- Bypassing `normalizer.ts` and writing raw spreadsheet cells directly to core tables.
-- Mixing provider-specific reconciliation logic into route handlers.
-- Treating ambiguous parser output as permission to create inventory.
-- Adding `multer` handling outside `routes.ts`.
-- Mutating business tables during `dryRun`.
-
-## Verification
-```bash
-npm run verify-ingestion
-npm run verify:all
-```
-
-Run endpoint manually for changed ingest route behavior and inspect summary fields: `processed`, `created`, `updated`, `skipped`, `deadLetters`, `errors`.
