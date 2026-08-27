@@ -8,7 +8,7 @@ const rootRoute = createRootRoute({
     return (
       <SidebarProvider>
         <AppSidebar />
-        <SidebarInset>
+        <SidebarInset className="min-h-svh overflow-hidden">
           <Outlet />
         </SidebarInset>
         {import.meta.env.DEV && <TanStackRouterDevtools position="bottom-right" />}
