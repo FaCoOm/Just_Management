@@ -91,11 +91,16 @@ function ConnectorAvailabilityList({ authenticated, savedRows }: { authenticated
                 <div className="font-medium">{label}</div>
                 <div className="text-xs text-muted-foreground">{matches.length === 0 ? "No saved connection" : `${matches.length} saved`}</div>
               </div>
-              {authenticated && validated ? <Badge>Validated</Badge> : <Badge variant="outline">{authenticated ? "Not validated" : "Sign in to connect"}</Badge>}
+              {authenticated && validated ? <Badge>Validated</Badge> : <Badge variant="outline">{authenticated ? "Not validated" : "Locked"}</Badge>}
             </li>
           );
         })}
       </ul>
+      {!authenticated ? (
+        <p className="mt-2 text-xs text-muted-foreground">
+          Authenticate via the Operator Access card above to unlock connect actions for these providers.
+        </p>
+      ) : null}
     </div>
   );
 }
