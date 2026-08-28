@@ -13,8 +13,8 @@ One CLI access works locally, but the deployed app has no persisted One connecti
 Local One CLI vault has operational connections:
 
 - `gmail` operational
-- `google-drive` operational: `live::google-drive::default::f022350e9000438298a3cc8f1e16365b`
-- `google-sheets` operational: `live::google-sheets::default::a5d5eb63d2c14b2ea10f49d9dac51dca`
+- `google-drive` operational: `live::google-drive::default::<redacted>`
+- `google-sheets` operational: `live::google-sheets::default::<redacted>`
 
 Verified read access:
 
@@ -135,3 +135,5 @@ INGEST_PIPELINE_ENABLED=true
 Diagnosis complete. Fix not applied yet.
 
 One/Google OAuth access works locally. Deployed app wiring is partially configured, but pipeline source path and persisted app connection rows are missing.
+
+> ⚠️ **ROTATE NOW** — live connection keys in this file were replaced with `<redacted>`. Treat them as compromised; rotation is the user's responsibility (see the notice in `docs/config.md`).

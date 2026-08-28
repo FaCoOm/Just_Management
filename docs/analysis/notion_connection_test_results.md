@@ -7,7 +7,7 @@ This report documents the validation tests performed on the Notion MCP connectio
 ## 1. Connection Validation Results
 
 We performed direct API connection tests using the configured Notion Integration Token:
-* **Token:** `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`
+* **Token:** `<redacted>`
 * **Status:** **Active & Functioning** (Verified)
 * **Response Details:**
   * **Integration Name:** ` MCP_AI`
@@ -38,3 +38,5 @@ In Notion, the default landing page for a new teamspace is a page titled `"Teams
    * **Details:** Also uses the default callout template and remains uncustomized with no nested children.
 
 All other custom content in the workspace is organized under standard top-level pages (such as `"Database"`, `"Wollongong Student learning help"`, `"12 WEEK - YEAR"`, etc.).
+
+> ⚠️ **ROTATE NOW** — the live Notion integration token in this file was replaced with `<redacted>`. Treat it as compromised; rotation is the user's responsibility (see the notice in `docs/config.md`).

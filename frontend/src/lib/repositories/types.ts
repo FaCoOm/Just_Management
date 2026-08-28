@@ -372,15 +372,6 @@ export interface IntegrationRepository {
   persistConnection(payload: { platform: string; connectionKey: string; displayName?: string }): Promise<unknown>;
   disconnect(connectionKey: string): Promise<unknown>;
 }
-export interface IntegrationRepository {
-  getStatus(): Promise<IntegrationStatus>;
-  getOperatorSession(): Promise<OperatorSession>;
-  loginOperator(password: string): Promise<void>;
-  logoutOperator(): Promise<void>;
-  getConnections(): Promise<IntegrationConnection[]>;
-  persistConnection(payload: { platform: string; connectionKey: string; displayName?: string }): Promise<unknown>;
-  disconnect(connectionKey: string): Promise<unknown>;
-}
 
 export interface IngestRepository {
   getPipelineStatus(): Promise<PipelineStatus>;

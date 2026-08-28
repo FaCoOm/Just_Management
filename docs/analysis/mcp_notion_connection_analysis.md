@@ -35,7 +35,7 @@ In your global configuration file (`C:\Users\Fate_Conqueror\.gemini\antigravity-
     "@notionhq/notion-mcp-server"
   ],
   "env": {
-    "OPENAPI_MCP_HEADERS": "{\"Authorization\": \"Bearer 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\", \"Notion-Version\": \"2022-06-28\"}"
+    "OPENAPI_MCP_HEADERS": "{\"Authorization\": \"Bearer <redacted>\", \"Notion-Version\": \"2022-06-28\"}"
   },
   "disabled": true
 }
@@ -58,7 +58,7 @@ Update your `notion-mcp-server` block in `C:\Users\Fate_Conqueror\.gemini\antigr
     "@notionhq/notion-mcp-server"
   ],
   "env": {
-    "NOTION_TOKEN": "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"
+    "NOTION_TOKEN": "<redacted>"
   },
   "disabled": false
 }
@@ -80,3 +80,5 @@ Notion also offers a hosted, streaming HTTP/SSE-based MCP server. If your IDE su
 1. Edit `C:\Users\Fate_Conqueror\.gemini\antigravity-ide\mcp_config.json` with the updated JSON structure shown above.
 2. Restart your IDE or OpenCode background processes to reload the configuration.
 3. Ensure you have shared the target pages/databases in Notion with your integration (click **•••** -> **Add connections** -> select your integration).
+
+> ⚠️ **ROTATE NOW** — the live Notion integration token in this file was replaced with `<redacted>`. Treat it as compromised; rotation is the user's responsibility (see the notice in `docs/config.md`).

@@ -1,12 +1,14 @@
 import fs from "fs";
 import path from "path";
 import { spawn } from "child_process";
+import { createRequire } from "module";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 const PORT = Number(process.env.VERIFY_PORT ?? String(3100 + Math.floor(Math.random() * 1000)));
 const API_URL = `http://127.0.0.1:${PORT}/api/ingest`;
-const TSX_CLI = path.resolve(__dirname, "../node_modules/tsx/dist/cli.mjs");
+const TSX_CLI = createRequire(import.meta.url).resolve("tsx/cli");
+const ALLOW_DB_WRITES = process.env.VERIFY_ALLOW_DB_WRITES === "true";
 const GOOGLE_SHEETS_VERIFY_ID = process.env.GOOGLE_SHEETS_SPREADSHEET_ID;
 function isLivePlaceholder(value: string): boolean {
   if (value.length === 0) return true;
@@ -136,6 +138,7 @@ async function main() {
       throw new Error("Dry run mutated business tables.");
     }
 
+    if (ALLOW_DB_WRITES) {
     // 2. Main-happy real run
     const mainSummary = await runTest("Main-happy Real Run", "listings", "Main-happy.csv", false, 200);
     if (mainSummary.processed !== 3 || mainSummary.deadLetters !== 0) {
@@ -168,6 +171,26 @@ async function main() {
       reservationSummary.created + reservationSummary.updated < 2
     ) {
       throw new Error(`Reservation sync summary unexpected: ${JSON.stringify(reservationSummary)}`);
+    }
+
+    const listingRows = await prisma.channel_listings.findMany({
+      where: { title: { in: ["Test Listing 1", "Test Listing 2", "Test Listing 3"] } },
+      orderBy: { title: "asc" },
+    });
+    if (listingRows.length !== 3) {
+      throw new Error(`Expected 3 persisted happy-path listings, found ${listingRows.length}`);
+    }
+
+    const reservationRefs = await prisma.reservation_external_refs.findMany({
+      where: { confirmation_code: { in: ["HMX1234567", "HMX9876543"] } },
+      orderBy: { confirmation_code: "asc" },
+    });
+    if (reservationRefs.length !== 2) {
+      throw new Error(`Expected 2 persisted reservation refs for resolvable rows, found ${reservationRefs.length}`);
+    }
+    } else {
+      console.log("\n--- Skipping DB Write Scenarios ---");
+      console.log("   Set VERIFY_ALLOW_DB_WRITES=true only against an isolated test DB to enable fixture writes.");
     }
 
     // 7. Google Sheets WithOne provider validation
@@ -268,22 +291,6 @@ async function main() {
     }
     if (pipelineRunJson.dryRun !== true || pipelineRunJson.processed <= 0 || !Array.isArray(pipelineRunJson.errors) || pipelineRunJson.errors.length !== 0) {
       throw new Error(`Pipeline built-in dry run unexpected: ${JSON.stringify(pipelineRunJson)}`);
-    }
-
-    const listingRows = await prisma.channel_listings.findMany({
-      where: { title: { in: ["Test Listing 1", "Test Listing 2", "Test Listing 3"] } },
-      orderBy: { title: "asc" },
-    });
-    if (listingRows.length !== 3) {
-      throw new Error(`Expected 3 persisted happy-path listings, found ${listingRows.length}`);
-    }
-
-    const reservationRefs = await prisma.reservation_external_refs.findMany({
-      where: { confirmation_code: { in: ["HMX1234567", "HMX9876543"] } },
-      orderBy: { confirmation_code: "asc" },
-    });
-    if (reservationRefs.length !== 2) {
-      throw new Error(`Expected 2 persisted reservation refs for resolvable rows, found ${reservationRefs.length}`);
     }
 
     await verifyDb();

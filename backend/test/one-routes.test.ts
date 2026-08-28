@@ -80,7 +80,7 @@ describe("POST /api/one/auth-token", () => {
     assert.equal(res.headers.get("set-cookie"), null);
   });
 
-it("forwards widget pagination to WithOne", async () => {
+  it("forwards widget pagination to WithOne", async () => {
     const originalFetch = globalThis.fetch;
     try {
       let requestedUrl = "";
@@ -141,7 +141,7 @@ it("forwards widget pagination to WithOne", async () => {
 
     assert.equal(logout.status, 204);
     assert.match(logout.headers.get("set-cookie") ?? "", /Expires=Thu, 01 Jan 1970 00:00:00 GMT/);
-});
+  });
 });
 
 describe("POST /api/one/auth-grant", () => {
@@ -179,6 +179,8 @@ describe("POST /api/one/auth-grant", () => {
     ts = await startTestServer();
     const res = await fetch(`${ts.baseUrl}/api/one/auth-grant`, { method: "POST" });
     assert.equal(res.status, 401);
+    const body = (await res.json()) as { error: string };
+    assert.equal(body.error, "operator session required");
   });
 
   it("rejects grant requests with a forged operator session cookie", async () => {

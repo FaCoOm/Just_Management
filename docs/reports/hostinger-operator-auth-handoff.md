@@ -8,7 +8,7 @@ These are the required env vars for the WithOne operator-auth flow on `manage.mu
 
 ```
 ONE_OPERATOR_PASSWORD=<your-passphrase>
-ONE_SESSION_SECRET=6e275dd7107b5c135dd02af1c30935372cfd4b30b83c018668de8718542fc27a
+ONE_SESSION_SECRET=<redacted>
 ONE_OPERATOR_IDENTITY=operator
 ```
 
@@ -19,8 +19,8 @@ ONE_OPERATOR_IDENTITY=operator
 ## Already configured in repo (verify Hostinger matches)
 
 ```
-ONE_CONNECTION_KEY=live::gmail::default::5651403676e344058c345c9f894c30c2, live::google-drive::default::f022350e9000438298a3cc8f1e16365b, live::google-drive::default::f022350e9000438298a3cc8f1e16365b
-ONE_SECRET_KEY=sk_live_EXbApbwkqu9WZAt7iV4tIKo6ztUmHaxh_ynmJdl2hT4
+ONE_CONNECTION_KEY=<redacted>
+ONE_SECRET_KEY=<redacted>
 ONE_API_BASE=https://api.withone.ai/v1
 ONE_AUTHKIT_DEFAULT_IDENTITY_TYPE=user
 ```
@@ -71,3 +71,5 @@ curl -X POST http://localhost:3001/api/one/operator-session \
 - Anonymous: Operator Access card shows login form, Connector Availability list shows 3 connectors with `Locked` badge and the "Authenticate via the Operator Access card above" hint.
 - After correct password: card flips to `Authenticated / Sign out`, badges flip to `Not validated`, Connect buttons appear.
 - After successful WithOne OAuth: persisted rows appear under each connector as `Validated`.
+
+> ⚠️ **ROTATE NOW** — live credentials in this file were replaced with `<redacted>`. Treat them as compromised; rotation is the user's responsibility (see the notice in `docs/config.md`).

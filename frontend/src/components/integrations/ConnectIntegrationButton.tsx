@@ -1,6 +1,6 @@
 import { useOneAuth } from "@withone/auth";
 import { Button } from "@/components/ui/button";
-import { usePersistConnection } from "@/hooks/use-one-connections";
+import { useAuthGrant, usePersistConnection } from "@/hooks/use-one-connections";
 
 const DEFAULT_TOKEN_URL = "/api/one/auth-token";
 
@@ -15,17 +15,26 @@ function absoluteTokenUrl(configuredUrl: string | undefined): string {
   return new URL(candidate, window.location.origin).toString();
 }
 
-export function buildOneAuthHeaders(): Record<string, string> {
-  return {};
+export function buildOneAuthHeaders(grant: string | undefined): Record<string, string> {
+  if (!grant) return {};
+  return { "x-one-grant": grant };
 }
 
-export function ConnectIntegrationButton({ platform }: { platform: "google-sheets" | "google-drive" | "gmail" }) {
+export function ConnectIntegrationButton({
+  platform,
+  authenticated,
+}: {
+  platform: "google-sheets" | "google-drive" | "gmail";
+  authenticated: boolean;
+}) {
   const persist = usePersistConnection();
   const tokenUrl = import.meta.env.VITE_ONE_AUTH_TOKEN_URL as string | undefined;
+  const grantQuery = useAuthGrant(authenticated);
+  const grant = grantQuery.data?.grant;
   const { open } = useOneAuth({
     token: {
       url: absoluteTokenUrl(tokenUrl),
-      headers: buildOneAuthHeaders(),
+      headers: buildOneAuthHeaders(grant),
     },
     selectedConnection: platformLabels[platform],
     appTheme: "light",
@@ -33,21 +42,23 @@ export function ConnectIntegrationButton({ platform }: { platform: "google-sheet
     companyName: "Latte Lounge",
     authWindow: "popup",
     onSuccess: (connection: unknown) => {
-      const record = connection as { key?: string; connectionKey?: string; platform?: string; title?: string; name?: string };
-      const connectionKey = record.connectionKey ?? record.key;
-      if (connectionKey) {
+      const record = connection as { key?: string; platform?: string; title?: string; name?: string };
+      if (record.key) {
         persist.mutate({
           platform: record.platform ?? platform,
-          connectionKey,
+          connectionKey: record.key,
           displayName: record.title ?? record.name ?? platformLabels[platform],
         });
       }
     },
   });
 
+  const disabled = persist.isPending || !grant;
+  const label = !grant && grantQuery.isFetching ? "Preparing..." : persist.isPending ? "Saving..." : `Connect ${platformLabels[platform]}`;
+
   return (
-    <Button type="button" onClick={open} disabled={persist.isPending}>
-      {persist.isPending ? "Saving..." : `Connect ${platformLabels[platform]}`}
+    <Button type="button" onClick={open} disabled={disabled}>
+      {label}
     </Button>
   );
 }
