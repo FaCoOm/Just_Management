@@ -1,0 +1,14 @@
+{
+  "id": "T-0bc2283e-09b6-4017-a1e9-f86d66a2b7fa",
+  "subject": "Verify WithOne API behavior",
+  "description": "Validate current documented API contracts and distinguish API key inventory from AuthKit integration visibility.",
+  "status": "completed",
+  "activeForm": "Verified WithOne API behavior",
+  "blocks": [],
+  "blockedBy": [],
+  "owner": "Hephaestus",
+  "metadata": {
+    "result": "Transport verified; empty AuthKit rows do not prove key-scope root cause. Leading causes: disabled integrations, scope mismatch, environment mismatch."
+  },
+  "threadID": "ses_08d1176e3ffe4YeYZHM3isj5RM"
+}

@@ -1,0 +1,13 @@
+{
+  "id": "T-fe7e68df-d606-4861-b91b-ad91beafdf22",
+  "subject": "Commit WithOne auth changes",
+  "description": "Stage only verified authentication files and create an atomic commit.",
+  "status": "pending",
+  "activeForm": "Committing WithOne auth changes",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "verify": "Commit created; unrelated changes remain unstaged"
+  },
+  "threadID": "ses_fbfb0aa1affeFzcK1MbQ7O45m7"
+}

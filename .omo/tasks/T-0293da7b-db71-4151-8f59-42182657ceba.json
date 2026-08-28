@@ -1,0 +1,10 @@
+{
+  "id": "T-0293da7b-db71-4151-8f59-42182657ceba",
+  "subject": "Assess Hostinger integration runtime",
+  "description": "Check Hostinger website/deployment state and public integration endpoints without exposing secrets.",
+  "status": "completed",
+  "activeForm": "Assessed Hostinger integration runtime",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_11bba77a8ffept3rVs3b5oxr7V"
+}

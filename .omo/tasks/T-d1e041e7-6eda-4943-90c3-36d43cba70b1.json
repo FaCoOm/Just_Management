@@ -1,0 +1,14 @@
+{
+  "id": "T-d1e041e7-6eda-4943-90c3-36d43cba70b1",
+  "subject": "Validate WithOne end to end",
+  "description": "Run diagnostics, tests/builds, and manually exercise matching route and UI surfaces.",
+  "status": "completed",
+  "activeForm": "Validated WithOne end to end",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "checks": "Focused route test, builds, browser rendering, console inspection",
+    "result": "Focused backend test, backend build, frontend typecheck/build passed. Desktop/mobile browser checks passed. Local AuthKit iframe limited by loopback Private Network Access. Production currently serves old copy pending deployment."
+  },
+  "threadID": "ses_08d1176e3ffe4YeYZHM3isj5RM"
+}

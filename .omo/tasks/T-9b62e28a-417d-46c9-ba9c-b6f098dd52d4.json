@@ -1,0 +1,10 @@
+{
+  "id": "T-9b62e28a-417d-46c9-ba9c-b6f098dd52d4",
+  "subject": "Verify + commit",
+  "description": "Run frontend tests, typecheck, build; commit atomic per git-master; capture artifacts.",
+  "status": "pending",
+  "activeForm": "Verifying + committing",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_fbfb0aa1affeFzcK1MbQ7O45m7"
+}

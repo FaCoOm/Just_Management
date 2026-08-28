@@ -1,0 +1,10 @@
+{
+  "id": "T-5c0bf33f-e108-4802-822a-e2e4cef93165",
+  "subject": "Ship UI clarity patch",
+  "description": "Implement minimum-diff edits to integrations page that show available connectors and validated-account state in both anon and authed paths.",
+  "status": "pending",
+  "activeForm": "Shipping UI clarity patch",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_fbfb0aa1affeFzcK1MbQ7O45m7"
+}

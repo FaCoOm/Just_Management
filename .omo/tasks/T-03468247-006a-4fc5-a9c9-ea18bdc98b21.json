@@ -1,0 +1,14 @@
+{
+  "id": "T-03468247-006a-4fc5-a9c9-ea18bdc98b21",
+  "subject": "Map integration connect controls",
+  "description": "Locate Gmail, Drive, and Google Sheets controls and determine why they are absent or unclear.",
+  "status": "completed",
+  "activeForm": "Mapping integration connect controls",
+  "blocks": [],
+  "blockedBy": [],
+  "owner": "Sisyphus",
+  "metadata": {
+    "verify": "All supported connector controls identified with visibility conditions"
+  },
+  "threadID": "ses_fbfb0aa1affeFzcK1MbQ7O45m7"
+}

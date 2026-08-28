@@ -1,0 +1,19 @@
+{
+  "id": "T-faee52cd-2847-42ba-bcb2-c0cd9ccb74a2",
+  "subject": "Verify operations runtime",
+  "description": "Run backend/frontend typecheck, tests, build, Prisma validation, and runtime/API checks for operations flow.",
+  "status": "completed",
+  "activeForm": "Verifying operations runtime",
+  "blocks": [],
+  "blockedBy": [
+    "T-9bd1785f-bcc6-465f-95dc-68427724a99d"
+  ],
+  "owner": "Sisyphus",
+  "metadata": {
+    "scope": "operations-pipeline",
+    "phase": "verification",
+    "note": "User reports Azure UI still lacks table; direct catalog proof required.",
+    "result": "Azure catalog proof, API smoke, perf sample, backend/frontend tests/builds all passed; reviewer PASS."
+  },
+  "threadID": "ses_122a056c2ffevhEFBGuD5MZmbv"
+}

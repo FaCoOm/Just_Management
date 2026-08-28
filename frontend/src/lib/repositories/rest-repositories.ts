@@ -17,6 +17,7 @@ import type {
   ChannelRepository,
   DiningEventRepository,
   IngestRepository,
+  AuthGrant,
   IntegrationRepository,
   RateRepository,
   RepositoryFactory,
@@ -442,6 +443,16 @@ const integrationRepo: IntegrationRepository = {
   async logoutOperator() {
     const res = await apiFetch(apiUrl("/api/one/operator-session"), { method: "DELETE" });
     if (!res.ok) throw new Error(`Logout failed: ${res.status}`);
+  },
+  async mintAuthGrant() {
+    const res = await apiFetch(apiUrl("/api/one/auth-grant"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: "{}",
+    });
+    const data = (await res.json()) as AuthGrant;
+    if (!res.ok) throw new Error(`Auth grant failed: ${res.status}`);
+    return data;
   },
   async getConnections() {
     const res = await apiFetch(apiUrl("/api/one/connections"));

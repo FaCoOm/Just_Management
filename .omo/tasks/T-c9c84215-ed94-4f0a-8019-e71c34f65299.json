@@ -1,0 +1,16 @@
+{
+  "id": "T-c9c84215-ed94-4f0a-8019-e71c34f65299",
+  "subject": "Clear locked backend process",
+  "description": "Stop stale local backend process holding Prisma DLL and verify build.",
+  "status": "completed",
+  "activeForm": "Build verified after process stop",
+  "blocks": [],
+  "blockedBy": [
+    "T-11636410-80db-435c-887d-181967121aa6"
+  ],
+  "metadata": {
+    "pid": 29460,
+    "port": 3001
+  },
+  "threadID": "ses_0b0e7c621ffexwZiscsgsQECdg"
+}

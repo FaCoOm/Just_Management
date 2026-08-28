@@ -1,0 +1,13 @@
+{
+  "id": "T-1b4c3f17-2a65-474e-bd97-45d4a8e56a26",
+  "subject": "Fix connection indicators",
+  "description": "Implement the smallest change that clearly exposes available connectors and validated account state.",
+  "status": "pending",
+  "activeForm": "Fixing connection indicators",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "verify": "Connectors and validation state appear correctly"
+  },
+  "threadID": "ses_fbfb0aa1affeFzcK1MbQ7O45m7"
+}

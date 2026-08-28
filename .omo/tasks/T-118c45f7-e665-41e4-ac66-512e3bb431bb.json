@@ -1,0 +1,15 @@
+{
+  "id": "T-118c45f7-e665-41e4-ac66-512e3bb431bb",
+  "subject": "Review WithOne auth diff",
+  "description": "Inspect exact auth-related diff and distinguish unrelated dirty-worktree changes.",
+  "status": "completed",
+  "activeForm": "Reviewing WithOne auth diff",
+  "blocks": [],
+  "blockedBy": [],
+  "owner": "Sisyphus",
+  "metadata": {
+    "verify": "Only intended auth files identified",
+    "result": "Manual diff review complete; intended auth files isolated"
+  },
+  "threadID": "ses_fbfb0aa1affeFzcK1MbQ7O45m7"
+}

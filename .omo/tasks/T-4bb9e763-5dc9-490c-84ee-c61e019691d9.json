@@ -1,0 +1,15 @@
+{
+  "id": "T-4bb9e763-5dc9-490c-84ee-c61e019691d9",
+  "subject": "Move resources/ files to new locations",
+  "description": "Relocate all resources/ files into analysis/, guides/, reports/, reference/, archive/",
+  "status": "completed",
+  "blocks": [
+    "T-e8e2a51a",
+    "T-df7409d6",
+    "T-4f12e8c5"
+  ],
+  "blockedBy": [
+    "T-f6a2b1d4"
+  ],
+  "threadID": "ses_12191ffd1ffeaopzdvlQ5JpBZn"
+}

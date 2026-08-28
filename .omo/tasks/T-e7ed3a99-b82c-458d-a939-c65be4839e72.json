@@ -1,0 +1,14 @@
+{
+  "id": "T-e7ed3a99-b82c-458d-a939-c65be4839e72",
+  "subject": "Diagnose stale operator access",
+  "description": "Trace local session freshness, query caching, cookie behavior, and route startup topology.",
+  "status": "completed",
+  "activeForm": "Diagnosing stale operator access",
+  "blocks": [],
+  "blockedBy": [],
+  "owner": "Sisyphus",
+  "metadata": {
+    "verify": "Unauthenticated reload and logout immediately show login gate"
+  },
+  "threadID": "ses_fbfb0aa1affeFzcK1MbQ7O45m7"
+}

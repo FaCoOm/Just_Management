@@ -1,0 +1,16 @@
+{
+  "id": "T-55cd3588-c7b3-42ba-b5de-df8334167d20",
+  "subject": "Verify API and app surfaces",
+  "description": "Run tests/build plus real endpoint/browser checks for integration surface.",
+  "status": "completed",
+  "activeForm": "verifying API and app surfaces",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "kind": "verify",
+    "frontend": "typecheck/build/test: pass",
+    "backend": "tests and tsc: pass; npm run build blocked by Prisma query_engine DLL EPERM rename",
+    "surface": "local/prod auth-token 200 AuthKit schema rows=0; CORS 204 both origins"
+  },
+  "threadID": "ses_11bba77a8ffept3rVs3b5oxr7V"
+}

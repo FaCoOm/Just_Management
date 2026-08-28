@@ -1,0 +1,13 @@
+{
+  "id": "T-8502283c-6867-4232-a791-0abea921cb4c",
+  "subject": "init-deep discovery",
+  "description": "Fire explore agents, collect structural/codegraph/LSP/existing AGENTS evidence.",
+  "status": "completed",
+  "activeForm": "Discovering repo structure",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "phase": "discovery"
+  },
+  "threadID": "ses_0d7433405ffeP3eGbTWUiIBzcZ"
+}

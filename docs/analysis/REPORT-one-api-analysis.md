@@ -268,7 +268,7 @@ Local testing was carried out using the fixed OpenCode MCP config structure.
   "type": "local",
   "command": ["npx", "-y", "@withone/mcp"],
   "environment": {
-    "ONE_SECRET": "sk_live_EXbApbwkqu..."
+    "ONE_SECRET": "<redacted>"
   }
 }
 ```
@@ -383,3 +383,5 @@ Webhooks let you monitor and log integration events asynchronously. Configure yo
 ### Phase 4: Verification & Testing
 - [ ] Verify that a user cannot retrieve, view, or execute another user's connection key (Access Control Verification).
 - [ ] Verify that OAuth revoking correctly broadcasts to your webhook and removes the record from your local database.
+
+> ⚠️ **ROTATE NOW** — a live secret key reference in this file was replaced with `<redacted>`. Treat it as compromised; rotation is the user's responsibility (see the notice in `docs/config.md`).

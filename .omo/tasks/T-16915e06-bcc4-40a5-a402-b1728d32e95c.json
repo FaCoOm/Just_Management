@@ -1,0 +1,13 @@
+{
+  "id": "T-16915e06-bcc4-40a5-a402-b1728d32e95c",
+  "subject": "Fix WithOne integration",
+  "description": "Apply smallest root-cause fixes to backend/frontend implementation and tests.",
+  "status": "completed",
+  "activeForm": "Corrected WithOne integration guidance",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "result": "Corrected UI Vault terminology and report certainty; no proxy code change needed."
+  },
+  "threadID": "ses_08d1176e3ffe4YeYZHM3isj5RM"
+}

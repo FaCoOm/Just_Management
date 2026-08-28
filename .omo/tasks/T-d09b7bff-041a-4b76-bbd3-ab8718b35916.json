@@ -1,0 +1,13 @@
+{
+  "id": "T-d09b7bff-041a-4b76-bbd3-ab8718b35916",
+  "subject": "Document current root causes",
+  "description": "Write concise source/runtime-backed root cause doc without leaking secrets.",
+  "status": "completed",
+  "activeForm": "documenting current root causes",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "kind": "docs"
+  },
+  "threadID": "ses_11bba77a8ffept3rVs3b5oxr7V"
+}

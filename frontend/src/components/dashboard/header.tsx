@@ -15,13 +15,13 @@ export function DashboardHeader({ today }: DashboardHeaderProps) {
   const runPipeline = useRunPipeline();
 
   return (
-    <header className="flex h-14 items-center gap-3 border-b border-border bg-card px-4">
+    <header className="sticky top-0 z-10 flex h-14 items-center gap-3 border-b border-border/80 bg-card/90 px-4 backdrop-blur supports-[backdrop-filter]:bg-card/75">
       <SidebarTrigger className="-ml-1" />
       <Separator orientation="vertical" className="h-5" />
 
       <div className="flex flex-1 items-center gap-3">
         <div className="hidden md:block">
-          <h2 className="text-base font-semibold tracking-[-0.005em]">Portfolio Dashboard</h2>
+          <h2 className="font-serif text-lg font-semibold tracking-[-0.015em] text-balance">Portfolio Dashboard</h2>
           <p className="text-xs text-muted-foreground">
             Vietnam time (GMT+7) · {formatVietnamDate(today, {
               weekday: "long",

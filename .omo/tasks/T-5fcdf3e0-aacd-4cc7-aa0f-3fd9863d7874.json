@@ -1,0 +1,10 @@
+{
+  "id": "T-5fcdf3e0-aacd-4cc7-aa0f-3fd9863d7874",
+  "subject": "Plan UI surface extension",
+  "description": "Use plan agent to design minimum UI change that surfaces available connectors + per-connector validation state.",
+  "status": "in_progress",
+  "activeForm": "Planning UI surface extension",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_fbfb0aa1affeFzcK1MbQ7O45m7"
+}

@@ -1,0 +1,10 @@
+{
+  "id": "T-e8d9ab8c-9854-443e-a404-8f1bb4957e07",
+  "subject": "Verify 3 prior blockers resolved in tax-export service and test files",
+  "description": "F1: folio line_total inconsistency guard, F2: property 13 mock missing fields/assertions, F3: any-typed where clauses in service.ts. Inspect changed files, verify all resolved. No edits.",
+  "status": "completed",
+  "activeForm": "Verifying blocker fixes",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_12162f8f6ffeIgPpqvsnsUgq2k"
+}

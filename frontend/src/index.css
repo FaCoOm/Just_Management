@@ -1,23 +1,8 @@
+@import url("https://fonts.googleapis.com/css2?family=Newsreader:wght@200..800&family=Plus+Jakarta+Sans:wght@200..800&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
-
-@font-face {
-  font-family: "Plus Jakarta Sans";
-  font-style: normal;
-  font-weight: 200 800;
-  font-display: swap;
-  src: url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200..800&display=swap");
-}
-
-@font-face {
-  font-family: "Newsreader";
-  font-style: normal;
-  font-weight: 200 800;
-  font-display: swap;
-  src: url("https://fonts.googleapis.com/css2?family=Newsreader:wght@200..800&display=swap");
-}
 
 @theme inline {
   --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
@@ -63,6 +48,8 @@
   --color-harbor-deep: var(--harbor-deep);
   --color-brass: var(--brass);
   --color-brass-foreground: var(--brass-foreground);
+  --shadow-soft: 0 8px 24px color-mix(in srgb, var(--foreground) 8%, transparent);
+  --shadow-panel: 0 16px 48px color-mix(in srgb, var(--foreground) 12%, transparent);
 }
 
 :root {
@@ -152,5 +139,32 @@
   }
   body {
     @apply bg-background text-foreground font-sans antialiased;
+    background:
+      radial-gradient(circle at top left, color-mix(in srgb, var(--harbor) 14%, transparent), transparent 30rem),
+      radial-gradient(circle at 85% 12%, color-mix(in srgb, var(--brass) 14%, transparent), transparent 24rem),
+      var(--background);
+    font-variant-numeric: tabular-nums;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--harbor) 22%, transparent);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    ::before,
+    ::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
   }
 }

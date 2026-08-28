@@ -30,4 +30,10 @@ describe("Router Configuration", () => {
       expect(paths).toContain(p);
     }
   });
+
+  it("should keep routed content inside the styled sidebar inset", () => {
+    const RootLayout = router.routeTree.options.component;
+
+    expect(RootLayout?.toString()).toContain("min-h-svh overflow-hidden");
+  });
 });

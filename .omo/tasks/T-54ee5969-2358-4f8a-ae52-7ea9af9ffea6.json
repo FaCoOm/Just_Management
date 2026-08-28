@@ -1,0 +1,15 @@
+{
+  "id": "T-54ee5969-2358-4f8a-ae52-7ea9af9ffea6",
+  "subject": "init-deep generation",
+  "description": "Update/create root and subdirectory AGENTS.md files.",
+  "status": "pending",
+  "activeForm": "Generating AGENTS files",
+  "blocks": [],
+  "blockedBy": [
+    "T-58c28ca7-9e36-4f26-8937-88b07600e95f"
+  ],
+  "metadata": {
+    "phase": "generate"
+  },
+  "threadID": "ses_0d7433405ffeP3eGbTWUiIBzcZ"
+}

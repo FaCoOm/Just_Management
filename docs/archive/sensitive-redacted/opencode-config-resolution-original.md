@@ -21,7 +21,7 @@ Upon inspection of `c:\Users\Fate_Conqueror\.config\opencode\opencode.json` (lin
         "command": "remote"
         "args": ["@withone/mcp"],
         "env": {
-          "ONE_SECRET": "sk_live_EXbApbwkqu9WZAt7iV4tIKo6ztUmHaxh_ynmJdl2hT4"
+          "ONE_SECRET": "<redacted>"
         }
       }
     }
@@ -50,7 +50,7 @@ The `"one"` block inside `c:\Users\Fate_Conqueror\.config\opencode\opencode.json
         "@withone/mcp"
       ],
       "env": {
-        "ONE_SECRET": "sk_live_EXbApbwkqu9WZAt7iV4tIKo6ztUmHaxh_ynmJdl2hT4"
+        "ONE_SECRET": "<redacted>"
       }
     },
 ```
@@ -60,3 +60,5 @@ The `"one"` block inside `c:\Users\Fate_Conqueror\.config\opencode\opencode.json
 ## 4. Verification
 1. **Syntax Check**: The JSON file was parsed and loaded successfully without syntax errors.
 2. **Process Execution**: Running `opencode` now launches the background task cleanly, starts the configured MCP servers, and remains in a `RUNNING` state without crashing or throwing provider loading exceptions.
+
+> ⚠️ **ROTATE NOW** — the live secret key in this file was replaced with `<redacted>`. Treat it as compromised; rotation is the user's responsibility (see the notice in `docs/config.md`).

@@ -1,0 +1,9 @@
+{
+  "id": "T-18782297-71ab-48c7-9ac6-b6e7658fc3e6",
+  "subject": "Delete global opencode backup clutter",
+  "description": "Prune ~/.config/opencode JSON backup clutter",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_fbfac4c3dffeqphmA0v6nsdGad"
+}

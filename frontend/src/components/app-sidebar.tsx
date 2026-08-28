@@ -52,15 +52,15 @@ export function AppSidebar() {
 
   return (
     <Sidebar>
-      <SidebarHeader className="border-b border-sidebar-border px-4 py-3">
+      <SidebarHeader className="border-b border-sidebar-border/80 bg-sidebar/95 px-4 py-3">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-harbor text-harbor-foreground">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-br from-harbor to-harbor-deep text-harbor-foreground shadow-sm shadow-harbor/30">
             <Coffee className="h-4 w-4" />
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-semibold leading-tight">
-              Just Management
-            </span>
+              <span className="font-serif text-base font-semibold leading-tight tracking-[-0.015em]">
+                Just Management
+              </span>
             <span className="text-xs text-muted-foreground">
               Hospitality Suite
             </span>

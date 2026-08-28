@@ -1,0 +1,16 @@
+{
+  "id": "T-a40a6f43-4c68-4159-8a53-195ab523d49c",
+  "subject": "Verify operations schema deployment",
+  "description": "Compare planned operations Prisma schema/migrations/services against current repo and Azure migration status without mutating Azure DB.",
+  "status": "completed",
+  "activeForm": "Verifying operations schema deployment",
+  "blocks": [],
+  "blockedBy": [],
+  "owner": "Sisyphus",
+  "metadata": {
+    "scope": "operations-pipeline",
+    "phase": "db-status",
+    "result": "Azure has 4 pending ops migrations; schema valid; direct Prisma status contradicts subagent note claiming SQL migrations missing."
+  },
+  "threadID": "ses_122a056c2ffevhEFBGuD5MZmbv"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "T-574af1ec-8d9c-4c9c-b4c8-2298992f955e",
+  "subject": "Verify integration browser flow",
+  "description": "Exercise invalid login, valid login, connector visibility, logout, reload, desktop/mobile, then teardown.",
+  "status": "completed",
+  "activeForm": "Verifying integration browser flow",
+  "blocks": [],
+  "blockedBy": [],
+  "owner": "Sisyphus",
+  "metadata": {
+    "verify": "Invalid login rejected; valid login exposed 3 buttons; logout+reload relocked; screenshots captured; ports 3001/5173 closed."
+  },
+  "threadID": "ses_fbfb0aa1affeFzcK1MbQ7O45m7"
+}

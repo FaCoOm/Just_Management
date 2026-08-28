@@ -1,0 +1,14 @@
+{
+  "id": "T-9cc9373f-85ce-43c7-9580-596a9d2663a5",
+  "subject": "Review integration auth changes",
+  "description": "High-rigor review against auth/session and UI scenarios.",
+  "status": "deleted",
+  "activeForm": "Reviewing integration auth changes",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "verify": "Reviewer approval or resolved blockers",
+    "reason": "No new production change to review."
+  },
+  "threadID": "ses_fbfb0aa1affeFzcK1MbQ7O45m7"
+}

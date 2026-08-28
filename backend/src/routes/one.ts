@@ -2,7 +2,8 @@
  * Withone integration routes.
  *
  * Exposes:
- *   POST   /api/one/auth-token        - Issue an AuthKit token for the frontend widget (dev-gated)
+ *   POST   /api/one/auth-grant        - Mint a short-lived signed grant (operator-cookie gated)
+ *   POST   /api/one/auth-token        - Issue an AuthKit token using a valid grant (header gated)
  *   GET    /api/one/connections       - List persisted connections for the requesting user
  *   POST   /api/one/connections       - Persist a connection after AuthKit success
  *   DELETE /api/one/connections/:key  - Revoke a persisted connection
@@ -26,8 +27,57 @@ const SUPPORTED_PLATFORMS = new Set([
 const SESSION_COOKIE = "one_operator_session";
 const SESSION_DURATION_MS = 12 * 60 * 60 * 1000;
 
+const GRANT_HEADER = "x-one-grant";
+const GRANT_TTL_MS = 5 * 60 * 1000;
+
+type IdentityType = "user" | "team" | "organization" | "project";
+
+type AuthGrantPayload = {
+  identity: string;
+  identityType: IdentityType;
+  exp: number;
+};
+
 function operatorIdentity(): string {
   return process.env.ONE_OPERATOR_IDENTITY?.trim() || "operator";
+}
+
+function signGrant(payload: AuthGrantPayload): string | undefined {
+  const secret = process.env.ONE_SESSION_SECRET;
+  if (!secret) return undefined;
+  const body = Buffer.from(JSON.stringify(payload), "utf8").toString("base64url");
+  const signature = createHmac("sha256", secret).update(body).digest("base64url");
+  return `${body}.${signature}`;
+}
+
+function verifyGrant(grant: string | undefined): AuthGrantPayload | null {
+  const secret = process.env.ONE_SESSION_SECRET;
+  if (!secret || !grant) return null;
+  const separator = grant.lastIndexOf(".");
+  if (separator < 1) return null;
+  const body = grant.slice(0, separator);
+  const signature = grant.slice(separator + 1);
+  const expected = createHmac("sha256", secret).update(body).digest("base64url");
+  const signatureBytes = Buffer.from(signature);
+  const expectedBytes = Buffer.from(expected);
+  if (signatureBytes.length !== expectedBytes.length) return null;
+  if (!timingSafeEqual(signatureBytes, expectedBytes)) return null;
+  try {
+    const decoded: unknown = JSON.parse(Buffer.from(body, "base64url").toString("utf8"));
+    if (!isObject(decoded)) return null;
+    const payload = decoded as Record<string, unknown>;
+    if (typeof payload.exp !== "number" || !Number.isSafeInteger(payload.exp) || payload.exp <= Date.now()) {
+      return null;
+    }
+    if (typeof payload.identity !== "string" || payload.identity.length === 0) return null;
+    const identityType = payload.identityType;
+    if (identityType !== "user" && identityType !== "team" && identityType !== "organization" && identityType !== "project") {
+      return null;
+    }
+    return { identity: payload.identity, identityType, exp: payload.exp };
+  } catch {
+    return null;
+  }
 }
 
 function signSession(expiresAt: number): string | undefined {
@@ -116,18 +166,34 @@ export function registerOneRoutes(app: Express, prisma: PrismaClient): void {
     res.sendStatus(204);
   });
 
-  app.post("/api/one/auth-token", requireOperatorSession, async (req: Request, res: Response) => {
-    const body = isObject(req.body) ? req.body : {};
+  app.post("/api/one/auth-grant", requireOperatorSession, (_req: Request, res: Response) => {
+    const identityType = (process.env.ONE_AUTHKIT_DEFAULT_IDENTITY_TYPE ?? "user") as IdentityType;
+    const exp = Date.now() + GRANT_TTL_MS;
+    const grant = signGrant({ identity: operatorIdentity(), identityType, exp });
+    if (!grant) {
+      res.status(500).json({ error: "auth grant unavailable" });
+      return;
+    }
+    res.status(200).json({ grant, expiresAt: exp });
+  });
 
+  app.post("/api/one/auth-token", async (req: Request, res: Response) => {
+    const body = isObject(req.body) ? req.body : {};
+    const grantHeader = req.header(GRANT_HEADER);
+    if (!grantHeader) {
+      res.status(401).json({ error: "auth grant required" });
+      return;
+    }
+    const verified = verifyGrant(grantHeader);
+    if (!verified) {
+      res.status(401).json({ error: "invalid or expired auth grant" });
+      return;
+    }
     try {
-      const identityType = (getString(body, "identityType") ?? process.env.ONE_AUTHKIT_DEFAULT_IDENTITY_TYPE ?? "user") as
-        | "user"
-        | "team"
-        | "organization"
-        | "project";
-      const page = typeof req.query.page === "string" ? req.query.page : undefined;
-      const limit = typeof req.query.limit === "string" ? req.query.limit : undefined;
-      const token = await issueAuthKitToken({ identity: operatorIdentity(), identityType, page, limit });
+      const identityType = (getString(body, "identityType") ?? verified.identityType) as IdentityType;
+      const page = typeof req.query.page === "string" ? req.query.page : "1";
+      const limit = typeof req.query.limit === "string" ? req.query.limit : "100";
+      const token = await issueAuthKitToken({ identity: verified.identity, identityType, page, limit });
       res.status(200).json(token);
     } catch (err) {
       const message = err instanceof Error ? err.message : "auth-token issuance failed";

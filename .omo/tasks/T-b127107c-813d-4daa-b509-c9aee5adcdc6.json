@@ -1,0 +1,10 @@
+{
+  "id": "T-b127107c-813d-4daa-b509-c9aee5adcdc6",
+  "subject": "Commit AuthKit fix",
+  "description": "Stage and commit only scoped AuthKit/config files after inspecting status/diff/log.",
+  "status": "completed",
+  "activeForm": "committed scoped AuthKit fix",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_11bba77a8ffept3rVs3b5oxr7V"
+}

@@ -1,0 +1,13 @@
+{
+  "id": "T-11636410-80db-435c-887d-181967121aa6",
+  "subject": "Reproduce local startup failure",
+  "description": "Capture exact build/dev failure blocking localhost.",
+  "status": "completed",
+  "activeForm": "Captured backend compiler error",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "scope": "local-run"
+  },
+  "threadID": "ses_0b0e7c621ffexwZiscsgsQECdg"
+}

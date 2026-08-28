@@ -1,0 +1,10 @@
+{
+  "id": "T-c585d439-0fe3-4395-b135-279138056417",
+  "subject": "Implement operator login UI",
+  "description": "Add minimal login state and pass bearer proof to AuthKit.",
+  "status": "pending",
+  "activeForm": "Implementing operator login UI",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_fbfb0aa1affeFzcK1MbQ7O45m7"
+}

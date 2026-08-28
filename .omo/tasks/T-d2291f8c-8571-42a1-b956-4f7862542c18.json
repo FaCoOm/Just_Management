@@ -1,0 +1,13 @@
+{
+  "id": "T-d2291f8c-8571-42a1-b956-4f7862542c18",
+  "subject": "Verify integrations flow",
+  "description": "Run diagnostics, tests, builds, and browser QA for anonymous and authenticated integrations states.",
+  "status": "pending",
+  "activeForm": "Verifying integrations flow",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "verify": "Automated checks and browser flow pass"
+  },
+  "threadID": "ses_fbfb0aa1affeFzcK1MbQ7O45m7"
+}

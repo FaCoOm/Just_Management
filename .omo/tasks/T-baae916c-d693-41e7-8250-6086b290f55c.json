@@ -1,0 +1,16 @@
+{
+  "id": "T-baae916c-d693-41e7-8250-6086b290f55c",
+  "subject": "Remove X WithOne connection",
+  "description": "Delete the confirmed X connection, then verify it is absent from WithOne.",
+  "status": "completed",
+  "activeForm": "Removed the X connection",
+  "blocks": [],
+  "blockedBy": [],
+  "owner": "Sisyphus",
+  "metadata": {
+    "verification": "one --agent connection list returned 4 connections; X absent."
+  },
+  "repoURL": "",
+  "parentID": "",
+  "threadID": "ses_0ab54b306ffecf8gEWZxEMFE1x"
+}

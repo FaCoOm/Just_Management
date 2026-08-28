@@ -1,0 +1,9 @@
+{
+  "id": "T-ecf76314-804c-4866-9b08-9ef4d249d657",
+  "subject": "Identify bloat scope",
+  "description": "Enumerate bloat candidates: global config backups, repo tooling dirs, dead code",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": [],
+  "threadID": "ses_fbfac4c3dffeqphmA0v6nsdGad"
+}

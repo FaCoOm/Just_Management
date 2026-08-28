@@ -1,0 +1,17 @@
+{
+  "id": "T-740539e3-0fe8-4178-b22a-520a245f5aa1",
+  "subject": "Create new directory structure",
+  "description": "Build the clean docs hierarchy before moving files",
+  "status": "completed",
+  "blocks": [
+    "T-b8b72df5",
+    "T-2e45c447",
+    "T-e8e2a51a",
+    "T-df7409d6",
+    "T-4f12e8c5"
+  ],
+  "blockedBy": [
+    "T-1a9c8e3f"
+  ],
+  "threadID": "ses_12191ffd1ffeaopzdvlQ5JpBZn"
+}

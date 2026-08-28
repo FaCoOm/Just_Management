@@ -1,0 +1,15 @@
+{
+  "id": "T-7da6d9f7-f229-4ee8-a83b-c249bef0cb31",
+  "subject": "Safety & Cleanup: Redact secrets and remove duplicates",
+  "description": "Handle critical security and duplicate issues before reorganization",
+  "status": "completed",
+  "blocks": [
+    "T-b8b72df5",
+    "T-2e45c447",
+    "T-e8e2a51a",
+    "T-df7409d6",
+    "T-4f12e8c5"
+  ],
+  "blockedBy": [],
+  "threadID": "ses_12191ffd1ffeaopzdvlQ5JpBZn"
+}

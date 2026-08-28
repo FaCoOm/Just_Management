@@ -1,0 +1,12 @@
+{
+  "id": "T-a5e0e791-4bd8-4ce8-9cc9-8f68035ac1b7",
+  "subject": "Revise AGENTS files",
+  "description": "Apply the smallest safe documentation/config changes to reduce duplicated context.",
+  "status": "pending",
+  "activeForm": "Revising AGENTS files",
+  "blocks": [],
+  "blockedBy": [
+    "T-63d9231d-cd8e-4805-ba31-e493f05971d7"
+  ],
+  "threadID": "ses_0d3f5381effekR1LrixPY6vjiW"
+}

@@ -1,0 +1,19 @@
+{
+  "id": "T-f45a4772-9775-487a-b4ec-e61c9eba115e",
+  "subject": "Push and smoke deploy",
+  "description": "Push commit to origin/main, wait for deployment, smoke live health/status/auth-token.",
+  "status": "completed",
+  "activeForm": "pushed and smoke-tested deployed endpoints",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "commits": "68b3aba,719c0c4,cc4f306",
+    "push": "origin/main updated to cc4f306",
+    "health": "200 {\"status\":\"ok\",\"track\":\"B\"}",
+    "integrationsStatus": "200 {\"status\":\"connected\",\"provider\":\"withone\"}",
+    "authToken": "200 rows=0 page=0 total=0",
+    "corsManageOrigin": "204 allowOrigin=https://manage.mujosaigon.com",
+    "corsAuthOrigin": "500 for Origin https://auth.withone.ai, Hostinger ALLOWED_ORIGINS not updated"
+  },
+  "threadID": "ses_11bba77a8ffept3rVs3b5oxr7V"
+}
