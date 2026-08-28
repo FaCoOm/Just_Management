@@ -57,7 +57,7 @@ Canonical env setup for the production deployment on the Hostinger VPS (frontend
 ```bash
 # Backend boot diagnostics print the config dashboard:
 cd backend && npm run build && npm run dev
-# Expect: DATABASE_URL 🟢, WithOne Keys 🟢, Ingestion Mode WithOne Passthrough, no FATAL/RECOMMENDED MISSING
+# Expect: DATABASE_URL 🟢, WithOne Keys 🟡 Not Set, Ingestion Mode WithOne Passthrough; "RECOMMENDED CREDENTIALS MISSING: ONE_CONNECTION_KEY" is EXPECTED (DB-backed rows preferred), no 🔴 MISSING / FATAL
 
 # Deployed route existence (todo 11 gate):
 curl -i https://manage.mujosaigon.com/api/one/auth-grant

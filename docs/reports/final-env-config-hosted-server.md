@@ -70,7 +70,7 @@ curl -i https://manage.mujosaigon.com/api/one/auth-grant        # expect 401 (ro
 curl -s https://manage.mujosaigon.com/health                    # expect {"status":"ok","track":"B"}
 ```
 
-Boot log must show: `DATABASE_URL 🟢 Configured`, `WithOne Keys: 🟢 Configured`, "Configuration validation passed".
+Boot log must show: `DATABASE_URL 🟢 Configured`, `WithOne Keys: 🟡 Not Set` plus `⚠️ RECOMMENDED CREDENTIALS MISSING: ONE_CONNECTION_KEY` — **expected when the key is unset** (DB-backed `integration_connections` rows are preferred); no `🔴 MISSING` / FATAL, "Configuration validation passed".
 
 ## 6. Deployment caveat
 
