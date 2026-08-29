@@ -15,12 +15,15 @@ Since you are serving both the frontend and backend strictly from Hostinger (pro
 ### 1. The Value to Set
 In your `backend/.env` file on Hostinger, define it as:
 ```env
-ALLOWED_ORIGINS=https://manage.mujosaigon.com
+ALLOWED_ORIGINS=https://manage.mujosaigon.com,https://auth.withone.ai,https://app.withone.ai
 ```
 
-### 2. Why omit localhost?
-Since you are not running the codebase or debugging from a local machine anymore, omitting `http://localhost` or `http://127.0.0.1` ensures that no local mock setups can make API calls to your live database backend, raising your security posture.
+> [!NOTE]
+> `backend/src/index.ts` automatically merges `https://auth.withone.ai`, `https://app.withone.ai`, and `https://manage.mujosaigon.com` into `DEFAULT_ALLOWED_ORIGINS` and normalizes trailing slashes, ensuring AuthKit token requests are never rejected by CORS even if minimal configurations are provided.
+
+### 2. Why omit localhost in Production?
+Since you are not running the codebase or debugging from a local machine in production, omitting `http://localhost` or `http://127.0.0.1` ensures that no local mock setups can make API calls to your live database backend, raising your security posture.
 
 ### ⚠️ Rules for Origins
-1.  **Do NOT include trailing slashes**: An origin is defined as `<protocol>://<host>[:port]`. Adding a trailing slash (e.g., `https://manage.mujosaigon.com/`) will make it fail CORS verification because browsers send the origin *without* the slash.
-2.  **Match HTTPS/HTTP exactly**: Ensure the protocol is correct. If your production site uses HTTPS (which it should), specify `https://manage.mujosaigon.com`, not `http://manage.mujosaigon.com`.
+1.  **Normalization is Automatic**: While trailing slashes are automatically sanitized by the backend normalization layer, configuring clean origins (e.g. `https://manage.mujosaigon.com`) is standard practice.
+2.  **Match HTTPS/HTTP exactly**: Ensure the protocol is correct. If your production site uses HTTPS, specify `https://manage.mujosaigon.com`, not `http://manage.mujosaigon.com`.
