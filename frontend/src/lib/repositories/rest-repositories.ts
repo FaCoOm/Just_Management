@@ -438,7 +438,15 @@ const integrationRepo: IntegrationRepository = {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ password }),
     });
-    if (!res.ok) throw new Error("Invalid operator password");
+    if (!res.ok) {
+      if (res.status === 401) {
+        throw new Error("Invalid operator password.");
+      }
+      if (res.status === 500) {
+        throw new Error("Server error or CORS rejection. Please check backend configuration.");
+      }
+      throw new Error(`Authentication failed (${res.status}).`);
+    }
   },
   async logoutOperator() {
     const res = await apiFetch(apiUrl("/api/one/operator-session"), { method: "DELETE" });
