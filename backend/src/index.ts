@@ -30,7 +30,6 @@ import { registerCheckInOutRoutes } from "./routes/check-in-out";
 import { registerFolioRoutes } from "./routes/folios";
 import { createDiningEvent } from "./services/dining-event-service";
 import { createStaff } from "./services/staff-service";
-import path from "node:path";
 
 const app = express();
 
