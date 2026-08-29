@@ -128,9 +128,9 @@ export function registerOneRoutes(app: Express, prisma: PrismaClient): void {
 
   app.post("/api/one/operator-session", (req: Request, res: Response) => {
     const body = isObject(req.body) ? req.body : {};
-    const password = getString(body, "password");
-    const expected = process.env.ONE_OPERATOR_PASSWORD;
-    const sessionSecret = process.env.ONE_SESSION_SECRET;
+    const password = getString(body, "password")?.trim();
+    const expected = process.env.ONE_OPERATOR_PASSWORD?.trim();
+    const sessionSecret = process.env.ONE_SESSION_SECRET?.trim();
     if (!expected || !sessionSecret || !password) {
       res.status(401).json({ error: "invalid operator credentials" });
       return;
@@ -146,22 +146,24 @@ export function registerOneRoutes(app: Express, prisma: PrismaClient): void {
       res.status(500).json({ error: "operator session unavailable" });
       return;
     }
+    const isHttps = req.secure || req.header("x-forwarded-proto") === "https" || process.env.NODE_ENV === "production";
     res.cookie(SESSION_COOKIE, value, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      secure: isHttps,
+      sameSite: "lax",
       maxAge: SESSION_DURATION_MS,
-      path: "/api/one",
+      path: "/",
     });
     res.sendStatus(204);
   });
 
-  app.delete("/api/one/operator-session", (_req: Request, res: Response) => {
+  app.delete("/api/one/operator-session", (req: Request, res: Response) => {
+    const isHttps = req.secure || req.header("x-forwarded-proto") === "https" || process.env.NODE_ENV === "production";
     res.clearCookie(SESSION_COOKIE, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      path: "/api/one",
+      secure: isHttps,
+      sameSite: "lax",
+      path: "/",
     });
     res.sendStatus(204);
   });
@@ -178,7 +180,6 @@ export function registerOneRoutes(app: Express, prisma: PrismaClient): void {
   });
 
   app.post("/api/one/auth-token", async (req: Request, res: Response) => {
-    const body = isObject(req.body) ? req.body : {};
     const grantHeader = req.header(GRANT_HEADER);
     if (!grantHeader) {
       res.status(401).json({ error: "auth grant required" });
@@ -190,7 +191,7 @@ export function registerOneRoutes(app: Express, prisma: PrismaClient): void {
       return;
     }
     try {
-      const identityType = (getString(body, "identityType") ?? verified.identityType) as IdentityType;
+      const identityType = verified.identityType;
       const page = typeof req.query.page === "string" ? req.query.page : "1";
       const limit = typeof req.query.limit === "string" ? req.query.limit : "100";
       const token = await issueAuthKitToken({ identity: verified.identity, identityType, page, limit });

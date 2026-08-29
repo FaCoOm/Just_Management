@@ -20,6 +20,7 @@ export function useAuthGrant(enabled = true) {
     queryFn: () => repos.integrations.mintAuthGrant(),
     enabled,
     staleTime: 4 * 60_000,
+    refetchInterval: 4 * 60_000,
     refetchOnWindowFocus: false,
     retry: 0,
   });

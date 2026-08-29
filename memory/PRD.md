@@ -116,7 +116,7 @@ Execute the `dashboard-completion-and-integration.md` plan to complete every sid
 - [ ] Add `nightly_rate` to reservation data for accurate tax export pricing
 
 ### P1 — Wave 5 Completion
-- [ ] WithOne Gmail integration for confirmation code search (key: `sk_live_EXbAp...`)
+- [ ] WithOne Gmail integration for confirmation code search (key: `<redacted>`)
 - [ ] OTA email parser registry (Airbnb, Booking.com, Agoda)
 - [ ] Google Sheets upsert writer (WithOne path)
 - [ ] Per-reservation Tax-Export row action on Reservations page
@@ -132,3 +132,5 @@ Execute the `dashboard-completion-and-integration.md` plan to complete every sid
 - [ ] Accessibility and responsive QA pass
 - [ ] Dark mode verification across all pages
 - [ ] Full-system verification docs and evidence index
+
+> ⚠️ **ROTATE NOW** — a live secret key reference in this file was replaced with `<redacted>`. Treat it as compromised; rotation is the user's responsibility (see the notice in `docs/config.md`).

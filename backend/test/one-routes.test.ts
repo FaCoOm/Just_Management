@@ -210,9 +210,11 @@ describe("POST /api/one/auth-grant", () => {
   it("round-trips grant + token so AuthKit iframe can authorize without the operator cookie", async () => {
     const originalFetch = globalThis.fetch;
     try {
+      let requestedBody = "";
       globalThis.fetch = async (url, init) => {
         const u = url.toString();
         if (!u.startsWith("https://one.example/")) return originalFetch(url, init);
+        requestedBody = String(init?.body);
         return new Response(JSON.stringify({ rows: [], total: 0, pages: 0, page: 1, requestId: "req-grant" }), {
           status: 200,
           headers: { "Content-Type": "application/json" },
@@ -229,10 +231,11 @@ describe("POST /api/one/auth-grant", () => {
       const tokenRes = await fetch(`${ts!.baseUrl}/api/one/auth-token`, {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-one-grant": grant },
-        body: JSON.stringify({ identity: "operator", identityType: "user" }),
+        body: JSON.stringify({ identity: "attacker", identityType: "team" }),
       });
 
       assert.equal(tokenRes.status, 200);
+      assert.deepEqual(JSON.parse(requestedBody), { identity: "operator", identityType: "user" });
     } finally {
       globalThis.fetch = originalFetch;
     }

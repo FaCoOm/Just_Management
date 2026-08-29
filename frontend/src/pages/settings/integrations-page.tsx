@@ -127,7 +127,7 @@ export function IntegrationsPage() {
 
   const onOperatorLogin = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    operatorLogin.mutate(operatorPassword, { onSuccess: () => setOperatorPassword("") });
+    operatorLogin.mutate(operatorPassword.trim(), { onSuccess: () => setOperatorPassword("") });
   };
 
   const providerState = integrationStatus.isLoading
@@ -204,21 +204,39 @@ export function IntegrationsPage() {
                 </Button>
               </div>
             ) : (
-              <form className="flex max-w-md flex-col gap-3 sm:flex-row sm:items-end" onSubmit={onOperatorLogin}>
-                <Label className="flex-1">
-                  Operator password
-                  <Input
-                    type="password"
-                    autoComplete="current-password"
-                    value={operatorPassword}
-                    onChange={(event) => setOperatorPassword(event.target.value)}
-                    required
-                  />
-                </Label>
-                <Button type="submit" disabled={operatorLogin.isPending}>
-                  {operatorLogin.isPending ? "Signing in..." : "Sign in"}
-                </Button>
-                {operatorLogin.isError ? <p className="text-sm text-destructive">Invalid operator password.</p> : null}
+              <form className="max-w-md space-y-3" onSubmit={onOperatorLogin}>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+                  <Label className="flex-1">
+                    Operator password
+                    <Input
+                      type="password"
+                      autoComplete="current-password"
+                      value={operatorPassword}
+                      aria-invalid={operatorLogin.isError}
+                      aria-describedby={operatorLogin.isError ? "operator-login-error" : undefined}
+                      onChange={(event) => {
+                        if (operatorLogin.isError) {
+                          operatorLogin.reset();
+                        }
+                        setOperatorPassword(event.target.value);
+                      }}
+                      required
+                    />
+                  </Label>
+                  <Button type="submit" disabled={operatorLogin.isPending}>
+                    {operatorLogin.isPending ? "Signing in..." : "Sign in"}
+                  </Button>
+                </div>
+                {operatorLogin.isError ? (
+                  <p
+                    id="operator-login-error"
+                    role="alert"
+                    aria-live="polite"
+                    className="text-sm text-destructive"
+                  >
+                    {operatorLogin.error?.message || "Invalid operator password."}
+                  </p>
+                ) : null}
               </form>
             )}
           </CardContent>

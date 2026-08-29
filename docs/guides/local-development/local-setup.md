@@ -148,17 +148,21 @@ Run the integrated end-to-end integration sync test suite to confirm the ingesti
 npm run verify-ingestion
 ```
 
-### 6.2 Full Compile Validation
-Run TypeScript compilation and production builds to ensure the system is completely robust:
-```bash
-# From the root directory:
+### 6.3 One Auth / WithOne Local Testing (Option A: HTTPS Tunnel)
+When testing the **Connect Integration** popup (Google Drive, Gmail, Google Sheets) locally, modern Chromium blocks cross-origin requests from the public AuthKit iframe (`https://auth.withone.ai`) to `http://localhost:5173` due to Local Network Access (LNA) security policies.
 
-# 1. Verify frontend TypeScript type-safety
-npm run typecheck
-
-# 2. Build the production assets
-npm run build:all
-```
+To test the full interactive OAuth modal locally:
+1. Start an HTTPS tunnel via ngrok:
+   ```bash
+   ngrok http 5173
+   ```
+2. Copy the generated HTTPS forwarding URL (e.g. `https://abc-123.ngrok-free.app`).
+3. Set the token endpoint in `.env`:
+   ```env
+   VITE_ONE_AUTH_TOKEN_URL=https://abc-123.ngrok-free.app/api/one/auth-token
+   ```
+4. Access the dashboard at `https://abc-123.ngrok-free.app/settings/integrations`.
+5. Click **Connect Google Drive** / **Gmail** to initiate the OAuth handshake.
 
 ---
 
@@ -166,8 +170,8 @@ npm run build:all
 
 > [!NOTE]
 > **Database Cold Connects:** 
-> First API requests (like `/api/dashboard/summary`) will pre-warm your connection pool automatically. Ensure the backend logs `Prisma pre-warm complete` on startup.
+> First API requests (like `/api/dashboard/summary`) will pre-warm your connection pool automatically. Ensure the backend logs `Prisma connection warmed in ...ms` on startup.
 
 > [!WARNING]
-> **CORS Blockers:**
-> If you test the frontend using an IP address instead of `localhost`, verify that your root `backend/.env` CORS configuration matches the new URL origin exactly.
+> **One Auth Blank Screen / "No Integration Available":**
+> If you open the Connect Integration modal directly on `http://localhost:5173`, Chrome will block the iframe's loopback token fetch. Use the ngrok tunnel described in Section 6.3 or disable Chrome's `Block insecure private network requests` flag in `chrome://flags` during development. In production, this issue does not occur as the application is served over public HTTPS.
