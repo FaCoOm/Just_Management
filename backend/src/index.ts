@@ -1,5 +1,11 @@
+import path from "node:path";
+import dotenv from "dotenv";
 
-import "dotenv/config";
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
+dotenv.config({ path: path.resolve(process.cwd(), "backend/.env") });
+dotenv.config({ path: path.resolve(process.cwd(), ".env") });
+dotenv.config();
+
 import { validateEnv } from "./config/env-validator";
 
 validateEnv();
@@ -54,31 +60,72 @@ const DEFAULT_ALLOWED_ORIGINS = [
   "http://127.0.0.1:4173",
   "http://host.docker.internal:5173",
   "http://host.docker.internal:4173",
+  "https://auth.withone.ai",
+  "https://app.withone.ai",
+  "https://manage.mujosaigon.com",
 ];
-const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
-  ? process.env.ALLOWED_ORIGINS.split(",").map((origin) => origin.trim())
-  : DEFAULT_ALLOWED_ORIGINS;
+const customOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(",")
+      .map((origin) => origin.trim().replace(/\/+$/, ""))
+      .filter((origin) => origin.length > 0)
+  : [];
+const ALLOWED_ORIGINS = Array.from(
+  new Set([
+    ...DEFAULT_ALLOWED_ORIGINS.map((origin) => origin.replace(/\/+$/, "")),
+    ...customOrigins,
+  ])
+);
+
+const DEV_TUNNEL_PATTERN =
+  /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*\.(trycloudflare\.com|ngrok-free\.app|ngrok\.io|ngrok\.app|loca\.lt)$/i;
+
+const isProduction = process.env.NODE_ENV === "production";
+const allowDevTunnels = process.env.ALLOW_DEV_TUNNELS === "true" || !isProduction;
+
+function isAllowedOrigin(origin: string): boolean {
+  const normalized = origin.trim().replace(/\/+$/, "");
+  if (ALLOWED_ORIGINS.includes(normalized)) {
+    return true;
+  }
+  // Safely allow development tunnels (Cloudflare, ngrok, localtunnel) in non-production
+  if (allowDevTunnels) {
+    try {
+      const parsed = new URL(normalized);
+      if (parsed.protocol === "https:" && (parsed.port === "" || parsed.port === "443")) {
+        if (DEV_TUNNEL_PATTERN.test(parsed.hostname)) {
+          return true;
+        }
+      }
+    } catch {
+      return false;
+    }
+  }
+  return false;
+}
 
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+      if (!origin || isAllowedOrigin(origin)) {
         callback(null, true);
         return;
       }
 
-      callback(new Error("CORS origin not allowed"));
+      callback(null, false);
     },
     allowedHeaders: [
       "Content-Type",
       "Authorization",
+      "Accept",
+      "X-Requested-With",
       "x-one-grant",
       "x-one-secret",
       "x-one-connection-key",
       "x-one-action-id",
     ],
-    exposedHeaders: ["X-Response-Time"],
-    credentials: false,
+    exposedHeaders: ["X-Response-Time", "X-Total-Count"],
+    credentials: true,
+    maxAge: 86400,
   })
 );
 app.use(compression() as unknown as express.RequestHandler);
